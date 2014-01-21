@@ -9,6 +9,17 @@ var pool  = mysql.createPool({
 });
 
 
+var quoteIfNotNull = function(value) {
+	var v = value;
+	if (v === null || v === undefined) {
+		v = 'null';	
+	} else {
+		// quote string
+		v = "'" + v + "'";
+	}
+	return v;
+}
+
 
 // @FIXME global variables
 var user_id = 1;
@@ -67,21 +78,30 @@ exports.add = function(req, res) {
 			'description'
 		];
 		var values = [];
+
+		var project_id = req.body['project_id'];
+
+		console.log('project_id is null: ' + (project_id === null)); 
+
+		console.log('project_id undefined: ' + (project_id === undefined));
+
+		console.log('project_id is NaN: ' + isNaN(project_id));
+
+		console.log('!project_id: ' + (!project_id));
+
+		console.log('project_id = ' + project_id);
+
 		attributes.forEach(function(item) {
-			var v = req.body[item];
-			if (v === null) {
-				v = 'null';	
-			} 
-			values.push("'" + v + "'");
+			values.push(quoteIfNotNull(req.body[item]));
 		});
 		
 		// additional (calculated) attributes
-		attribute.push('cdate');
+		attributes.push('cdate');
 		values.push('now()');
-		attribute.push('mdate');
+		attributes.push('mdate');
 		values.push('now()');
 
-		attribute.push('user_id');
+		attributes.push('user_id');
 		values.push(user_id);
 
 		// check for mandatory fields
@@ -128,11 +148,7 @@ exports.update = function(req, res) {
 		];
 		var values = [];
 		attributes.forEach(function(item) {
-			var v = req.body[item];
-			if (v === null) {
-				v = 'null';	
-			} 
-			values.push("'" + v + "'");
+			values.push(quoteIfNotNull(req.body[item]));
 		});
 		
 		// additional (calculated) attributes
