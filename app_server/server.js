@@ -2,6 +2,7 @@ var express = require('express'),
 hours = require('./routes/hours');
  
 var app = express();
+app.use(express.bodyParser());
  
 app.get('/hours', hours.findAll);
 app.get('/hours/:id', hours.findById);
