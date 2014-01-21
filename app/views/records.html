@@ -1,0 +1,17 @@
+<section>
+	<h1>Work Records</h1>
+	<table>
+		<tr>
+			<th>Start</th>
+			<th>End</th>
+			<th>Project</th>
+			<th>Description</th>
+		</tr>
+		<tr ng-repeat="record in records">
+			<td>{{record.starttime}}</td>
+			<td>{{record.endtime}}</td>
+			<td>{{record.project}}</td>
+			<td>{{record.description}}</td>
+		</tr>
+	</table>
+</section>

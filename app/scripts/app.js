@@ -1,18 +1,26 @@
 'use strict';
 
-angular.module('hoursApp', [
+angular.module('timetrackerApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
-  'ngRoute'
+  'ngRoute',
+  'recordServices'
 ])
-  .config(function ($routeProvider) {
+   .config(['routeProvider', function ($routeProvider) {
+    alert('ASFDSA');
     $routeProvider
       .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
+        templateUrl: 'views/records.html',
+        controller: 'RecordsListCtrl'
       })
       .otherwise({
         redirectTo: '/'
       });
-  });
+  }]);
+
+
+
+ // angular.module('timetrackerApp', []);
+
+

@@ -9,6 +9,10 @@ var pool  = mysql.createPool({
 });
 
 
+// @FIXME global variables
+var user_id = 1;
+
+
 var quoteIfNotNull = function(value) {
 	var v = value;
 	if (v === null || v === undefined) {
@@ -20,9 +24,6 @@ var quoteIfNotNull = function(value) {
 	return v;
 }
 
-
-// @FIXME global variables
-var user_id = 1;
 
 exports.findById = function(req, res) {
 
@@ -136,7 +137,7 @@ exports.update = function(req, res) {
 
 		var id = parseInt(req.params.id);
 		if (!id) {
-			res.send(400, 'No valid hour_id passed');
+			res.send(400, 'No valid record_id passed');
 		}
 
 		var attributes = [
@@ -203,7 +204,7 @@ exports.delete = function(req, res) {
 
 		var id = parseInt(req.params.id);
 		if (!id) {
-			res.send(400, 'No valid hour_id passed');
+			res.send(400, 'No valid record_id passed');
 		}
 
 		// write to DB
