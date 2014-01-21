@@ -7,6 +7,8 @@ var connection = mysql.createConnection({
   database : 'sql427640'
 });
 
+// @FIXME global variables
+var user_id = 1;
 
 exports.findById = function(req, res) {
 	// Query the database to some data 
@@ -64,9 +66,9 @@ exports.add = function(req, res) {
 	values.push('now()');
 
 	attribute.push('user_id');
-	values.push(1);
+	values.push(user_id);
 
-	// check fo mandatory fields
+	// check for mandatory fields
 	if (!req.body.starttime) {
 		res.send(400, 'Missing starttime');
 	}
@@ -119,7 +121,7 @@ exports.update = function(req, res) {
 	values.push('now()');
 
 	attributes.push('user_id');
-	values.push(1);
+	values.push(user_id);
 
 	// check fo mandatory fields
 	if (!req.body.starttime) {
@@ -148,7 +150,7 @@ exports.update = function(req, res) {
 			res.status(200);
 		}	
 
-		// Shows the result on console window
+		// send the result
 		res.send(rows);
 	}
 	// Close connection
@@ -157,16 +159,34 @@ exports.update = function(req, res) {
 }
 
 exports.delete = function(req, res) {
-	// var id = req.params.id;
-	// console.log('Deleting wine: ' + id);
-	// db.collection('wines', function(err, collection) {
-	// 	collection.remove({'_id':new BSON.ObjectID(id)}, {safe:true}, function(err, result) {
-	// 		if (err) {
-	// 			res.send({'error':'An error has occurred - ' + err});
-	// 		} else {
-	// 			console.log('' + result + ' document(s) deleted');
-	// 			res.send(204, req.body);
-	// 		}
-	// 	});
-	// });
+	// Query the database to some data 
+	console.log('DELETE, Body: ' + JSON.stringify(req.body));
+
+	var id = parseInt(req.params.id);
+	if (!id) {
+		res.send(400, 'No valid hour_id passed');
+	}
+
+	// write to DB
+	var sql = 'DELETE from hours where hour_id=' + id;
+	console.log("SQL = " + sql);
+	connection.query(sql, function(err, rows){
+	
+	if(err != null) {
+		res.end("Query error:" + err);
+	} else {
+
+		if (!rows.affectedRows) {
+			res.status(400);
+			rows.error = 'No rows matched';
+		} else {
+			res.status(204);
+		}	
+
+		// send the result
+		res.send(rows);
+	}
+	// Close connection
+//	connection.end();
+	});
 }
