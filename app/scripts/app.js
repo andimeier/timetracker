@@ -4,10 +4,10 @@ angular.module('timetrackerApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
-  'ngRoute',
-  'recordServices'
+  'ngRoute'
+  // , 'recordServices'
 ])
-   .config(['routeProvider', function ($routeProvider) {
+   .config(function ($routeProvider) {
     alert('ASFDSA');
     $routeProvider
       .when('/', {
@@ -17,7 +17,7 @@ angular.module('timetrackerApp', [
       .otherwise({
         redirectTo: '/'
       });
-  }]);
+  });
 
 
 
