@@ -1,12 +1,12 @@
 'use strict';
 
-var timetrackerApp = angular.module('timetrackerApp', []);
+var recordControllers = angular.module('recordControllers', []);
 
-timetrackerApp.controller('RecordsListCtrl', ['$scope', 'Record', function($scope, Records) {
-	$scope.records = Records.query();
+recordControllers.controller('RecordListCtrl', ['$scope', 'Record', function($scope, Record) {
+	$scope.records = Record.query();
 	$scope.orderProp = 'starttime';
 }]);
  
-timetrackerApp.controller('RecordsDetailCtrl', ['$scope', '$routeParams', 'Record', function($scope, $routeParams, Records) {
-	$scope.record = Records.get({recordId: $routeParams.recordId}, function(record) {});
+recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Record', function($scope, $routeParams, Record) {
+	$scope.record = Record.get({recordId: $routeParams.recordId}, function(record) {});
 }]);

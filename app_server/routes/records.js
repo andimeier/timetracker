@@ -47,15 +47,21 @@ exports.findById = function(req, res) {
 
 exports.findAll = function(req, res) {
 
+	console.log('Query called...');
+
 	pool.getConnection(function(err, connection) {
 
 		// Query the database to some data 
-		connection.query("SELECT * from hours where starttime >= date_sub(current_date, interval 30 days) order by starttime", function(err, rows) {
+		connection.query("SELECT * from hours where starttime >= date_sub(current_date, interval 30 day) order by starttime", function(err, rows) {
 
 			if (err != null) {
 				res.send(404, "Query error:" + err);
 			} else {
 				// Shows the result on console window
+
+				console.log('Found ' + rows.length + ' rows ...');
+
+
 				res.send(200, rows);
 			}
 			// close connection

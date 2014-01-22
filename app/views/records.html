@@ -13,5 +13,10 @@
 			<td>{{record.project}}</td>
 			<td>{{record.description}}</td>
 		</tr>
+		<tr ng-hide="filteredRecords">
+			<td colspan="4" class="norows">no records found</td>
+		</tr>
 	</table>
 </section>
+
+<div>order by = {{orderProp}}</div>

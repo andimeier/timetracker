@@ -1,9 +1,7 @@
-var recordServices = angular.module('recordsServices', ['ngResource']);
+var recordServices = angular.module('recordServices', ['ngResource']);
 
 recordServices.factory('Record', ['$resource',
 	function($resource){
-		return $resource('records/:recordId', {}, {
-			query: {method:'GET', params:{recordId:'records'}, isArray:true}
-		});
+		return $resource('http://localhost:3000/records/:recordId', {}, {});
 	}
 ]);
