@@ -23,8 +23,9 @@ app.use(allowCrossDomain);
 
 app.get('/records', records.findAll);
 app.get('/records/:id', records.findById);
-app.post('/records', records.add);
+app.post('/records/:id', records.update); // POST with ID => update
 app.put('/records/:id', records.update);
+app.post('/records', records.add); // POST without ID => add
 app.delete('/records/:id', records.delete);
 
 app.listen(3000);

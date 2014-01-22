@@ -1,3 +1,39 @@
+<section ng-controller="RecordDetailCtrl">
+	<form ng-submit="processRecordForm()">
+		<!-- edit new record -->
+		<h1>New Record</h1>
+
+		<p>hour_id={{onerecord.hour_id}}</p>
+
+		<table>
+			<tr>
+				<td><label for="start">Start</label></td>
+				<td><input type="datetime" ng-model="onerecord.starttime"></td>
+			</tr>
+			<tr>
+				<td><label for="end">End</label></td>
+				<td><input type="datetime" ng-model="onerecord.endtime"></td>
+			</tr>
+			<tr>
+				<td><label for="project">Project</label></td>
+				<td><input type="text" ng-model="onerecord.project"></td>
+			</tr>
+			<tr>
+				<td><label for="description">Description</label></td>
+				<td><textarea ng-model="onerecord.description"></textarea></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><button type="submit" id="submit" class="submit">Submit</button></td>
+			</tr>
+		</table>
+
+		<div>{{success}}</div>
+
+	</form>
+</section>
+
+
 <section>
 	<h1>Work Records</h1>
 	<table>
@@ -7,16 +43,14 @@
 			<th>Project</th>
 			<th>Description</th>
 		</tr>
-		<tr ng-repeat="record in records">
-			<td>{{record.starttime}}</td>
-			<td>{{record.endtime}}</td>
+		<tr ng-repeat="record in (filteredRecords = records)" ng-dblclick="editRecord(record)" ng-cloak>
+			<td ng-dbl-click="editRecord(record)">{{record.starttime | date:'yyyy-MM-dd HH:mm'}}</td>
+			<td>{{record.endtime | date:'yyyy-MM-dd HH:mm'}}</td>
 			<td>{{record.project}}</td>
 			<td>{{record.description}}</td>
 		</tr>
-		<tr ng-hide="filteredRecords">
+		<tr ng-hide="filteredRecords.length">
 			<td colspan="4" class="norows">no records found</td>
 		</tr>
 	</table>
 </section>
-
-<div>order by = {{orderProp}}</div>
