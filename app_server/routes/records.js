@@ -13,18 +13,6 @@ var pool  = mysql.createPool({
 var user_id = 1;
 
 
-var quoteIfNotNull = function(value) {
-	var v = value;
-	if (v === null || v === undefined) {
-		v = 'null';	
-	} else {
-		// quote string
-		v = "'" + v + "'";
-	}
-	return v;
-}
-
-
 exports.findById = function(req, res) {
 
 	console.log('---------------------------------');
@@ -34,6 +22,22 @@ exports.findById = function(req, res) {
 
 		// query the database to some data 
 		connection.query("SELECT * from hours where hour_id=" + req.params.id, function(err, rows) {
+
+			console.log('Found record: ' + JSON.stringify(rows));
+			console.log('Records are of type [' + rows.constructor.name + ']');
+			console.log('Record[0] is of type [' + (rows[0]).constructor.name + ']');
+			console.log('Record[0][starttime] is of type [' + (rows[0]['starttime']).constructor.name + ']');
+			
+			for (var i in rows[0]) {
+			  val = rows[i];
+			  console.log('field: ' + val);
+			}	
+
+			rows.forEach(rows, function(key, val) {
+				console.log('   value [' + key + '] is [' + value + ']');
+			});
+			console.log('Field "starttime" is [' + rows['starttime']);
+			console.log('Field "starttime" is [' + rows['starttime'].constructor.name + ']');
 
 			if (err != null) {
 				res.send(400, "Query error:" + err);
@@ -104,7 +108,7 @@ exports.add = function(req, res) {
 	console.log('project_id = ' + project_id);
 
 	attributes.forEach(function(item) {
-		values.push(quoteIfNotNull(req.body[item]));
+		values.push(pool.escape(req.body[item]));
 	});
 	
 	// additional (calculated) attributes
@@ -138,15 +142,20 @@ exports.add = function(req, res) {
 			connection.query(sql, function(err, rows) {
 
 				if (err != null) {
+					res.status(400);
 					res.end("Query error:" + err);
+					console.log("Sent error response: status=400");
 				} else {
 					// Shows the result on console window
 					res.send(201, rows);
+					console.log("Sent OK (status 201)");
 				}
 			});
 
 			// close connection
 			connection.release();
+			console.log("Connection released");
+
 		});
 	}
 }
@@ -170,7 +179,7 @@ exports.update = function(req, res) {
 	];
 	var values = [];
 	attributes.forEach(function(item) {
-		values.push(quoteIfNotNull(req.body[item]));
+		values.push(pool.escape(req.body[item]));
 	});
 	
 	// additional (calculated) attributes
@@ -213,8 +222,10 @@ exports.update = function(req, res) {
 					if (!rows.affectedRows) {
 						res.status(400);
 						rows.error = 'No rows matched';
+						console.log("Sent error response (no rows matched): status=400");
 					} else {
 						res.status(200);
+						console.log("Sent OK (status 200)");
 					}	
 
 					// send the result
@@ -224,6 +235,7 @@ exports.update = function(req, res) {
 
 			// close connection
 			connection.release();
+			console.log("Connection released");
 		});
 	}
 }

@@ -3,28 +3,35 @@
 		<!-- edit new record -->
 		<h1>New Record</h1>
 
-		<p>hour_id={{onerecord.hour_id}}</p>
+		<p>hour_id={{data.onerecord.hour_id}}</p>
 
 		<table>
 			<tr>
 				<td><label for="startdate">Start2</label></td>
-				<td><input type="text" ng-model="onerecord.date"></td>
+				<td><input type="text" ng-model="data.onerecord.startdate"></td>
 			</tr>
 			<tr>
 				<td><label for="start">Start</label></td>
-				<td><input type="datetime" ng-model="onerecord.starttime"></td>
+				<td>
+					<input type="datetime" ng-model="data.onerecord.starttime" autofocus>
+					<button type="button" ng-click="data.onerecord.starttime= (getNow() | date:'yyyy-MM-dd HH:mm')">Now</button>
+					<!-- <button type="button" ng-click="alert('click for starttime ...'); data.onerecord.starttime=Date.now().toISOString()">Now1</button> -->
+				</td>
 			</tr>
 			<tr>
 				<td><label for="end">End</label></td>
-				<td><input type="datetime" ng-model="onerecord.endtime"></td>
+				<td>
+					<input type="datetime" ng-model="data.onerecord.endtime">
+					<button type="button" ng-click="data.onerecord.endtime= (getNow() | date:'yyyy-MM-dd HH:mm')">Now</button>
+				</td>
 			</tr>
 			<tr>
 				<td><label for="project">Project</label></td>
-				<td><input type="text" ng-model="onerecord.project"></td>
+				<td><input type="text" ng-model="data.onerecord.project"></td>
 			</tr>
 			<tr>
 				<td><label for="description">Description</label></td>
-				<td><textarea ng-model="onerecord.description"></textarea></td>
+				<td><textarea ng-model="data.onerecord.description"></textarea></td>
 			</tr>
 			<tr>
 				<td></td>
@@ -40,22 +47,23 @@
 
 <section>
 	<h1>Work Records</h1>
-			<p>hour_id={{onerecord.hour_id}}</p>
 
 	<table>
 		<tr>
+			<th>ID</th>
 			<th>Date</th>
 			<th>Start</th>
 			<th>End</th>
 			<th>Project</th>
 			<th>Description</th>
 		</tr>
-		<tr ng-repeat="record in (filteredRecords = records)" 
+		<tr ng-repeat="record in (filteredRecords = data.records)" 
 				ng-dblclick="editRecord(record)" 
-				ng-class="{editing: record == onerecord}" 
+				ng-class="{editing: equals(record, data.onerecord)}" 
 				ng-cloak
 				ng-class-even="'even'"
 				ng-class-odd="'odd'">
+			<td>{{record.hour_id}}</td>
 			<td>{{record.starttime | date:'yyyy-MM-dd'}}</td>
 			<td>{{record.starttime | date:'HH:mm'}}</td>
 			<td>{{record.endtime | date:'HH:mm'}}</td>

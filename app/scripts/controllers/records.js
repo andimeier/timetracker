@@ -1,21 +1,28 @@
 'use strict';
 
 var recordControllers = angular.module('recordControllers', []);
+var counter = 1;
 
 recordControllers.controller('RecordListCtrl', ['$scope', 'Record', function($scope, Record) {
-	$scope.records = Record.query();
-	$scope.records.forEach(function(rec) {
+	// initialize data member
+	$scope.data = {};
+
+	$scope.data.records = Record.query();
+	$scope.data.records.forEach(function(rec) {
 		rec.startdate = 'Alex' + 'asdf';
 	});
 	$scope.orderProp = 'starttime';
 
-	$scope.onerecord = {};
+	$scope.data.onerecord = {};
 
 	$scope.editRecord = function(rec) {
-		$scope.onerecord = rec;
-		$scope.onerecord.date = $scope.extractDate(rec.starttime);
-
-		alert('type: ' + rec.starttime.constructor.name);
+		// edit a copy so the old values are preserved - these will be needed
+		// in case of a "cancel edit"
+		var r = angular.copy(rec);
+		$scope.data.onerecord = r;
+		// $scope.data.onerecord = rec;
+		$scope.data.onerecord.date = $scope.extractDate(rec.starttime);
+		$scope.test = counter++;
 	};
 
 	$scope.extractDate = function(datetime) {
@@ -27,17 +34,28 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', function($sc
 }]);
  
 recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Record', function($scope, $routeParams, Record) {
-	//$scope.onerecord = Record.get({recordId: $routeParams.recordId}, function(record) {});
+	//$scope.data.onerecord = Record.get({recordId: $routeParams.recordId}, function(record) {});
 
 	$scope.processRecordForm = function() {
 
-		//alert('id: ' + $scope.onerecord.hour_id);
+		var reply = Record.save($scope.data.onerecord, function() {
+			// save went ok
+			$scope.data.onerecord = {}; // empty the form after saving
 
-		var reply = Record.save($scope.onerecord);
-		$scope.onerecord = {}; // empty the form after saving
-		$scope.success = 'Oh yeah!';
+			$scope.success = 'Saved successfully.';
 
-		// refresh record list
-		$scope.records = Record.query();
+			// refresh record list
+			$scope.data.records = Record.query();
+
+		}, function(response) {
+			// failure when saving
+			$scope.error = 'Error at saving, response status: ' + response.status;
+		});
 	};
+
+	$scope.getNow = function() {
+		// return (new Date()).toLocaleString();
+		return new Date();
+	};
+
 }]);
