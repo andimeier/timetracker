@@ -59,7 +59,7 @@
 		</tr>
 		<tr ng-repeat="record in (filteredRecords = data.records)" 
 				ng-dblclick="editRecord(record)" 
-				ng-class="{editing: equals(record, data.onerecord)}" 
+				ng-class="{editing: record.hour_id == data.onerecord.hour_id}" 
 				ng-cloak
 				ng-class-even="'even'"
 				ng-class-odd="'odd'">
