@@ -77,3 +77,22 @@ body {
     border-bottom: 0;
   }
 }
+
+
+/* AZ */
+tr.editing {
+  border: 1px solid blue;
+}
+
+tr.even {
+  background-color: #ddd;
+}
+tr.odd {
+  background-color: #eee;
+}
+td {
+  padding: 5px;
+}
+th {
+  padding: 5px;
+}

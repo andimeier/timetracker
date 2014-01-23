@@ -57,6 +57,7 @@ exports.findAll = function(req, res) {
 
 		// Query the database to some data 
 		connection.query("SELECT * from hours where starttime >= date_sub(current_date, interval 30 day) order by starttime desc limit 10", function(err, rows) {
+			console.log('   ... got answer from DB server');
 
 			if (err != null) {
 				res.send(404, "Query error:" + err);
@@ -72,6 +73,7 @@ exports.findAll = function(req, res) {
 
 		// close connection
 		connection.release();
+		console.log('   Connection closed');
 	});
 };
 

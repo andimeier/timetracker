@@ -315,6 +315,24 @@ module.exports = function (grunt) {
         configFile: 'karma.conf.js',
         singleRun: true
       }
+    },
+
+
+    'bower-install': {
+
+      target: {
+
+        // Point to the files that should be updated when
+        // you run `grunt bower-install`
+        src: ['app/index.html'],
+
+        // Optional:
+        // ---------
+        cwd: '',
+        ignorePath: '',
+        exclude: [],
+        fileTypes: {}
+      }
     }
   });
 

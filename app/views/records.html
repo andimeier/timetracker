@@ -7,6 +7,10 @@
 
 		<table>
 			<tr>
+				<td><label for="startdate">Start2</label></td>
+				<td><input type="text" ng-model="onerecord.date"></td>
+			</tr>
+			<tr>
 				<td><label for="start">Start</label></td>
 				<td><input type="datetime" ng-model="onerecord.starttime"></td>
 			</tr>
@@ -36,16 +40,25 @@
 
 <section>
 	<h1>Work Records</h1>
+			<p>hour_id={{onerecord.hour_id}}</p>
+
 	<table>
 		<tr>
+			<th>Date</th>
 			<th>Start</th>
 			<th>End</th>
 			<th>Project</th>
 			<th>Description</th>
 		</tr>
-		<tr ng-repeat="record in (filteredRecords = records)" ng-dblclick="editRecord(record)" ng-cloak>
-			<td ng-dbl-click="editRecord(record)">{{record.starttime | date:'yyyy-MM-dd HH:mm'}}</td>
-			<td>{{record.endtime | date:'yyyy-MM-dd HH:mm'}}</td>
+		<tr ng-repeat="record in (filteredRecords = records)" 
+				ng-dblclick="editRecord(record)" 
+				ng-class="{editing: record == onerecord}" 
+				ng-cloak
+				ng-class-even="'even'"
+				ng-class-odd="'odd'">
+			<td>{{record.starttime | date:'yyyy-MM-dd'}}</td>
+			<td>{{record.starttime | date:'HH:mm'}}</td>
+			<td>{{record.endtime | date:'HH:mm'}}</td>
 			<td>{{record.project}}</td>
 			<td>{{record.description}}</td>
 		</tr>

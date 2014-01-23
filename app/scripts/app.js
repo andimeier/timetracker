@@ -8,19 +8,13 @@ angular.module('timetrackerApp', [
   'recordControllers',
   'recordServices'
 ])
-   .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: 'views/records.html',
-        controller: 'RecordListCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
+  .config(function ($routeProvider) {
+  $routeProvider
+    .when('/', {
+      templateUrl: 'views/records.html',
+      controller: 'RecordListCtrl'
+    })
+    .otherwise({
+      redirectTo: '/'
+    });
   });
-
-
-
- // angular.module('timetrackerApp', []);
-
-
