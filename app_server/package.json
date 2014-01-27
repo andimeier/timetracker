@@ -1,5 +1,5 @@
 {
-  "name": "hours",
+  "name": "timetracker",
   "description": "Time Tracking Tool",
   "version": "0.0.1",
   "private": true,

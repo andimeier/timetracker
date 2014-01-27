@@ -3,7 +3,7 @@
 		<!-- edit new record -->
 		<h1>New Record</h1>
 
-		<p>hour_id={{data.onerecord.hour_id}}</p>
+		<p>record_id={{data.onerecord.record_id}}</p>
 
 		<table>
 			<tr>
@@ -59,11 +59,11 @@
 		</tr>
 		<tr ng-repeat="record in (filteredRecords = data.records)" 
 				ng-dblclick="editRecord(record)" 
-				ng-class="{editing: record.hour_id == data.onerecord.hour_id}" 
+				ng-class="{editing: record.record_id == data.onerecord.record_id}" 
 				ng-cloak
 				ng-class-even="'even'"
 				ng-class-odd="'odd'">
-			<td>{{record.hour_id}}</td>
+			<td>{{record.record_id}}</td>
 			<td>{{record.starttime | date:'yyyy-MM-dd'}}</td>
 			<td>{{record.starttime | date:'HH:mm'}}</td>
 			<td>{{record.endtime | date:'HH:mm'}}</td>

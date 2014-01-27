@@ -2,10 +2,10 @@ var mysql = require('mysql');
 
 // MySql connection data
 var pool  = mysql.createPool({
-	host     : 'sql4.freesqldatabase.com',
-	user     : 'sql427640',
-	password : 'hE6!nX4!',
-	database : 'sql427640'
+	host     : 'db4free.net',
+	user     : 'timetracker',
+	password : 'timeIsOnMyS8',
+	database : 'timetracker'
 });
 
 
@@ -21,7 +21,7 @@ exports.findById = function(req, res) {
 	pool.getConnection(function(err, connection) {
 
 		// query the database to some data 
-		connection.query("SELECT * from hours where hour_id=" + req.params.id, function(err, rows) {
+		connection.query("SELECT * from records where record_id=" + req.params.id, function(err, rows) {
 
 			console.log('Found record: ' + JSON.stringify(rows));
 			console.log('Records are of type [' + rows.constructor.name + ']');
@@ -60,7 +60,8 @@ exports.findAll = function(req, res) {
 	pool.getConnection(function(err, connection) {
 
 		// Query the database to some data 
-		connection.query("SELECT * from hours where starttime >= date_sub(current_date, interval 30 day) order by starttime desc limit 10", function(err, rows) {
+		//connection.query("SELECT * from records limit 10where starttime >= date_sub(current_date, interval 30 day) order by starttime desc limit 10", function(err, rows) {
+		connection.query("SELECT * from records limit 10", function(err, rows) {
 			console.log('   ... got answer from DB server');
 
 			if (err != null) {
@@ -136,7 +137,7 @@ exports.add = function(req, res) {
 		pool.getConnection(function(err, connection) {
 
 			// write to DB
-			var sql = 'INSERT into hours(' + attributes.join(',') + ') ' +
+			var sql = 'INSERT into records(' + attributes.join(',') + ') ' +
 				'select ' + values.join(',');
 			console.log("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
@@ -211,7 +212,7 @@ exports.update = function(req, res) {
 			};
 
 			// write to DB
-			var sql = 'UPDATE hours set ' + updateText.join() + ' where hour_id=' + id;
+			var sql = 'UPDATE records set ' + updateText.join() + ' where record_id=' + id;
 			console.log("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
 
@@ -261,7 +262,7 @@ exports.delete = function(req, res) {
 		// ------------------------------
 		pool.getConnection(function(err, connection) {
 			// write to DB
-			var sql = 'DELETE from hours where hour_id=' + id;
+			var sql = 'DELETE from records where record_id=' + id;
 			console.log("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
 

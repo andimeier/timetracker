@@ -29,7 +29,7 @@ exports.findById = function(req, res) {
 	});
 
 	// Query the database to some data 
-	connection.query("SELECT * from hours WHERE hour_id=?", function(err, rows){
+	connection.query("SELECT * from records WHERE record_id=?", function(err, rows){
 	// There was a error or not?
 	if(err != null) {
 		res.end("Query error:" + err);
@@ -47,7 +47,7 @@ exports.findById = function(req, res) {
 
 exports.findAll = function(req, res) {
 	// Query the database to some data 
-	connection.query("SELECT * from hours", function(err, rows){
+	connection.query("SELECT * from records", function(err, rows){
 	
 	if(err != null) {
 		res.end("Query error:" + err);
