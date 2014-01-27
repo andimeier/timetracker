@@ -96,3 +96,7 @@ td {
 th {
   padding: 5px;
 }
+
+.strike {
+  text-decoration: line-through;
+}

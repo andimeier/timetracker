@@ -71,7 +71,7 @@
 		</tr>
 		<tr ng-repeat="record in (filteredRecords = data.records)" 
 				ng-dblclick="editRecord(record)" 
-				ng-class="{editing: record.record_id == data.onerecord.record_id}" 
+				ng-class="{editing: record.record_id == data.onerecord.record_id, strike: record.toBeDeleted}" 
 				ng-cloak
 				ng-class-even="'even'"
 				ng-class-odd="'odd'">

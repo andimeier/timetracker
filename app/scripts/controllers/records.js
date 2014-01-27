@@ -13,7 +13,7 @@ var formatJSONDate = function(input) {
 recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', function($scope, Record, Project) {
 	// initialize data member
 	$scope.data = {};
-	$scope.data.editNewRecord = 0;
+	$scope.data.editMode = 0;
 
 	$scope.data.records = Record.query();
 	$scope.data.records.forEach(function(rec) {
@@ -28,32 +28,33 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 	 */
 	$scope.remove = function(rec) {
 		var recordId = rec.record_id;
-		var deletedRecord = angular.copy(rec);
-		var indexOfDeletedRecord = $scope.data.records.indexOf(rec);
-		console.log('Stashing deletedRecord: [' + rec.record_id + ']');
+		console.log('Going to deleted record: [' + rec.record_id + ']');
 
-		$scope.data.records.splice($scope.data.records.indexOf(rec), 1);
+		$scope.data.editMode = 0;
 
-		// also delete it in DB
-		Record.delete({record_id: rec.record_id}, function(response) {
+		// mark record as moribund
+		rec.toBeDeleted = 1;
+
+		// try to delete it in DB first
+		Record.remove({ recordId: rec.record_id }, function(response) {
+			
 			// delete went ok
 			$scope.data.success = 'Successfully deleted record [' + recordId + '].';
 
-			// refresh record list
-			// $scope.data.records = Record.query();
-			// $scope.data.editMode = 0;
+			// now remove element from screen also
+			$scope.data.records.splice($scope.data.records.indexOf(rec), 1);
 
 			// refresh record list
 			$scope.data.records = Record.query();
 
 		}, function(response) {
+			// delete did not succeed
 			console.log('  in save-ERROR handler.');
-			// failure when saving
-			$scope.data.error = 'Error at deleting, response status: ' + response.status + ' ' + response.error;
 
-			// revert record on screen
-			console.log('Reverting record: [' + deletedRecord.record_id + ']');
-			$scope.data.records.splice(indexOfDeletedRecord, 0, deletedRecord);
+			// revert the record's status on screen
+			rec.toBeDeleted = 0;
+
+			$scope.data.error = 'Error at deleting, response status: ' + response.status + ' ' + response.error;
 		});
 	}
 
@@ -73,7 +74,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		// edit a copy so the old values are preserved - these will be needed
 		// in case of a "cancel edit"
 		$scope.data.editMode = 1; // 1 stands for "edit new record"
-		$scope.data.onerecord={}
+		$scope.data.onerecord = {}
 	};	
 
 	$scope.cancelEditRecord = function(rec) {
