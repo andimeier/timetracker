@@ -23,23 +23,27 @@ exports.findById = function(req, res) {
 	pool.getConnection(function(err, connection) {
 
 		// query the database to some data 
-		connection.query("SELECT * from records where record_id=" + req.params.id, function(err, rows) {
+		connection.query("SELECT c.client_id, c.name as client_name, p.project_id, p.name as project_name, r.* "
+				+ " from records r "
+				+ " join projects p on p.project_id=r.project_id "
+				+ " join clients c on c.client_id=p.client_id "
+				+ " where record_id=" + req.params.id, function(err, rows) {
 
-			console.log('Found record: ' + JSON.stringify(rows));
-			console.log('Records are of type [' + rows.constructor.name + ']');
-			console.log('Record[0] is of type [' + (rows[0]).constructor.name + ']');
-			console.log('Record[0][starttime] is of type [' + (rows[0]['starttime']).constructor.name + ']');
+			// console.log('Found record: ' + JSON.stringify(rows));
+			// console.log('Records are of type [' + rows.constructor.name + ']');
+			// console.log('Record[0] is of type [' + (rows[0]).constructor.name + ']');
+			// console.log('Record[0][starttime] is of type [' + (rows[0]['starttime']).constructor.name + ']');
 			
-			for (var i in rows[0]) {
-			  val = rows[i];
-			  console.log('field: ' + val);
-			}	
+			// for (var i in rows[0]) {
+			//   val = rows[i];
+			//   console.log('field: ' + val);
+			// }	
 
-			rows.forEach(rows, function(key, val) {
-				console.log('   value [' + key + '] is [' + value + ']');
-			});
-			console.log('Field "starttime" is [' + rows['starttime']);
-			console.log('Field "starttime" is [' + rows['starttime'].constructor.name + ']');
+			// rows.forEach(rows, function(key, val) {
+			// 	console.log('   value [' + key + '] is [' + value + ']');
+			// });
+			// console.log('Field "starttime" is [' + rows['starttime']);
+			// console.log('Field "starttime" is [' + rows['starttime'].constructor.name + ']');
 
 			if (err != null) {
 				res.send(400, "Query error:" + err);
@@ -63,7 +67,12 @@ exports.findAll = function(req, res) {
 
 		// Query the database to some data 
 		//connection.query("SELECT * from records limit 10where starttime >= date_sub(current_date, interval 30 day) order by starttime desc limit 10", function(err, rows) {
-		connection.query("SELECT * from records limit 10", function(err, rows) {
+		connection.query("SELECT c.client_id, c.name as client_name, p.project_id, p.name as project_name, "
+				+ "r.record_id, r.starttime, r.endtime, r.pause, r.description, r.user_id, r.invoice_id "
+				+ " from records r "
+				+ " join projects p on p.project_id=r.project_id "
+				+ " join clients c on c.client_id=p.client_id "
+				+ " limit 10", function(err, rows) {
 			console.log('   ... got answer from DB server');
 
 			if (err != null) {

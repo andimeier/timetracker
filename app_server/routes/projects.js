@@ -23,21 +23,8 @@ exports.findById = function(req, res) {
 	pool.getConnection(function(err, connection) {
 
 		// query the database to some data 
-		connection.query("SELECT * from projects where project_id=" + req.params.id, function(err, rows) {
-
-			console.log('Found record: ' + JSON.stringify(rows));
-			console.log('Records are of type [' + rows.constructor.name + ']');
-			console.log('Record[0] is of type [' + (rows[0]).constructor.name + ']');
-			console.log('Record[0][starttime] is of type [' + (rows[0]['starttime']).constructor.name + ']');
-			
-			for (var i in rows[0]) {
-			  val = rows[i];
-			  console.log('field: ' + val);
-			}	
-
-			rows.forEach(rows, function(key, val) {
-				console.log('   value [' + key + '] is [' + value + ']');
-			});
+		connection.query("SELECT p.project_id, p.name, p.abbreviation, p.active "
+				+ " from projects p where project_id=" + req.params.id, function(err, rows) {
 
 			if (err != null) {
 				res.send(400, "Query error:" + err);
@@ -60,7 +47,8 @@ exports.findAll = function(req, res) {
 	pool.getConnection(function(err, connection) {
 
 		// Query the database to some data 
-		connection.query("SELECT * from projects where active", function(err, rows) {
+		connection.query("SELECT p.project_id, p.name, p.abbreviation, p.active " 
+				+ " from projects p where active", function(err, rows) {
 			console.log('   ... got answer from DB server');
 
 			if (err != null) {
