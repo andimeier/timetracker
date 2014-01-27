@@ -29,6 +29,16 @@ update users set password=md5('username'), uid=null;
 -- anomymize records
 update hours set description = concat('Test-Eintrag mit gewissen Taetigkeiten am ',  date_format(starttime, '%d.%m.%Y'));
 
--- rename table
+-- some DDL
 rename table hours to records;
 alter table hours change hour_id record_id int NOT NULL AUTO_INCREMENT;
+
+-- instead of enum('Y', 'N') use 1/0:
+alter table projects modify active int not null default 1;
+alter table projects change project name varchar(100) not null;
+alter table projects change project_abbr abbreviation varchar(20);
+update projects set active=active-1; -- map 1/2 -> 0/1
+update projects set name=concat('Active ', name) where active;
+alter table clients modify active int not null default 1;
+update users set active=1 where active='Y';
+alter table users modify active int not null default 1;

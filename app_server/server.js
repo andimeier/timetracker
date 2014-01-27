@@ -1,5 +1,6 @@
 var express = require('express'),
-records = require('./routes/records');
+	records = require('./routes/records');
+	projects = require('./routes/projects');
 
 var allowCrossDomain = function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*');
@@ -26,6 +27,9 @@ app.post('/records/:id', records.update); // POST with ID => update
 app.put('/records/:id', records.update);
 app.post('/records', records.add); // POST without ID => add
 app.delete('/records/:id', records.delete);
+
+app.get('/projects', projects.findAll);
+app.get('/projects/:id', projects.findById);
 
 app.listen(3000);
 console.log('Listening on port 3000...');

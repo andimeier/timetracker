@@ -1,11 +1,13 @@
 var mysql = require('mysql');
 
+var dbConfig = require(__dirname + '/db_config.json');
+
 // MySql connection data
-var pool  = mysql.createPool({
-	host     : 'db4free.net',
-	user     : 'timetracker',
-	password : 'timeIsOnMyS8',
-	database : 'timetracker'
+var pool = mysql.createPool({
+	host     : dbConfig.host,
+	user     : dbConfig.user,
+	password : dbConfig.password,
+	database : dbConfig.database
 });
 
 
