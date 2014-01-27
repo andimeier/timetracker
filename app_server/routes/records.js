@@ -14,6 +14,31 @@ var pool = mysql.createPool({
 // @FIXME global variables
 var user_id = 1;
 
+/*
+ * Formats a JSON date string for being used in an SQL expression.
+ * @return null if input is null or undefined, the datetime expressionin SQL format otherwise
+ */
+var formatDate = function(input) {
+	// parse a date in yyyy-mm-dd formatDate
+
+	if (!input) {
+		return null;
+	}
+
+	console.log('called formatDate with [' + input + ']');
+	var components = input.split(/[T ]/, 2);
+
+	// get date portion
+	var date = components[0];
+	console.log(' --- extracted: date_part = [' + date + ']');
+
+	// split time
+	var time_parts = components[1].split(':', 3);		
+
+	var r = date + ' ' + time_parts.splice(0,2).join(':'); 
+	console.log(' --- will return: ' + r);
+	return r;
+}
 
 exports.findById = function(req, res) {
 
@@ -23,7 +48,7 @@ exports.findById = function(req, res) {
 	pool.getConnection(function(err, connection) {
 
 		// query the database to some data 
-		connection.query("SELECT c.client_id, c.name as client_name, p.project_id, p.name as project_name, r.* "
+		connection.query("SELECT c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, p.project_id, p.name as project_name, p.abbreviation as project_abbreviation, r.* "
 				+ " from records r "
 				+ " join projects p on p.project_id=r.project_id "
 				+ " join clients c on c.client_id=p.client_id "
@@ -67,7 +92,7 @@ exports.findAll = function(req, res) {
 
 		// Query the database to some data 
 		//connection.query("SELECT * from records limit 10where starttime >= date_sub(current_date, interval 30 day) order by starttime desc limit 10", function(err, rows) {
-		connection.query("SELECT c.client_id, c.name as client_name, p.project_id, p.name as project_name, "
+		connection.query("SELECT c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, p.project_id, p.name as project_name, p.abbreviation as project_abbreviation, "
 				+ "r.record_id, r.starttime, r.endtime, r.pause, r.description, r.user_id, r.invoice_id "
 				+ " from records r "
 				+ " join projects p on p.project_id=r.project_id "
@@ -120,7 +145,11 @@ exports.add = function(req, res) {
 	console.log('project_id = ' + project_id);
 
 	attributes.forEach(function(item) {
-		values.push(pool.escape(req.body[item]));
+		var v = req.body[item];
+		if (item == 'starttime' || item == 'endtime') {
+			v = formatDate(v);
+		}
+		values.push(pool.escape(v));
 	});
 	
 	// additional (calculated) attributes
@@ -154,13 +183,12 @@ exports.add = function(req, res) {
 			connection.query(sql, function(err, rows) {
 
 				if (err != null) {
-					res.status(400);
-					res.end("Query error:" + err);
+					res.send(400, "Query error:" + err);
 					console.log("Sent error response: status=400");
 				} else {
 					// Shows the result on console window
 					res.send(201, rows);
-					console.log("Sent OK (status 201)");
+					console.log("Sent OK (status 201): " + JSON.stringify(rows));
 				}
 			});
 
@@ -191,7 +219,11 @@ exports.update = function(req, res) {
 	];
 	var values = [];
 	attributes.forEach(function(item) {
-		values.push(pool.escape(req.body[item]));
+		var v = req.body[item];
+		if (item == 'starttime' || item == 'endtime') {
+			v = formatDate(v);
+		}
+		values.push(pool.escape(v));
 	});
 	
 	// additional (calculated) attributes
@@ -227,12 +259,19 @@ exports.update = function(req, res) {
 			console.log("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
 
+				console.log("Ok, done update, error is: [" + JSON.stringify(err) + "]");
+
 				if (err != null) {
+					res.status(400);
 					res.end("Query error:" + err);
+					rows.error = 'Error at updating: ' + err.code;
+					console.log('Error at updating: ' + err.code);
+					res.send(rows);
 				} else {
 
 					if (!rows.affectedRows) {
 						res.status(400);
+						rows = {};
 						rows.error = 'No rows matched';
 						console.log("Sent error response (no rows matched): status=400");
 					} else {

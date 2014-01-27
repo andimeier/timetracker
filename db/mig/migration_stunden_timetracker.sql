@@ -39,8 +39,15 @@ alter table projects change project name varchar(100) not null;
 alter table projects change project_abbr abbreviation varchar(20);
 update projects set active=active-1; -- map 1/2 -> 0/1
 update projects set name=concat('Active ', name) where active;
+
 alter table clients modify active int not null default 1;
 alter table clients change client_name name varchar(100) not null;
 alter table clients change client_abbr abbreviation varchar(30) not null;
+
 update users set active=1 where active='Y';
 alter table users modify active int not null default 1;
+
+alter table records modify cdate datetime not null;
+alter table records add mdate datetime not null;
+update records set mdate=cdate where mdate='0000-00-00 00:00:00';
+alter table records modify pause time ; -- pause should be nullable

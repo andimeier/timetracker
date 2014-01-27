@@ -1,7 +1,11 @@
-<section ng-controller="RecordDetailCtrl">
+<!-- show form for new record if the button "new" is clicked -->
+<button type="button" ng-click="editNewRecord()">New</button>
+
+<section ng-controller="RecordDetailCtrl" ng-show="data.editMode">
 	<form ng-submit="processRecordForm()">
 		<!-- edit new record -->
-		<h1>New Record</h1>
+
+		<h1 ng-show="data.editMode==1">New Record</h1>
 
 		<p>record_id={{data.onerecord.record_id}}</p>
 
@@ -26,8 +30,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td><label for="project">Project</label></td>
-				<td><input type="text" ng-model="data.onerecord.project"></td>
+				<td><label for="project_id">Project</label></td>
+				<td>
+					<select ng-model="data.onerecord.project_id" name="project_id" required ng-options="p.project_id as p.name for p in data.activeProjects">
+					</select>
+				</td>
 			</tr>
 			<tr>
 				<td><label for="description">Description</label></td>
@@ -35,15 +42,19 @@
 			</tr>
 			<tr>
 				<td></td>
-				<td><button type="submit" id="submit" class="submit">Submit</button></td>
+				<td>
+					<button type="submit" id="submit" class="submit">Submit</button>
+					<button type="button" id="cancel" class="cancel" ng-click="cancelEditRecord()">Cancel</button>
+				</td>
 			</tr>
 		</table>
 
-		<div>{{success}}</div>
+		<div ng-show="error" class="data.onerecord.error">{{data.onerecord.error}}</div>
 
 	</form>
 </section>
 
+<div ng-show="success" class="data.onerecord.success">{{data.onerecord.success}}</div>
 
 <section>
 	<h1>Work Records</h1>
@@ -67,7 +78,7 @@
 			<td>{{record.starttime | date:'yyyy-MM-dd'}}</td>
 			<td>{{record.starttime | date:'HH:mm'}}</td>
 			<td>{{record.endtime | date:'HH:mm'}}</td>
-			<td>{{record.project}}</td>
+			<td>{{record.project_abbreviation}}</td>
 			<td>{{record.description}}</td>
 		</tr>
 		<tr ng-hide="filteredRecords.length">

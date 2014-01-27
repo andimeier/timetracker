@@ -48,7 +48,7 @@ exports.findAll = function(req, res) {
 
 		// Query the database to some data 
 		connection.query("SELECT p.project_id, p.name, p.abbreviation, p.active " 
-				+ " from projects p where active", function(err, rows) {
+				+ " from projects p where active order by p.name", function(err, rows) {
 			console.log('   ... got answer from DB server');
 
 			if (err != null) {
