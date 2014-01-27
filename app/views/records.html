@@ -49,12 +49,13 @@
 			</tr>
 		</table>
 
-		<div ng-show="error" class="data.onerecord.error">{{data.onerecord.error}}</div>
+		<div xng-show="data.onerecord.error" class="data.onerecord.error">{{data.onerecord.error}}</div>
 
 	</form>
 </section>
 
-<div ng-show="success" class="data.onerecord.success">{{data.onerecord.success}}</div>
+<div ng-show="data.success" class="data.success">{{data.success}}</div>
+<div ng-show="data.error" class="data.error">{{data.error}}</div>
 
 <section>
 	<h1>Work Records</h1>
@@ -80,6 +81,7 @@
 			<td>{{record.endtime | date:'HH:mm'}}</td>
 			<td>{{record.project_abbreviation}}</td>
 			<td>{{record.description}}</td>
+			<td><button type="button" ng-click="remove(record)">Delete</button></td>
 		</tr>
 		<tr ng-hide="filteredRecords.length">
 			<td colspan="4" class="norows">no records found</td>

@@ -95,8 +95,9 @@ exports.findAll = function(req, res) {
 		connection.query("SELECT c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, p.project_id, p.name as project_name, p.abbreviation as project_abbreviation, "
 				+ "r.record_id, r.starttime, r.endtime, r.pause, r.description, r.user_id, r.invoice_id "
 				+ " from records r "
-				+ " join projects p on p.project_id=r.project_id "
-				+ " join clients c on c.client_id=p.client_id "
+				+ " left join projects p on p.project_id=r.project_id "
+				+ " left join clients c on c.client_id=p.client_id "
+				+ " order by r.cdate desc "
 				+ " limit 10", function(err, rows) {
 			console.log('   ... got answer from DB server');
 
