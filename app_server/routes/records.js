@@ -87,6 +87,7 @@ exports.findAll = function(req, res) {
 
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
+	console.log('  Query parameters: ' + JSON.stringify(req.query));
 
 	pool.getConnection(function(err, connection) {
 

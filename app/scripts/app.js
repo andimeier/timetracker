@@ -6,6 +6,7 @@ angular.module('timetrackerApp', [
   'ngSanitize',
   'ngRoute',
   'recordControllers',
+  'testControllers',
   'recordServices'
 ])
   .config(function ($routeProvider) {
@@ -13,6 +14,10 @@ angular.module('timetrackerApp', [
     .when('/', {
       templateUrl: 'views/records.html',
       controller: 'RecordListCtrl'
+    })
+    .when('/test', {
+      templateUrl: 'views/test.html',
+      controller: 'TestCtrl'
     })
     .otherwise({
       redirectTo: '/'

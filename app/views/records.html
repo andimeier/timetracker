@@ -32,8 +32,9 @@
 			<tr>
 				<td><label for="project_id">Project</label></td>
 				<td>
-					<select ng-model="data.onerecord.project_id" name="project_id" required ng-options="p.project_id as p.name for p in data.activeProjects">
-					</select>
+					<select ng-model="data.onerecord.project_id" 
+						ng-options="p.project_id as p.name for p in data.activeProjects">
+					</select><pre>project_id={{data.onerecord.project_id}}</pre>
 				</td>
 			</tr>
 			<tr>

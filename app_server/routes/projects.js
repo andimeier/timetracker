@@ -39,16 +39,64 @@ exports.findById = function(req, res) {
 	});
 };
 
+/**
+ * REST parameters:
+ *   - set ... specify set of projects to be returned, can be one of the following values:
+ *       all ... all projects in the database
+ *       active ... only active projects (with attribute "active")
+ *   - add ... add a specific project into the result set, the value of the parameter is the 
+ *       project_id of the project to be added to the result set. This project will be 
+ *       included in the result set, regardless of the other query parameters.
+ */
 exports.findAll = function(req, res) {
 
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
+	console.log('  Query parameters: ' + JSON.stringify(req.query));
+
+	// parse parameters
+	var constraints = [ '1=1'], // find constraints
+		include; // a project_id which should always be in the result set
+	if (req.query.set) {
+		// specifies the set of projects (default, if 'set' 
+		// is omitted: 'active', thus requesting only active projects)
+		switch(req.query.set) {
+			case 'all': break;
+			case 'active': constraints.push('active'); break;
+		}
+	} else {
+		// default: query only active projects
+		constraints.push('active'); 
+	}
+	if (req.query.add) {
+		// parameter "add" will include a specific project into the result set,
+		// regardless of other contraints
+		include = parseInt(req.query.add);
+		console.log('parameter "add" detected, include= [' + include + ']');
+	}
+	console.log('parameter "set" = [' + req.query.set + ']');
+	console.log('parameter "add" = [' + req.query.add + ']');
+	console.log('number of constraints = [' + constraints.length + ']');
+
+	// build query
+	var where;
+	console.log('2 include= [' + include + ']');
+	if (include) {
+		where = '((' + constraints.join(' and ') + ') or project_id=' + include + ')';
+	} else {
+		where = '' + constraints.join(' and ');
+	}
+	console.log('constraints[0] = [' + constraints[0] + ']');
+	console.log('where = [' + where + ']');
+	var sql = "SELECT p.project_id, p.name, p.abbreviation, p.active " 
+				+ " from projects p where " + where + " order by p.name";
+	console.log('sql = [' + sql + ']');
+
 
 	pool.getConnection(function(err, connection) {
 
 		// Query the database to some data 
-		connection.query("SELECT p.project_id, p.name, p.abbreviation, p.active " 
-				+ " from projects p where active order by p.name", function(err, rows) {
+		connection.query(sql, function(err, rows) {
 			console.log('   ... got answer from DB server');
 
 			if (err != null) {

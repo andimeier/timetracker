@@ -1,13 +1,38 @@
 'use strict';
 
 var recordControllers = angular.module('recordControllers', []);
-var counter = 1;
 
 var formatJSONDate = function(input) {
 	if (!input) {
 		return null;
 	}
 	return input.replace(' ', 'T');
+}
+
+/**
+ * Searches a list of objects for a specific one which has an attribute set to
+ * a specific value (will be a kind of ID in most cases) and returns the found
+ * object.
+ *
+ * @param list list of objects to be searched in
+ * @param attribute the name of the attribute to be looked at
+ * @param value the value of the attribute which is being looked for
+ * @return the found object in the list, null if the object could not be found
+ */
+var containsObject = function(list, attribute, value) {
+	var x;
+
+	// if not even the object to be searched for has the specified attribute: leave
+	if (!obj[attribute]) {
+		return null;
+	}
+	for (x in list) {
+		if (x[attribute] && x[attribute] == value) {
+			return x;
+		}
+	}
+	// object was not found, apparently
+	return null;
 }
 
 recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', function($scope, Record, Project) {
@@ -62,11 +87,32 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		// edit a copy so the old values are preserved - these will be needed
 		// in case of a "cancel edit"
 		var r = angular.copy(rec);
+
+		// console.log('Copied rec -> r');
+		// console.log('r.project_id is [' + r.project_id + '], of type [' + typeof(r.project_id) + ']');
+		// console.log('rec.project_id is [' + rec.project_id + '], of type [' + typeof(rec.project_id) + ']');
+		// console.log('activeprojects[1].project_id is [' + $scope.data.activeProjects[1].project_id + '] and of type ' + typeof($scope.data.activeProjects[1].project_id));
+
 		$scope.data.onerecord = r;
 		$scope.data.editMode = 2;
-		// $scope.data.onerecord = rec;
 		$scope.data.onerecord.date = $scope.extractDate(rec.starttime);
-		$scope.test = counter++;
+
+		// fill projects list. This is done with each start of editing on purpose,
+		// because during the last edit the list could contain a non-active project
+		// (because when you edit an existing project, the assigned project is added
+		// to the project list, if not there - by this mechanism, a non-active project
+		// could have been leaked into the list activeProjects. Thus, now reload the
+		// list)
+		$scope.data.activeProjects = Project.query({ add:r.project_id });
+
+		/* if project of the selected record is not in the dropdown list of projects yet
+		 * (because it is not active) active, add it now temporarily (as long as this record
+		 * is being edited)
+		 */
+		// if (!containsObject($scope.data.activeProjects, 'project_id', r.project_id)) {
+		// 	// add current project
+		// 	$scope.data.activeProjects.push(Project.get(r.project_id));
+		// }
 	};
 
 
@@ -75,6 +121,14 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		// in case of a "cancel edit"
 		$scope.data.editMode = 1; // 1 stands for "edit new record"
 		$scope.data.onerecord = {}
+
+		// fill projects list. This is done with each start of editing on purpose,
+		// because during the last edit the list could contain a non-active project
+		// (because when you edit an existing project, the assigned project is added
+		// to the project list, if not there - by this mechanism, a non-active project
+		// could have been leaked into the list activeProjects. Thus, now reload the
+		// list)
+		$scope.data.activeProjects = Project.query();
 	};	
 
 	$scope.cancelEditRecord = function(rec) {
@@ -87,12 +141,6 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		return '[' + datetime + ']';
 		return 'Alex was here'.substring(0, 3);
 	};
-
-	// fill projects list, if not filled already
-	if (!$scope.data.activeProjects) {
-		$scope.data.activeProjects = Project.query();
-	}
-
 
 }]);
  
@@ -114,7 +162,11 @@ recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Rec
 			// save went ok
 			$scope.data.onerecord = {}; // empty the form after saving
 
-			$scope.data.success = 'Saved successfully with record_id=[' + response.insertId + '].';
+			if (response.insertId) {
+				$scope.data.success = 'Updated successfully.';
+			} else {
+				$scope.data.success = 'Saved successfully with record_id=[' + response.insertId + '].';
+			}
 
 			// refresh record list
 			$scope.data.records = Record.query();

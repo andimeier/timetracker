@@ -1,0 +1,16 @@
+<!-- show form for new record if the button "new" is clicked -->
+
+<select ng-model="data.id" 
+	ng-options="p.id as p.name for p in data.projects">
+</select>
+
+<pre>id={{data.id}}</pre>
+<pre>Selected project: id={{data.oneProject.id}}, name={{data.oneProject.name}}</pre>
+
+<p>
+	<input type="text" ng-model="chosenId" size="2">
+	<button type="button" ng-click="selectProject(chosenId)">Select n'th project</button>
+</p>
+<p>
+	<button type="button" ng-click="selectProject(2)">Select second project</button>
+</p>
