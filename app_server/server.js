@@ -1,6 +1,7 @@
 var express = require('express'),
-	records = require('./routes/records');
-	projects = require('./routes/projects');
+	records = require('./routes/records'),
+	projects = require('./routes/projects'),
+	authenticate = require('./auth');
 
 var allowCrossDomain = function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*');
@@ -16,17 +17,31 @@ var allowCrossDomain = function(req, res, next) {
 	}
 };
  
+var basicAuthMessage = 'Restricted operation, authorization required';
+
 var app = express();
 app.use(express.bodyParser());
 app.use(express.cookieParser());
 app.use(allowCrossDomain);
 
+// express routes
+
+
+// user validation
+var auth = express.basicAuth(function(user, pass, callback) {
+	console.log('Invoking auth helper ...');
+	authenticate.authenticate(user, pass, function(authResult) {
+		console.log('Going to call auth callback function with the result of [' + authResult + ']');
+		callback(null /* error */, authResult);
+	});
+}, basicAuthMessage);
+
 app.get('/records', records.findAll);
 app.get('/records/:id', records.findById);
-app.post('/records/:id', records.update); // POST with ID => update
-app.put('/records/:id', records.update);
-app.post('/records', records.add); // POST without ID => add
-app.delete('/records/:id', records.delete);
+app.post('/records/:id', auth, records.update); // POST with ID => update
+app.put('/records/:id', auth, records.update);
+app.post('/records', auth, records.add); // POST without ID => add
+app.delete('/records/:id', auth, records.delete);
 
 app.get('/projects', projects.findAll);
 app.get('/projects/:id', projects.findById);

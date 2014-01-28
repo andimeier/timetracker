@@ -103,16 +103,10 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		// to the project list, if not there - by this mechanism, a non-active project
 		// could have been leaked into the list activeProjects. Thus, now reload the
 		// list)
+		// using the REST query parameter "add", ensure that the currently assigned 
+		// project of the edited record is in the list, regardless if it is active or 
+		// not
 		$scope.data.activeProjects = Project.query({ add:r.project_id });
-
-		/* if project of the selected record is not in the dropdown list of projects yet
-		 * (because it is not active) active, add it now temporarily (as long as this record
-		 * is being edited)
-		 */
-		// if (!containsObject($scope.data.activeProjects, 'project_id', r.project_id)) {
-		// 	// add current project
-		// 	$scope.data.activeProjects.push(Project.get(r.project_id));
-		// }
 	};
 
 

@@ -31,7 +31,7 @@ update hours set description = concat('Test-Eintrag mit gewissen Taetigkeiten am
 
 -- some DDL
 rename table hours to records;
-alter table hours change hour_id record_id int NOT NULL AUTO_INCREMENT;
+alter table records change hour_id record_id int NOT NULL AUTO_INCREMENT;
 
 -- instead of enum('Y', 'N') use 1/0:
 alter table projects modify active int not null default 1;

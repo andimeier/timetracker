@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 
-var dbConfig = require(__dirname + '/db_config.json');
+var dbConfig = require(__dirname + '/../config/db_config.json');
 
 // MySql connection data
 var pool = mysql.createPool({
