@@ -36,6 +36,8 @@ var auth = express.basicAuth(function(user, pass, callback) {
 	});
 }, basicAuthMessage);
 
+// ATTENTION: be sure to add the auth handler to all route which change data!
+
 app.get('/records', records.findAll);
 app.get('/records/:id', records.findById);
 app.post('/records/:id', auth, records.update); // POST with ID => update
