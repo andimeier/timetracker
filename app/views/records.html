@@ -2,7 +2,7 @@
 <button type="button" ng-click="editNewRecord()">New</button>
 
 <section ng-controller="RecordDetailCtrl" ng-show="data.editMode">
-	<form ng-submit="processRecordForm()">
+	<form novalidate ng-submit="processRecordForm()">
 		<!-- edit new record -->
 
 		<h1 ng-show="data.editMode==1">New Record</h1>

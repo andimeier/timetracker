@@ -26,6 +26,16 @@
       <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
 
+    <header>
+        <div ng-show="loggedIn" ng-controller="LoginCtrl" ng-cloak>
+            Logged in as {{username}}
+            <a ng-click="logout()">Logout</a>
+        </div>
+        <div ng-hide="loggedIn" ng-cloak>
+            <a href="#/login">Login</a>
+        </div>
+    </header>
+
     <!-- Add your site or application content here -->
     <div class="container" ng-view=""></div>
 
@@ -58,6 +68,7 @@
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/records.js"></script>
         <script src="scripts/controllers/test.js"></script>
+        <script src="scripts/controllers/login.js"></script>
         <script src="scripts/services.js"></script>
         <!-- endbuild -->
 </body>

@@ -7,19 +7,23 @@ angular.module('timetrackerApp', [
   'ngRoute',
   'recordControllers',
   'testControllers',
-  'recordServices'
+  'timetrackerServices'
 ])
   .config(function ($routeProvider) {
   $routeProvider
-    .when('/', {
+    .when('/records', {
       templateUrl: 'views/records.html',
       controller: 'RecordListCtrl'
+    })
+    .when('/login', {
+      templateUrl: 'views/login.html',
+      controller: 'LoginCtrl'
     })
     .when('/test', {
       templateUrl: 'views/test.html',
       controller: 'TestCtrl'
     })
     .otherwise({
-      redirectTo: '/'
+      redirectTo: '/records'
     });
   });

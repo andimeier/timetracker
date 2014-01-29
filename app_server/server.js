@@ -1,6 +1,7 @@
 var express = require('express'),
 	records = require('./routes/records'),
 	projects = require('./routes/projects'),
+	login = require('./routes/login'),
 	authenticate = require('./auth');
 
 var allowCrossDomain = function(req, res, next) {
@@ -47,6 +48,8 @@ app.delete('/records/:id', auth, records.delete);
 
 app.get('/projects', projects.findAll);
 app.get('/projects/:id', projects.findById);
+
+app.post('/login', login.login);
 
 app.listen(3000);
 console.log('Listening on port 3000...');

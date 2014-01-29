@@ -14,6 +14,12 @@ var pool = mysql.createPool({
 
 exports.authenticate = function(user, pass, callback) {
 
+	if (!user || !pass) {
+		console.log('username or password missing ...');
+		callback(false);
+		return;
+	}
+
 	var md5sum = crypto.createHash('md5');
 	md5sum.update(pass);
 	var passHash = md5sum.digest('hex');
