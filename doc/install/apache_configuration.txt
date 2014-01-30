@@ -1,0 +1,80 @@
+This document describes how the Apache2 configuration must be adapted in order for
+the application "timetracker" to work. Since the application consists of a JavaScript 
+application frontend and a RESTful node.js backend, both parts must be configured.
+
+The frontend files are served through standard HTTP mechanisms. This is simply
+configured with a standard Alias directive in the Apache config file. The application
+(frontend) should be reached on the server via the alias /timetracker (for example,
+https://wwww.example.com/timetracker).
+
+However, to provide access to the node.js backend running on a "unusual" port, I decided
+to make the port 3000 not available to the public, but instead use Apache's rewriting
+capabilities to construct a comprehensible standard URL. The resulting URL to be used
+for the REST API should be: https://wwww.example.com/timetracker/api/. By means of URL
+rewriting Apache would then forward such requests to the local node.js server listening
+on port 3000. Thus:
+https://www.example.com/timetracker/api/projects will actually translate to
+http://localhost:3000/projects
+Advantage: only standard ports (80 or in case of HTTPS 443) are open, non-standard port 
+3000 is hidden behind the Apache acting as reverse proxy.
+
+There are two possible configuration variants to reach this goal:
+  Option 1: two aliases:
+     (1) /timetracker ... for the application (frontend)
+	 (2) /timetracker/api ... for the REST backend
+  Option 2: one alias:
+     (1) /timetracker/api will be caught by a global rewrite configuration block
+	 (2) /timetracker ... Alias for the application (frontend)
+
+Option 2 is preferred because it frees us from the need to reference some existing directory 
+in the /timetracker/api configuration block (in the below case the directory timetracker.rest).
+Note that you cannot simply use the application directory as a dummy because this directory 
+contains a .htaccess file with several Redirect instructions which collide with our rewriting
+purposes. So you have to point to another existing directory which has no function other than
+that it must exist. I don't like it. That's why I prefer Option 2.
+
+
+Option 1: two aliases
+=====================
+
+  # it is important to have this "api" alias section as the first configuration
+  # entry, otherwise it will never match because the alias "/timetracker" will
+  # match before this alias "/timetracker/api"
+  Alias /timetracker/api "/var/www/eck-zimmer.at/apps/timetracker.rest"
+  <Directory "/var/www/eck-zimmer.at/apps/timetracker.rest">
+      Options MultiViews FollowSymLinks
+      Order allow,deny
+      Allow from all
+
+      # REST API for the node.js Server listening on localhost:3000
+      RewriteEngine  on
+      RewriteBase    /timetracker/api/
+      RewriteCond    %{REQUEST_URI}  ^/timetracker/api/
+      RewriteRule    ^(.*)$ http://localhost:3000/$1 [P]
+  </Directory>
+
+  Alias /timetracker "/var/www/eck-zimmer.at/apps/timetracker"
+  <Directory "/var/www/eck-zimmer.at/apps/timetracker">
+      Options Indexes MultiViews FollowSymLinks
+      DirectoryIndex index.html
+      Order allow,deny
+      Allow from all
+  </Directory>
+
+
+Option 2 (preferred): instant rewriting, only 1 alias
+=====================================================
+
+  # REST API for the node.js Server listening on localhost:3000
+  # redirect such requests before any alias configuration
+  RewriteEngine  on
+  RewriteCond    %{REQUEST_URI}  ^/timetracker/api/
+  RewriteRule    ^/timetracker/api/(.*)$ http://localhost:3000/$1 [P]
+
+  Alias /timetracker "/var/www/eck-zimmer.at/apps/timetracker"
+  <Directory "/var/www/eck-zimmer.at/apps/timetracker">
+      Options Indexes MultiViews FollowSymLinks
+      DirectoryIndex index.html
+      Order allow,deny
+      Allow from all
+  </Directory>
