@@ -1,5 +1,5 @@
 <!-- show form for new record if the button "new" is clicked -->
-<button type="button" ng-click="editNewRecord()">New</button>
+<button type="button" ng-click="editNewRecord()" ng-show="loggedIn">New</button>
 
 <section ng-controller="RecordDetailCtrl" ng-show="data.editMode">
 	<form novalidate ng-submit="processRecordForm()">
@@ -69,18 +69,18 @@
 			<th>Description</th>
 		</tr>
 		<tr ng-repeat="record in (filteredRecords = data.records)" 
-				ng-dblclick="editRecord(record)" 
+				ng-dblclick="loggedIn ? editRecord(record) : undefined" 
 				ng-class="{editing: record.record_id == data.onerecord.record_id, strike: record.toBeDeleted}" 
-				ng-cloak
 				ng-class-even="'even'"
-				ng-class-odd="'odd'">
+				ng-class-odd="'odd'"
+				ng-cloak>
 			<td>{{record.record_id}}</td>
 			<td>{{record.starttime | date:'yyyy-MM-dd'}}</td>
 			<td>{{record.starttime | date:'HH:mm'}}</td>
 			<td>{{record.endtime | date:'HH:mm'}}</td>
 			<td>{{record.project_abbreviation}}</td>
 			<td>{{record.description}}</td>
-			<td><button type="button" ng-click="remove(record)">Delete</button></td>
+			<td ng-show="loggedIn"><button type="button" ng-click="remove(record)">Delete</button></td>
 		</tr>
 		<tr ng-hide="filteredRecords.length">
 			<td colspan="4" class="norows">no records found</td>
