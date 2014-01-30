@@ -5,9 +5,10 @@ var express = require('express'),
 	authenticate = require('./auth');
 
 var allowCrossDomain = function(req, res, next) {
-	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:9000');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+	res.header('Access-Control-Allow-Credentials', 'true');
 
 	// intercept OPTIONS method
 	if ('OPTIONS' == req.method) {
@@ -17,27 +18,45 @@ var allowCrossDomain = function(req, res, next) {
 		next();
 	}
 };
- 
-var basicAuthMessage = 'Restricted operation, authorization required';
+
 
 var app = express();
-app.use(express.bodyParser());
-app.use(express.cookieParser());
 app.use(allowCrossDomain);
+app.use(express.bodyParser());
+app.use(express.cookieParser('asdr84353$^@k;1B'));
+app.use(express.cookieSession({cookie: { httpOnly: false }}));
+// app.use(express.csrf());
+// app.use(function(req, res, next) {
+// 	console.log('XSRF-TOKEN from the request: [' + req.csrfToken() + ']');
+// 	res.cookie('XSRF-TOKEN', req.csrfToken());
+// 	next();
+// });
 
-// express routes
+app.use(function(req, res, next) {
+	console.log('=======================================================');
+	console.log('==================== New request ======================');
+	console.log('=======================================================');
+	next();
+});
+
+// user validation using session cookies
+var auth = function(req, res, next) {
+	console.log('!!!!!!----- In auth(), session is ' + JSON.stringify(req.session, undefined, 2));
+	if (!req.session.userId) {
+		res.status(401);
+		res.end('Unauthorized access.');
+	} else {
+		console.log('SESSION DETECTED: userId=[' + req.session.userId + '], firstName=[' + req.session.firstName + ']');
+    	next();
+    }
+};
 
 
-// user validation
-var auth = express.basicAuth(function(user, pass, callback) {
-	console.log('Invoking auth helper ...');
-	authenticate.authenticate(user, pass, function(authResult) {
-		console.log('Going to call auth callback function with the result of [' + authResult + ']');
-		callback(null /* error */, authResult);
-	});
-}, basicAuthMessage);
+// express routes config starts here
 
-// ATTENTION: be sure to add the auth handler to all route which change data!
+// ATTENTION: be sure to add the auth handler to all routes which change data!
+app.post('/login', login.login);
+app.get('/logout', auth, login.logout);
 
 app.get('/records', records.findAll);
 app.get('/records/:id', records.findById);
@@ -48,8 +67,6 @@ app.delete('/records/:id', auth, records.delete);
 
 app.get('/projects', projects.findAll);
 app.get('/projects/:id', projects.findById);
-
-app.post('/login', login.login);
 
 app.listen(3000);
 console.log('Listening on port 3000...');

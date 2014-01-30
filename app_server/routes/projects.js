@@ -52,7 +52,7 @@ exports.findAll = function(req, res) {
 
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
-	console.log('  Query parameters: ' + JSON.stringify(req.query));
+	console.log('  Query parameters: ' + JSON.stringify(req.query, undefined, 2));
 
 	// parse parameters
 	var constraints = [ '1=1'], // find constraints

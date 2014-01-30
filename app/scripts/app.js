@@ -9,21 +9,24 @@ angular.module('timetrackerApp', [
   'testControllers',
   'timetrackerServices'
 ])
-  .config(function ($routeProvider) {
-  $routeProvider
-    .when('/records', {
-      templateUrl: 'views/records.html',
-      controller: 'RecordListCtrl'
-    })
-    .when('/login', {
-      templateUrl: 'views/login.html',
-      controller: 'LoginCtrl'
-    })
-    .when('/test', {
-      templateUrl: 'views/test.html',
-      controller: 'TestCtrl'
-    })
-    .otherwise({
-      redirectTo: '/records'
-    });
+  .config(function ($routeProvider, $httpProvider) {
+  
+    $httpProvider.defaults.withCredentials = true;
+
+    $routeProvider
+      .when('/records', {
+        templateUrl: 'views/records.html',
+        controller: 'RecordListCtrl'
+      })
+      .when('/login', {
+        templateUrl: 'views/login.html',
+        controller: 'LoginCtrl'
+      })
+      .when('/test', {
+        templateUrl: 'views/test.html',
+        controller: 'TestCtrl'
+      })
+      .otherwise({
+        redirectTo: '/records'
+      });
   });

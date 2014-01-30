@@ -32,7 +32,7 @@ exports.authenticate = function(user, pass, callback) {
 		console.log('replaced: ' + user);
 
 		// query the database to some data 
-		var sql = "SELECT username, password from users where username=" + user;
+		var sql = "SELECT first_name, last_name, user_id, username, password, lastlogin from users where username=" + user;
 		console.log('SQL: [' + sql + ']');
 		connection.query(sql, function(err, rows) {
 
@@ -41,10 +41,11 @@ exports.authenticate = function(user, pass, callback) {
 			console.log('error=[' + + JSON.stringify(err));
 			if (rows.length > 0 && err == null) {
 				console.log('Query went (technically) ok, now check if password is correct ...');
-				if (rows[0].password == passHash) {
+				var user = rows[0];
+				if (user.password == passHash) {
 					console.log('Whoa! Correct password! Congrats!');
 					console.log('+++++++++++++++++++ HOW DID WE GET HERE? RETURNING 1');
-					callback(true);
+					callback(true, user.user_id, user);
 					return;
 				} else {
 					console.log('Oh my! Wrong password!');

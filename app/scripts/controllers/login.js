@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('timetrackerApp')
- .controller('LoginCtrl', ['$rootScope', '$scope', '$location', '$routeParams', 'Login', 
+ .controller('LoginCtrl', ['$rootScope', '$scope', '$location', '$routeParams', 'Login',
 		function ($rootScope, $scope, $location, $routeParams, Login) {
 
 	$scope.data = {};
@@ -18,7 +18,7 @@ angular.module('timetrackerApp')
  		var username = $scope.logindata.username,
  			password = $scope.logindata.password;
 
- 		Login.save({
+ 		Login.login({
  			user: username, 
  			pass: password
  		}, function(success) {
@@ -40,12 +40,14 @@ angular.module('timetrackerApp')
 
  	$scope.logout = function() {
 
- 		// remove global user info
-		$rootScope.username = null;
-		$rootScope.password = null;
-		$rootScope.loggedIn = false;
+ 		Login.logout({}, function(success) {
+	 		// remove global user info
+			$rootScope.username = null;
+			$rootScope.password = null;
+			$rootScope.loggedIn = false;
 
-		$location.path('/login').search({ 'msg':'You have been logged out successfully.' });
+			$location.path('/login').search({ 'msg':'You have been logged out successfully.' });
+ 		});
  	}
 
   }]);
