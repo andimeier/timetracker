@@ -1,6 +1,8 @@
 var mysql = require('mysql');
 
 var dbConfig = require(__dirname + '/../config/db_config.json');
+var utils = require(__dirname + '/../utils');
+var error = require(__dirname + '/../error');
 
 // MySql connection data
 var pool = mysql.createPool({
@@ -11,8 +13,7 @@ var pool = mysql.createPool({
 });
 
 
-// @FIXME global variables
-var user_id = 1;
+var userId = 10; //@TODO: remove!!!! replace with session user id
 
 /*
  * Formats a JSON date string for being used in an SQL expression.
@@ -54,27 +55,10 @@ exports.findById = function(req, res) {
 				+ " join clients c on c.client_id=p.client_id "
 				+ " where record_id=" + req.params.id, function(err, rows) {
 
-			// console.log('Found record: ' + JSON.stringify(rows));
-			// console.log('Records are of type [' + rows.constructor.name + ']');
-			// console.log('Record[0] is of type [' + (rows[0]).constructor.name + ']');
-			// console.log('Record[0][starttime] is of type [' + (rows[0]['starttime']).constructor.name + ']');
-			
-			// for (var i in rows[0]) {
-			//   val = rows[i];
-			//   console.log('field: ' + val);
-			// }	
-
-			// rows.forEach(rows, function(key, val) {
-			// 	console.log('   value [' + key + '] is [' + value + ']');
-			// });
-			// console.log('Field "starttime" is [' + rows['starttime']);
-			// console.log('Field "starttime" is [' + rows['starttime'].constructor.name + ']');
-
 			if (err != null) {
 				res.send(400, "Query error:" + err);
 			} else {
-				// Shows the result on console window
-				res.send(200, rows);
+				res.send(200, utils.changeKeysToCamelCase(rows));
 			}
 		});
 
@@ -98,19 +82,14 @@ exports.findAll = function(req, res) {
 				+ " from records r "
 				+ " left join projects p on p.project_id=r.project_id "
 				+ " left join clients c on c.client_id=p.client_id "
-				+ " order by r.cdate desc "
+				+ " order by r.starttime desc "
 				+ " limit 10", function(err, rows) {
 			console.log('   ... got answer from DB server');
 
 			if (err != null) {
 				res.send(404, "Query error:" + err);
 			} else {
-				// Shows the result on console window
-
-				console.log('Found ' + rows.length + ' rows ...');
-
-
-				res.send(200, rows);
+				res.send(200, utils.changeKeysToCamelCase(rows));
 			}
 		});
 
@@ -125,51 +104,35 @@ exports.add = function(req, res) {
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] add: ' + JSON.stringify(req.body));
 
-	var attributes = [
-		'starttime',
-		'endtime',
-		'pause',
-		'project_id',
-		'description'
-	];
-	var values = [];
+	var obj = req.body;
 
-	var project_id = req.body['project_id'];
-
-	console.log('project_id is null: ' + (project_id === null)); 
-
-	console.log('project_id undefined: ' + (project_id === undefined));
-
-	console.log('project_id is NaN: ' + isNaN(project_id));
-
-	console.log('!project_id: ' + (!project_id));
-
-	console.log('project_id = ' + project_id);
-
-	attributes.forEach(function(item) {
-		var v = req.body[item];
-		if (item == 'starttime' || item == 'endtime') {
-			v = formatDate(v);
+	// convert date fields
+	[ 'starttime', 'endtime' ].forEach(function(field) {
+		if (obj[field]) {
+			obj[field] = formatDate(obj[field]);
 		}
-		values.push(pool.escape(v));
 	});
-	
-	// additional (calculated) attributes
-	attributes.push('cdate');
-	values.push('now()');
-	attributes.push('mdate');
-	values.push('now()');
 
-	attributes.push('user_id');
-	values.push(user_id);
+	
+	// set additional (calculated) attributes, these will not be escaped,
+	// but used literally in the query string. The keys here are exactly
+	// the database table column names, no changing of case will take place
+	var calculatedAttributes = {
+		cdate: "now()",
+		mdate: "now()",
+		user_id: userId
+	};
 
 	// begin input validation
 	// ----------------------
 	var ok = true; // optimistic assumption
 
 	// check for mandatory fields
-	if (!req.body.starttime) {
-		res.send(400, 'Missing starttime');
+	if (!obj.starttime) {
+		res.send(400, error.error({
+			errorCode: 1003,
+			message: 'Missing starttime parameter - starttime is mandatory'
+		}));
 		ok = false;
 	}
 
@@ -178,26 +141,29 @@ exports.add = function(req, res) {
 		// ------------------------------
 		pool.getConnection(function(err, connection) {
 
-			// write to DB
-			var sql = 'INSERT into records(' + attributes.join(',') + ') ' +
-				'select ' + values.join(',');
+
+			// convert case of the column names into database syntax
+			obj = utils.changeKeysToSnakeCase(obj);
+			var dataFields = utils.getInsertLists(obj, mysql.escape);
+			var calcFields = utils.getInsertLists(calculatedAttributes);
+			var sql = 'INSERT into records('
+				+ [dataFields['keys'], calcFields['keys']].join(',')
+				+ ') select '
+				+ [dataFields['values'], calcFields['values']].join(',');
+
 			console.log("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
 
 				if (err != null) {
 					res.send(400, "Query error:" + err);
-					console.log("Sent error response: status=400");
 				} else {
 					// Shows the result on console window
 					res.send(201, rows);
-					console.log("Sent OK (status 201): " + JSON.stringify(rows));
 				}
 			});
 
 			// close connection
 			connection.release();
-			console.log("Connection released");
-
 		});
 	}
 }
@@ -207,80 +173,87 @@ exports.update = function(req, res) {
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] update: ' + JSON.stringify(req.body));
 
-	var id = parseInt(req.params.id);
-	if (!id) {
-		res.send(400, 'No valid record_id passed');
-	}
+	var obj = req.body;
 
-	var attributes = [
-		'starttime',
-		'endtime',
-		'pause',
-		'project_id',
-		'description'
-	];
-	var values = [];
-	attributes.forEach(function(item) {
-		var v = req.body[item];
-		if (item == 'starttime' || item == 'endtime') {
-			v = formatDate(v);
+	// convert date fields
+	[ 'starttime', 'endtime' ].forEach(function(field) {
+		if (obj[field]) {
+			obj[field] = formatDate(obj[field]);
 		}
-		values.push(pool.escape(v));
 	});
-	
-	// additional (calculated) attributes
-	attributes.push('mdate');
-	values.push('now()');
 
-	attributes.push('user_id');
-	values.push(user_id);
+	
+	// set additional (calculated) attributes, these will not be escaped,
+	// but used literally in the query string. The keys here are exactly
+	// the database table column names, no changing of case will take place
+	var calculatedAttributes = {
+		mdate: "now()",
+		user_id: userId
+	};
 
 	// begin input validation
 	// ----------------------
 	var ok = true; // optimistic assumption
 
-	// check fo mandatory fields
-	if (!req.body.starttime) {
-		res.send(400, 'Missing starttime');
+	var recordId = parseInt(req.params.id);
+	if (!recordId) {
+		res.send(400, error.error({
+			errorCode: 1003,
+			message: 'No ID passed in the API call'
+		}));
 		ok = false;
 	}
+
+
+	// check for mandatory fields
+	if (!obj.starttime) {
+		res.send(400, error.error({
+			errorCode: 1003,
+			message: 'Missing starttime parameter - starttime is mandatory'
+		}));
+		ok = false;
+	}
+
 
 	if (ok) {
 		// input is ok, let's write to DB
 		// ------------------------------
 		pool.getConnection(function(err, connection) {
 
-			// build update string part
-			var updateText = []
-			for (var i = 0; i < attributes.length; i++) {
-				updateText.push(attributes[i] + '=' + values[i]);
-			};
+			// convert case of the column names into database syntax
+			obj = utils.changeKeysToSnakeCase(obj);
+			var dataFields = utils.getUpdateString(obj, mysql.escape);
+			var calcFields = utils.getUpdateString(calculatedAttributes);
+			var sql = 'UPDATE records set ' 
+				+ [dataFields, calcFields].join(',') 
+				+ ' where record_id=' + id;
 
-			// write to DB
-			var sql = 'UPDATE records set ' + updateText.join() + ' where record_id=' + id;
 			console.log("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
 
-				console.log("Ok, done update, error is: [" + JSON.stringify(err) + "]");
-
 				if (err != null) {
 					res.status(400);
+
 					res.end("Query error:" + err);
 					rows.error = 'Error at updating: ' + err.code;
 					console.log('Error at updating: ' + err.code);
-					res.send(rows);
+					res.send(error.error({
+						errorCode: 1002,
+						errorObj: rows,
+						message: 'Error at updating row'
+					}));
 				} else {
 
 					if (!rows.affectedRows) {
 						res.status(400);
-						rows = {};
-						rows.error = 'No rows matched';
-						console.log("Sent error response (no rows matched): status=400");
+						res.send(error.error({
+							errorCode: 1002,
+							errorObj: rows,
+							message: 'No rows matched'
+						}));
 					} else {
 						res.status(200);
-						console.log("Sent OK (status 200)");
 					}	
-
 					// send the result
 					res.send(rows);
 				}
@@ -303,9 +276,12 @@ exports.delete = function(req, res) {
 	// ----------------------
 	var ok = true; // optimistic assumption
 
-	var id = parseInt(req.params.id);
-	if (!id) {
-		res.send(400, 'No valid record_id passed');
+	var recordId = parseInt(req.params.id);
+	if (!recordId) {
+		res.send(400, error.error({
+			errorCode: 1003,
+			message: 'No ID passed in the API call'
+		}));
 		ok = false;
 	}
 
@@ -324,9 +300,13 @@ exports.delete = function(req, res) {
 
 					if (!rows.affectedRows) {
 						res.status(400);
-						rows.error = 'No rows matched';
+						res.send(error.error({
+							errorCode: 1002,
+							errorObj: rows,
+							message: 'No rows matched'
+						}));
 					} else {
-						res.status(204);
+						res.status(200);
 					}	
 
 					// send the result

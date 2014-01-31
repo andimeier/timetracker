@@ -23,7 +23,10 @@ exports.login = function(req, res) {
 				lastLogin: user.lastlogin
 			 });
 		} else {
-			res.send(401, error.error(1000, result));
+			res.send(401, error.error({
+				errorCode: 1001, 
+				errorObj: result
+			}));
 		}
 	});
 };

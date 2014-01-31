@@ -1,6 +1,7 @@
 var mysql = require('mysql');
 
 var dbConfig = require(__dirname + '/../config/db_config.json');
+var utils = require(__dirname + '/../utils');
 
 // MySql connection data
 var pool = mysql.createPool({
@@ -11,9 +12,14 @@ var pool = mysql.createPool({
 });
 
 
-// @FIXME global variables
-var user_id = 1;
-
+// mapping of object properties to the underlying database fields 
+// key-value = propert-dbFieldName
+var fieldMapping = {
+	projectId:    'project_id',
+	name:         'name',
+	abbreviation: 'abbreviation',
+	active:       'active'
+};
 
 exports.findById = function(req, res) {
 
@@ -29,8 +35,12 @@ exports.findById = function(req, res) {
 			if (err != null) {
 				res.send(400, "Query error:" + err);
 			} else {
-				// Shows the result on console window
-				res.send(200, rows);
+
+				var result = utils.mapToJsonKeys(rows, fieldMapping);
+				if (result instanceof Error) {
+					console.error('Error at mapping keys to JSON keys: ' + result);
+				}
+				res.send(200, result);
 			}
 		});
 
@@ -72,26 +82,18 @@ exports.findAll = function(req, res) {
 		// parameter "add" will include a specific project into the result set,
 		// regardless of other contraints
 		include = parseInt(req.query.add);
-		console.log('parameter "add" detected, include= [' + include + ']');
 	}
-	console.log('parameter "set" = [' + req.query.set + ']');
-	console.log('parameter "add" = [' + req.query.add + ']');
-	console.log('number of constraints = [' + constraints.length + ']');
 
 	// build query
 	var where;
-	console.log('2 include= [' + include + ']');
 	if (include) {
 		where = '((' + constraints.join(' and ') + ') or project_id=' + include + ')';
 	} else {
 		where = '' + constraints.join(' and ');
 	}
-	console.log('constraints[0] = [' + constraints[0] + ']');
-	console.log('where = [' + where + ']');
 	var sql = "SELECT p.project_id, p.name, p.abbreviation, p.active " 
 				+ " from projects p where " + where + " order by p.name";
 	console.log('sql = [' + sql + ']');
-
 
 	pool.getConnection(function(err, connection) {
 
@@ -102,12 +104,11 @@ exports.findAll = function(req, res) {
 			if (err != null) {
 				res.send(404, "Query error:" + err);
 			} else {
-				// Shows the result on console window
-
-				console.log('Found ' + rows.length + ' rows ...');
-
-
-				res.send(200, rows);
+				var result = utils.mapToJsonKeys(rows, fieldMapping);
+				if (result instanceof Error) {
+					console.error('Error at mapping keys to JSON keys: ' + result);
+				}
+				res.send(200, result);
 			}
 		});
 

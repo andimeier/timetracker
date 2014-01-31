@@ -4,6 +4,9 @@ var express = require('express'),
 	login = require('./routes/login'),
 	authenticate = require('./auth');
 
+// server port
+var port = 3000;
+
 var allowCrossDomain = function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:9000');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -53,20 +56,29 @@ var auth = function(req, res, next) {
 
 
 // express routes config starts here
+// ---------------------------------
 
-// ATTENTION: be sure to add the auth handler to all routes which change data!
+// ATTENTION: BE SURE TO ADD THE AUTH HANDLER TO ALL ROUTES WHICH CHANGE DATA!
+
+// public services (without authentication)
 app.post('/login', login.login);
-app.get('/logout', auth, login.logout);
 
 app.get('/records', records.findAll);
 app.get('/records/:id', records.findById);
-app.post('/records/:id', auth, records.update); // POST with ID => update
-app.put('/records/:id', auth, records.update);
-app.post('/records', auth, records.add); // POST without ID => add
-app.delete('/records/:id', auth, records.delete);
 
 app.get('/projects', projects.findAll);
 app.get('/projects/:id', projects.findById);
 
-app.listen(3000);
-console.log('Listening on port 3000...');
+
+// private services (need session for those)
+app.get('/logout',         auth, login.logout);
+
+app.post('/records/:id',   auth, records.update); // POST with ID => update
+app.put('/records/:id',    auth, records.update);
+app.post('/records',       auth, records.add); // POST without ID => add
+app.delete('/records/:id', auth, records.delete);
+
+
+// start the server
+app.listen(port);
+console.log('Listening on port ' + port + ' ...');
