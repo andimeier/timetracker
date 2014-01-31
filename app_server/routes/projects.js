@@ -49,6 +49,8 @@ exports.findById = function(req, res) {
  * Retrieves all specified projects.
  * 
  * REST parameters (in query string):
+ *   - fields ... specify list of fields to be delivered. All other fields are ignored. If unknown fields
+ *       are specified here, they will be silently ignored. The list of fields must be comma-separated.
  *   - set ... specify set of projects to be returned, can be one of the following values:
  *       all ... all projects in the database
  *       active ... only active projects (with attribute "active")
@@ -63,8 +65,11 @@ exports.findAll = function(req, res) {
 	console.log('  Query parameters: ' + JSON.stringify(req.query, undefined, 2));
 
 	// parse parameters
+	// ----------------
+
 	var constraints = [ '1=1'], // find constraints
-		include; // a project_id which should always be in the result set
+		include, // a project_id which should always be in the result set
+		fields; // list of fields to be included in the output
 
 	if (req.query.set) {
 		// specifies the set of projects (default, if 'set' 
@@ -82,6 +87,13 @@ exports.findAll = function(req, res) {
 		// regardless of other contraints
 		include = parseInt(req.query.add);
 	}
+
+	if (req.query.fields) {
+		fields = req.query.fields.split(',');
+	}
+
+	// let's fetch the data
+	// --------------------
 
 	// build query
 	var where;
@@ -103,11 +115,12 @@ exports.findAll = function(req, res) {
 			if (err != null) {
 				res.send(404, "Query error:" + err);
 			} else {
-				var result = utils.changeKeysToCamelCase(rows);
-				if (result instanceof Error) {
-					console.error('Error at mapping keys to JSON keys: ' + result);
+
+				rows = utils.changeKeysToCamelCase(rows);
+				if (fields) {
+					rows = utils.filterProperties(rows, fields);
 				}
-				res.send(200, result);
+				res.send(200, rows);
 			}
 		});
 
