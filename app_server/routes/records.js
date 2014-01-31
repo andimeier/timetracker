@@ -12,6 +12,30 @@ var pool = mysql.createPool({
 	database : dbConfig.database
 });
 
+/*
+Attributes sent over the API in request bodies being accepted for 
+writing to the database.
+Any attributes (properties) of the objects sent in a request body
+over the API during POST/PUT/DELETE operations which are not listed
+here will be ignored.
+The value in this list describes in which REST functions the 
+corresponding attributes are valid. For example, a recordId is valid
+(and necessary) in an 'update' operation, but it not legal in an
+'add' operation under normal circumstances, because the recordId 
+should  be assigned by the database server in this case.
+Nevertheless, other attributes can be set by the REST service itself
+(e.g. cdate, userId), but they are silently ignored when coming over
+the API form the outside world
+*/
+var acceptedPropertiesApi = {
+	'recordId'   : [ 'update' ],
+	'starttime'  : [ 'add', 'update' ],
+	'endtime'    : [ 'add', 'update' ],
+	'pause'      : [ 'add', 'update' ],
+	'projectId'  : [ 'add', 'update' ],
+	'description': [ 'add', 'update' ],
+	'invoiceId'  : [ 'add', 'update' ]
+};
 
 var userId = 10; //@TODO: remove!!!! replace with session user id
 
@@ -45,6 +69,8 @@ exports.findById = function(req, res) {
 
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
+	
+	var recordId = req.params.id;
 
 	pool.getConnection(function(err, connection) {
 
@@ -53,10 +79,14 @@ exports.findById = function(req, res) {
 				+ " from records r "
 				+ " join projects p on p.project_id=r.project_id "
 				+ " join clients c on c.client_id=p.client_id "
-				+ " where record_id=" + req.params.id, function(err, rows) {
+				+ " where record_id=" + recordId, function(err, rows) {
 
 			if (err != null) {
-				res.send(400, "Query error:" + err);
+				res.send(400, error.error({
+					errorCode: 1002,
+					errorObj: err,
+					message: 'Query error'
+				}));
 			} else {
 				res.send(200, utils.changeKeysToCamelCase(rows));
 			}
@@ -105,6 +135,14 @@ exports.add = function(req, res) {
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] add: ' + JSON.stringify(req.body));
 
 	var obj = req.body;
+
+	// remove unacceptable fields
+	for (key in obj) {
+		if (!acceptedPropertiesApi[key] || acceptedPropertiesApi[key].indexOf('add') == -1) {
+			console.log('Removed attribute [' + key + '] (illegal over API)');
+			delete obj[key];
+		}
+	}
 
 	// convert date fields
 	[ 'starttime', 'endtime' ].forEach(function(field) {
@@ -158,7 +196,10 @@ exports.add = function(req, res) {
 					res.send(400, "Query error:" + err);
 				} else {
 					// Shows the result on console window
-					res.send(201, rows);
+					res.send(201, {
+						insertId: rows['insertId'],
+						db: rows
+					});
 				}
 			});
 
@@ -174,6 +215,14 @@ exports.update = function(req, res) {
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] update: ' + JSON.stringify(req.body));
 
 	var obj = req.body;
+
+	// remove unacceptable fields
+	for (key in obj) {
+		if (!acceptedPropertiesApi[key] || acceptedPropertiesApi[key].indexOf('update') == -1) {
+			console.log('Removed attribute [' + key + '] (illegal over API)');
+			delete obj[key];
+		}
+	}
 
 	// convert date fields
 	[ 'starttime', 'endtime' ].forEach(function(field) {
@@ -226,7 +275,7 @@ exports.update = function(req, res) {
 			var calcFields = utils.getUpdateString(calculatedAttributes);
 			var sql = 'UPDATE records set ' 
 				+ [dataFields, calcFields].join(',') 
-				+ ' where record_id=' + id;
+				+ ' where record_id=' + recordId;
 
 			console.log("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
@@ -290,7 +339,7 @@ exports.delete = function(req, res) {
 		// ------------------------------
 		pool.getConnection(function(err, connection) {
 			// write to DB
-			var sql = 'DELETE from records where record_id=' + id;
+			var sql = 'DELETE from records where record_id=' + recordId;
 			console.log("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
 

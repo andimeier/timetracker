@@ -52,8 +52,8 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 	 * remove a record from the list and delete it from the database
 	 */
 	$scope.remove = function(rec) {
-		var recordId = rec.record_id;
-		console.log('Going to deleted record: [' + rec.record_id + ']');
+		var recordId = rec.recordId;
+		console.log('Going to deleted record: [' + rec.recordId + ']');
 
 		$scope.data.editMode = 0;
 
@@ -61,7 +61,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		rec.toBeDeleted = 1;
 
 		// try to delete it in DB first
-		Record.remove({ recordId: rec.record_id }, function(response) {
+		Record.remove({ recordId: rec.recordId }, function(response) {
 			
 			// delete went ok
 			$scope.data.success = 'Successfully deleted record [' + recordId + '].';
@@ -89,9 +89,9 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		var r = angular.copy(rec);
 
 		// console.log('Copied rec -> r');
-		// console.log('r.project_id is [' + r.project_id + '], of type [' + typeof(r.project_id) + ']');
-		// console.log('rec.project_id is [' + rec.project_id + '], of type [' + typeof(rec.project_id) + ']');
-		// console.log('activeprojects[1].project_id is [' + $scope.data.activeProjects[1].project_id + '] and of type ' + typeof($scope.data.activeProjects[1].project_id));
+		// console.log('r.projectId is [' + r.projectId + '], of type [' + typeof(r.projectId) + ']');
+		// console.log('rec.projectId is [' + rec.projectId + '], of type [' + typeof(rec.projectId) + ']');
+		// console.log('activeprojects[1].projectId is [' + $scope.data.activeProjects[1].projectId + '] and of type ' + typeof($scope.data.activeProjects[1].projectId));
 
 		$scope.data.onerecord = r;
 		$scope.data.editMode = 2;
@@ -106,7 +106,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		// using the REST query parameter "add", ensure that the currently assigned 
 		// project of the edited record is in the list, regardless if it is active or 
 		// not
-		$scope.data.activeProjects = Project.query({ add:r.project_id });
+		$scope.data.activeProjects = Project.query({ add:r.projectId });
 	};
 
 
@@ -157,9 +157,9 @@ recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Rec
 			$scope.data.onerecord = {}; // empty the form after saving
 
 			if (response.insertId) {
-				$scope.data.success = 'Updated successfully.';
+				$scope.data.success = 'Saved successfully with recordId=[' + response.insertId + '].';
 			} else {
-				$scope.data.success = 'Saved successfully with record_id=[' + response.insertId + '].';
+				$scope.data.success = 'Updated successfully.';
 			}
 
 			// refresh record list

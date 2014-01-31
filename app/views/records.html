@@ -28,10 +28,10 @@
 				</td>
 			</tr>
 			<tr>
-				<td><label for="project_id">Project</label></td>
+				<td><label for="projectId">Project</label></td>
 				<td>
-					<select ng-model="data.onerecord.project_id" 
-						ng-options="p.project_id as p.name for p in data.activeProjects">
+					<select ng-model="data.onerecord.projectId" 
+						ng-options="p.projectId as p.name for p in data.activeProjects">
 					</select>
 				</td>
 			</tr>
@@ -70,15 +70,15 @@
 		</tr>
 		<tr ng-repeat="record in (filteredRecords = data.records)" 
 				ng-dblclick="loggedIn ? editRecord(record) : undefined" 
-				ng-class="{editing: record.record_id == data.onerecord.record_id, strike: record.toBeDeleted}" 
+				ng-class="{editing: record.recordId == data.onerecord.recordId, strike: record.toBeDeleted}" 
 				ng-class-even="'even'"
 				ng-class-odd="'odd'"
 				ng-cloak>
-			<td>{{record.record_id}}</td>
+			<td>{{record.recordId}}</td>
 			<td>{{record.starttime | date:'yyyy-MM-dd'}}</td>
 			<td>{{record.starttime | date:'HH:mm'}}</td>
 			<td>{{record.endtime | date:'HH:mm'}}</td>
-			<td>{{record.project_abbreviation}}</td>
+			<td>{{record.projectAbbreviation}}</td>
 			<td>{{record.description}}</td>
 			<td ng-show="loggedIn"><button type="button" ng-click="remove(record)">Delete</button></td>
 		</tr>

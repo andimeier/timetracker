@@ -5,13 +5,13 @@ var serviceBaseURL = 'http://127.0.0.1:3000/';
 
 timetrackerServices.factory('Record', ['$resource',
 	function($resource){
-		return $resource(serviceBaseURL + 'records/:recordId', {recordId:'@record_id'}, {});
+		return $resource(serviceBaseURL + 'records/:recordId', {recordId:'@recordId'}, {});
 	}
 ]);
 
 timetrackerServices.factory('Project', ['$resource',
 	function($resource){
-		return $resource(serviceBaseURL + 'projects/:projectId', {projectId:'@project_id'}, {});
+		return $resource(serviceBaseURL + 'projects/:projectId', {projectId:'@projectId'}, {});
 	}
 ]);
 
