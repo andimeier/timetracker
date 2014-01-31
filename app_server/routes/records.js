@@ -97,11 +97,35 @@ exports.findById = function(req, res) {
 	});
 };
 
+/**
+ * Called with /records
+ * Retrieves all specified records.
+ * 
+ * REST parameters (in query string):
+ *   - fields ... specify list of fields to be delivered. All other fields are ignored. If unknown fields
+ *       are specified here, they will be silently ignored. The list of fields must be comma-separated.
+ *   - add ... add a specific project into the result set, the value of the parameter is the 
+ *       project_id of the project to be added to the result set. This project will be 
+ *       included in the result set, regardless of the other query parameters.
+ */
 exports.findAll = function(req, res) {
 
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
 	console.log('  Query parameters: ' + JSON.stringify(req.query));
+
+	// parse parameters
+	// ----------------
+	var constraints = [ '1=1'], // find constraints
+		include, // a project_id which should always be in the result set
+		fields; // list of fields to be included in the output
+
+	if (req.query.fields) {
+		fields = req.query.fields.split(',');
+	}
+
+	// let's fetch the data
+	// --------------------
 
 	pool.getConnection(function(err, connection) {
 
@@ -119,7 +143,13 @@ exports.findAll = function(req, res) {
 			if (err != null) {
 				res.send(404, "Query error:" + err);
 			} else {
-				res.send(200, utils.changeKeysToCamelCase(rows));
+
+				rows = utils.changeKeysToCamelCase(rows);
+				if (fields) {
+					rows = utils.filterProperties(rows, fields);
+				}
+
+				res.send(200, rows);
 			}
 		});
 

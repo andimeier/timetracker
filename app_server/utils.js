@@ -1,5 +1,6 @@
 var changeCase = require('change-case');
 
+
 /**
  * @return Error object on error
  */
@@ -51,6 +52,7 @@ exports.changeKeysToSnakeCase = function(obj) {
 
 	var result;
 	if (Array.isArray(obj)) {
+		// list of objects => call recursively
 		result = [];
 		obj.forEach(function(o) {
 			result.push(changeKeysToSnakeCase(o));
@@ -158,4 +160,45 @@ exports.getUpdateString = function(obj, escape) {
 	}
 
 	return parts.join(',');
+}
+
+/**
+ * Filters the list of objects or the single object given so that for each object
+ * only the specified attributes are used. All other attributes are discarded. If an unknown
+ * field is specified which cannot be found as an object property, it is silently ignored 
+ * (no error produced).
+ *
+ * @param obj either a single object or a list of objects whose properties will be filtered
+ * @param properties a list of properties, all other properties will be discarded
+ * @return a single obj resp. a list of objects showing only the specified properties.
+ *   If obj is a single object, then the filtered single object is returned. If obj is a
+ *   list of objects, a list of filtered objects is returned.
+ */
+exports.filterProperties = function(obj, fields) {
+
+	var filter = function(obj, fd) {
+		var filteredObj = {};
+		fd.forEach(function(property) {
+			if (typeof(obj[property]) != 'undefined') {
+				// preserve this field
+				filteredObj[property] = obj[property];
+			} 
+		});
+		return filteredObj;
+	}
+
+	var result;
+	if (Array.isArray(obj)) {
+		// list of objects => filter each entry separately
+		result = [];
+		obj.forEach(function(item) {
+			// result.push(changeKeysToSnakeCase(o));
+			// result.push(filterProperties(o, fields));
+			result.push(filter(item, fields));
+		});
+	} else {
+		// a single object => filter it
+		result = filter(obj, fields);
+	}
+	return result;
 }
