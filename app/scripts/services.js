@@ -1,17 +1,14 @@
-var timetrackerServices = angular.module('timetrackerServices', ['ngResource']);
+var timetrackerServices = angular.module('timetrackerServices', ['ngResource', 'env']);
 
-// base URL of REST data service, be sure to end on slash
-var serviceBaseURL = 'http://127.0.0.1:3000/';
-
-timetrackerServices.factory('Record', ['$resource',
-	function($resource){
-		return $resource(serviceBaseURL + 'records/:recordId', {recordId:'@recordId'}, {});
+timetrackerServices.factory('Record', ['$resource', 'env',
+	function($resource, env){
+		return $resource(env.serviceBaseUrl + 'records/:recordId', {recordId:'@recordId'}, {});
 	}
 ]);
 
-timetrackerServices.factory('Project', ['$resource',
-	function($resource){
-		return $resource(serviceBaseURL + 'projects/:projectId', {projectId:'@projectId'}, {});
+timetrackerServices.factory('Project', ['$resource', 'env',
+	function($resource, env){
+		return $resource(env.serviceBaseUrl + 'projects/:projectId', {projectId:'@projectId'}, {});
 	}
 ]);
 
@@ -30,9 +27,9 @@ timetrackerServices.factory('Project', ['$resource',
 ]);
 */
 
-timetrackerServices.factory('Login', ['$resource',
-	function($resource){
-		return $resource(serviceBaseURL + 'login', {user:'@username', pass:'@password'}, {
+timetrackerServices.factory('Login', ['$resource', 'env',
+	function($resource, env){
+		return $resource(env.serviceBaseUrl + 'login', {user:'@username', pass:'@password'}, {
 			'login':  { method: 'POST' },
 			'logout': { method: 'GET', url: serviceBaseURL + 'logout' }
 		});
