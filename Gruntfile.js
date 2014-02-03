@@ -22,6 +22,7 @@ module.exports = function (grunt) {
 		yeoman: {
 			// configurable paths
 			app: require('./bower.json').appPath || 'app',
+			serverApp: require('./bower.json').serverApp || 'server',
 			dist: 'dist'
 		},
 
@@ -334,9 +335,9 @@ module.exports = function (grunt) {
 						expand: true,
 						flatten: true,
 						src: ['./config/server.config.json'],
-						dest: '<%= yeoman.serverApp %>/config/config.js',
+						dest: '<%= yeoman.serverApp %>/config/config.json',
 						rename: function(dest, src) {
-							return '<%= yeoman.serverApp %>/config/config.js';
+							return '<%= yeoman.serverApp %>/config/config.json';
 						}
 					}
 				]
@@ -359,12 +360,30 @@ module.exports = function (grunt) {
 						expand: true,
 						flatten: true,
 						src: ['./config/server.config.json'],
-						dest: '<%= yeoman.serverApp %>/config/config.js',
+						dest: '<%= yeoman.serverApp %>/config/config.json',
 						rename: function(dest, src) {
-							return '<%= yeoman.serverApp %>/config/config.js';
+							return '<%= yeoman.serverApp %>/config/config.json';
 						}
 					}
 				]
+			}
+		},
+
+		scp: {
+			production: {
+				options: {
+					patterns: [{
+						json: grunt.file.readJSON('./config/environments/production.json')
+					}],
+					host: 'eck-zimmer.at',
+					username: 'alex'
+				},
+				files: [{
+					cwd: '<%= yeoman.serverApp %>',
+					src: '**/*',
+					filter: 'isFile',
+					dest: '/tmp/timetracker_deploy/'
+				}]
 			}
 		},
 
@@ -397,7 +416,7 @@ module.exports = function (grunt) {
 
 	
 	grunt.loadNpmTasks('grunt-replace');
-
+	grunt.loadNpmTasks('grunt-scp');
 
 	grunt.registerTask('serve', function (target) {
 		if (target === 'dist') {
@@ -452,5 +471,10 @@ module.exports = function (grunt) {
 		'newer:jshint',
 		'test',
 		'build'
+	]);
+
+	grunt.registerTask('deployServer', [
+		'replace:production',
+		'scp:production'
 	]);
 };

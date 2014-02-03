@@ -5,5 +5,9 @@
 		"user"     : "tt",
 		"password" : "tT_timeTime",
 		"database" : "timetracker"
+	},
+	"productionHost": {
+		"host":     "eck-zimmer.at",
+		"username": "alex"
 	}
 }
