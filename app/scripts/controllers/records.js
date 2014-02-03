@@ -53,6 +53,14 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 	 */
 	$scope.remove = function(rec) {
 		var recordId = rec.recordId;
+
+
+		var deleteUser = confirm('Are you absolutely sure you want to delete?');   
+
+    	if (!deleteUser) {
+    		return; // do nothing
+    	}
+
 		console.log('Going to deleted record: [' + rec.recordId + ']');
 
 		$scope.data.editMode = 0;
