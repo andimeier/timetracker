@@ -39,6 +39,13 @@ var acceptedPropertiesApi = {
 
 var userId = 10; //@TODO: remove!!!! replace with session user id
 
+// default values for parameters not specified via REST API
+var defaultParams = {
+	limit: 10, // number of records delivered at once
+	page: 0 // deliver first page of result set
+}
+
+
 /*
  * Formats a JSON date string for being used in an SQL expression.
  * @return null if input is null or undefined, the datetime expressionin SQL format otherwise
@@ -104,25 +111,41 @@ exports.findById = function(req, res) {
  * REST parameters (in query string):
  *   - fields ... specify list of fields to be delivered. All other fields are ignored. If unknown fields
  *       are specified here, they will be silently ignored. The list of fields must be comma-separated.
- *   - add ... add a specific project into the result set, the value of the parameter is the 
- *       project_id of the project to be added to the result set. This project will be 
- *       included in the result set, regardless of the other query parameters.
+ *   - n ... specify number of records to be delivered at a maximum, of not specified, theconfigured 
+ *       default value will be used.
+ *   - p ... number of page to be delivered. The size of one page can be set with the parameter 
+ *      'limit', defaulting to the default value otherwise. The first page is page 0.
  */
 exports.findAll = function(req, res) {
 
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
-	console.log('  Query parameters: ' + JSON.stringify(req.query));
+	console.log('  All Query parameters: ' + JSON.stringify(req.query));
 
 	// parse parameters
 	// ----------------
-	var constraints = [ '1=1'], // find constraints
-		include, // a project_id which should always be in the result set
-		fields; // list of fields to be included in the output
+	var params = {};
+
+	// start with default values
+	for (key in defaultParams) {
+		params[key] = defaultParams[key];
+	}
 
 	if (req.query.fields) {
-		fields = req.query.fields.split(',');
+		params.fields = req.query.fields.split(',');
 	}
+
+	if (req.query.n) {
+		console.log('Parameter n given: [' + req.query.n + ']');
+		params.limit = parseInt(req.query.n);
+	}
+
+	if (req.query.p) {
+		console.log('Parameter p given: [' + req.query.p + ']');
+		params.page = parseInt(req.query.p);
+	}
+
+	console.log('Params are now: ' + JSON.stringify(params, null, 2));
 
 	// let's fetch the data
 	// --------------------
@@ -131,13 +154,16 @@ exports.findAll = function(req, res) {
 
 		// Query the database to some data 
 		//connection.query("SELECT * from records limit 10where starttime >= date_sub(current_date, interval 30 day) order by starttime desc limit 10", function(err, rows) {
-		connection.query("SELECT c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, p.project_id, p.name as project_name, p.abbreviation as project_abbreviation, "
+		console.log('2Params are now: ' + JSON.stringify(params, null, 2));
+		var sql = "SELECT c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, p.project_id, p.name as project_name, p.abbreviation as project_abbreviation, "
 				+ "r.record_id, r.starttime, r.endtime, r.pause, r.description, r.user_id, r.invoice_id "
 				+ " from records r "
 				+ " left join projects p on p.project_id=r.project_id "
 				+ " left join clients c on c.client_id=p.client_id "
 				+ " order by r.starttime desc "
-				+ " limit 10", function(err, rows) {
+				+ " limit " + params.limit + ' offset ' + params.page * (params.limit);
+		console.log('SQL string: ' + sql);
+		connection.query(sql, function(err, rows) {
 			console.log('   ... got answer from DB server');
 
 			if (err != null) {
@@ -145,8 +171,8 @@ exports.findAll = function(req, res) {
 			} else {
 
 				rows = utils.changeKeysToCamelCase(rows);
-				if (fields) {
-					rows = utils.filterProperties(rows, fields);
+				if (params.fields) {
+					rows = utils.filterProperties(rows, params.fields);
 				}
 
 				res.send(200, rows);
