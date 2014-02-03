@@ -1,15 +1,6 @@
-var mysql = require('mysql');
-
-var dbConfig = require(__dirname + '/../config/db_config.json');
+// var config = require(__dirname + '/../config/config.json');
 var utils = require(__dirname + '/../utils');
 
-// MySql connection data
-var pool = mysql.createPool({
-	host     : dbConfig.host,
-	user     : dbConfig.user,
-	password : dbConfig.password,
-	database : dbConfig.database
-});
 
 
 exports.findById = function(req, res) {
@@ -17,7 +8,7 @@ exports.findById = function(req, res) {
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
 
-	pool.getConnection(function(err, connection) {
+	dbPool.getConnection(function(err, connection) {
 
 		// query the database to some data 
 		connection.query("SELECT p.project_id, p.name, p.abbreviation, p.active "
@@ -106,7 +97,7 @@ exports.findAll = function(req, res) {
 				+ " from projects p where " + where + " order by p.name";
 	console.log('sql = [' + sql + ']');
 
-	pool.getConnection(function(err, connection) {
+	dbPool.getConnection(function(err, connection) {
 
 		// Query the database to some data 
 		connection.query(sql, function(err, rows) {

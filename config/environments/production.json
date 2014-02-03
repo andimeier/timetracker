@@ -1,3 +1,9 @@
 {
-	"serviceBaseUrl": "https://apps.eck-zimmer.at/timetracker/api/"
+	"serviceBaseUrl": "https://apps.eck-zimmer.at/timetracker/api/",
+	"server": {
+		"host"     : "localhost",
+		"user"     : "tt",
+		"password" : "tT_timeTime",
+		"database" : "timetracker"
+	}
 }

@@ -1,16 +1,5 @@
-var mysql = require('mysql');
-
-var dbConfig = require(__dirname + '/../config/db_config.json');
 var utils = require(__dirname + '/../utils');
 var error = require(__dirname + '/../error');
-
-// MySql connection data
-var pool = mysql.createPool({
-	host     : dbConfig.host,
-	user     : dbConfig.user,
-	password : dbConfig.password,
-	database : dbConfig.database
-});
 
 /*
 Attributes sent over the API in request bodies being accepted for 
@@ -79,7 +68,7 @@ exports.findById = function(req, res) {
 	
 	var recordId = req.params.id;
 
-	pool.getConnection(function(err, connection) {
+	dbPool.getConnection(function(err, connection) {
 
 		// query the database to some data 
 		connection.query("SELECT c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, p.project_id, p.name as project_name, p.abbreviation as project_abbreviation, r.* "
@@ -133,24 +122,32 @@ exports.findAll = function(req, res) {
 
 	if (req.query.fields) {
 		params.fields = req.query.fields.split(',');
+		delete req.query.fields;
 	}
 
 	if (req.query.n) {
 		console.log('Parameter n given: [' + req.query.n + ']');
 		params.limit = parseInt(req.query.n);
+		delete req.query.limit;
 	}
 
 	if (req.query.p) {
 		console.log('Parameter p given: [' + req.query.p + ']');
 		params.page = parseInt(req.query.p);
+		delete req.query.page;
 	}
 
 	console.log('Params are now: ' + JSON.stringify(params, null, 2));
 
+	if (req.query) {
+		// there are query parameters left which could not be processed
+		console.error('Unknown query parameter(s) used: ' + JSON.stringify(req.query, null, 2));
+	}
+
 	// let's fetch the data
 	// --------------------
 
-	pool.getConnection(function(err, connection) {
+	dbPool.getConnection(function(err, connection) {
 
 		// Query the database to some data 
 		//connection.query("SELECT * from records limit 10where starttime >= date_sub(current_date, interval 30 day) order by starttime desc limit 10", function(err, rows) {
@@ -233,7 +230,7 @@ exports.add = function(req, res) {
 	if (ok) {
 		// input is ok, let's write to DB
 		// ------------------------------
-		pool.getConnection(function(err, connection) {
+		dbPool.getConnection(function(err, connection) {
 
 
 			// convert case of the column names into database syntax
@@ -323,7 +320,7 @@ exports.update = function(req, res) {
 	if (ok) {
 		// input is ok, let's write to DB
 		// ------------------------------
-		pool.getConnection(function(err, connection) {
+		dbPool.getConnection(function(err, connection) {
 
 			// convert case of the column names into database syntax
 			obj = utils.changeKeysToSnakeCase(obj);
@@ -393,7 +390,7 @@ exports.delete = function(req, res) {
 	if (ok) {
 		// input is ok, let's write to DB
 		// ------------------------------
-		pool.getConnection(function(err, connection) {
+		dbPool.getConnection(function(err, connection) {
 			// write to DB
 			var sql = 'DELETE from records where record_id=' + recordId;
 			console.log("SQL = " + sql);

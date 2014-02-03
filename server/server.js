@@ -2,10 +2,22 @@ var express = require('express'),
 	records = require('./routes/records'),
 	projects = require('./routes/projects'),
 	login = require('./routes/login'),
-	authenticate = require('./auth');
-
+	authenticate = require('./auth'),
+	mysql = require('mysql');
+	
 // server port
 var port = 3000;
+
+
+var config = require(__dirname + '/config/config.json');
+// global MySql connection pool
+global.dbPool = mysql.createPool({
+	host     : config.host,
+	user     : config.user,
+	password : config.password,
+	database : config.database
+});
+
 
 var allowCrossDomain = function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:9000');
@@ -24,6 +36,16 @@ var allowCrossDomain = function(req, res, next) {
 
 
 var app = express();
+
+app.use(function(req, res, next) {
+	console.log('=======================================================');
+	console.log('==================== New request ======================');
+	console.log('=======================================================');
+	console.log('Query parameters: ' + JSON.stringify(req.query, null, 2));
+	next();
+});
+
+
 app.use(allowCrossDomain);
 app.use(express.bodyParser());
 app.use(express.cookieParser('asdr84353$^@k;1B'));
@@ -34,13 +56,6 @@ app.use(express.cookieSession({cookie: { httpOnly: false }}));
 // 	res.cookie('XSRF-TOKEN', req.csrfToken());
 // 	next();
 // });
-
-app.use(function(req, res, next) {
-	console.log('=======================================================');
-	console.log('==================== New request ======================');
-	console.log('=======================================================');
-	next();
-});
 
 // user validation using session cookies
 var auth = function(req, res, next) {

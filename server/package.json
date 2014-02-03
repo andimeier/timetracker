@@ -1,6 +1,6 @@
 {
-  "name": "timetracker",
-  "description": "Time Tracking Tool",
+  "name": "timetracker.rest",
+  "description": "REST service for Time Tracking Tool",
   "version": "0.0.1",
   "private": true,
   "dependencies": {

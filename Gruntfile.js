@@ -264,8 +264,13 @@ module.exports = function (grunt) {
 				cwd: '<%= yeoman.app %>/styles',
 				dest: '.tmp/styles/',
 				src: '{,*/}*.css'
+			},
+			// build the node.js server ready for deployment
+			server: {
+				src: '<%= yeoman.serverApp %>/**/*',
 			}
 		},
+
 
 		// Run some tasks in parallel to speed up the build process
 		concurrent: {
@@ -317,12 +322,24 @@ module.exports = function (grunt) {
 						json: grunt.file.readJSON('./config/environments/development.json')
 					}]
 				},
-				files: [{
-					expand: true,
-					flatten: true,
-					src: ['./config/config.js'],
-					dest: '<%= yeoman.app %>/scripts/services/'
-				}]
+				files: [
+					{
+						expand: true,
+						flatten: true,
+						src: ['./config/config.js'],
+						dest: '<%= yeoman.app %>/scripts/services/'
+					},
+					{
+						// config file for server:
+						expand: true,
+						flatten: true,
+						src: ['./config/server.config.json'],
+						dest: '<%= yeoman.serverApp %>/config/config.js',
+						rename: function(dest, src) {
+							return '<%= yeoman.serverApp %>/config/config.js';
+						}
+					}
+				]
 			},
 			production: {
 				options: {
@@ -330,12 +347,24 @@ module.exports = function (grunt) {
 						json: grunt.file.readJSON('./config/environments/production.json')
 					}]
 				},
-				files: [{
-					expand: true,
-					flatten: true,
-					src: ['./config/config.js'],
-					dest: '<%= yeoman.app %>/scripts/services/'
-				}]
+				files: [
+					{
+						expand: true,
+						flatten: true,
+						src: ['./config/config.js'],
+						dest: '<%= yeoman.app %>/scripts/services/'
+					},
+					{
+						// config file for server:
+						expand: true,
+						flatten: true,
+						src: ['./config/server.config.json'],
+						dest: '<%= yeoman.serverApp %>/config/config.js',
+						rename: function(dest, src) {
+							return '<%= yeoman.serverApp %>/config/config.js';
+						}
+					}
+				]
 			}
 		},
 
@@ -369,25 +398,8 @@ module.exports = function (grunt) {
 	
 	grunt.loadNpmTasks('grunt-replace');
 
-	// grunt.registerTask('serve', function (target) {
-	// 	if (target === 'dist') {
-	// 		return grunt.task.run(['build', 'connect:dist:keepalive']);
-	// 	}
 
-
-	// 	grunt.task.run([
-	// 		'clean:server',
-	// 		'concurrent:server',
-	// 		'autoprefixer',
-	// 		'connect:livereload',
-	// 		'watch'
-	// 	]);
-	// });
-
-
-
-
-grunt.registerTask('serve', function (target) {
+	grunt.registerTask('serve', function (target) {
 		if (target === 'dist') {
 			return grunt.task.run(['build', 'connect:dist:keepalive']);
 		}

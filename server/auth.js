@@ -1,16 +1,4 @@
-var mysql = require('mysql');
 var crypto = require('crypto');
-
-var dbConfig = require(__dirname + '/config/db_config.json');
-
-// MySql connection data
-var pool = mysql.createPool({
-	host     : dbConfig.host,
-	user     : dbConfig.user,
-	password : dbConfig.password,
-	database : dbConfig.database
-});
-
 
 exports.authenticate = function(user, pass, callback) {
 
@@ -24,8 +12,8 @@ exports.authenticate = function(user, pass, callback) {
 	md5sum.update(pass);
 	var passHash = md5sum.digest('hex');
 
-	console.log('get connection from pool ...');
-	pool.getConnection(function(err, connection) {
+	console.log('get connection from dbPool ...');
+	dbPool.getConnection(function(err, connection) {
 
 		// secure text input
 		user = connection.escape(user);

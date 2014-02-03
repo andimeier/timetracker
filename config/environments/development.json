@@ -1,3 +1,9 @@
 {
 	"serviceBaseUrl": "http://127.0.0.1:3000/",
+	"server": {
+		"host"     : "db4free.net",
+		"user"     : "timetracker",
+		"password" : "timeIsOnMyS8",
+		"database" : "timetracker"
+	}
 }
