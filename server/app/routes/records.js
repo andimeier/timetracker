@@ -235,7 +235,7 @@ exports.add = function(req, res) {
 
 			// convert case of the column names into database syntax
 			obj = utils.changeKeysToSnakeCase(obj);
-			var dataFields = utils.getInsertLists(obj, mysql.escape);
+			var dataFields = utils.getInsertLists(obj, global.mysql.escape);
 			var calcFields = utils.getInsertLists(calculatedAttributes);
 			var sql = 'INSERT into records('
 				+ [dataFields['keys'], calcFields['keys']].join(',')
@@ -324,7 +324,7 @@ exports.update = function(req, res) {
 
 			// convert case of the column names into database syntax
 			obj = utils.changeKeysToSnakeCase(obj);
-			var dataFields = utils.getUpdateString(obj, mysql.escape);
+			var dataFields = utils.getUpdateString(obj, global.mysql.escape);
 			var calcFields = utils.getUpdateString(calculatedAttributes);
 			var sql = 'UPDATE records set ' 
 				+ [dataFields, calcFields].join(',') 

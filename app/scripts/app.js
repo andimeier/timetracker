@@ -1,9 +1,7 @@
 'use strict';
 
 angular.module('timetrackerApp', [
-  'ngCookies',
   'ngResource',
-  'ngSanitize',
   'ngRoute',
   'recordControllers',
   'timetrackerServices',

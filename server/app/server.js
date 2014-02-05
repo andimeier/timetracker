@@ -1,6 +1,7 @@
 var express = require('express'),
 	records = require('./routes/records'),
 	projects = require('./routes/projects'),
+	stats = require('./routes/stats'),
 	login = require('./routes/login'),
 	authenticate = require('./auth'),
 	mysql = require('mysql');
@@ -18,6 +19,8 @@ global.dbPool = mysql.createPool({
 	database : config.database
 });
 
+// enable routers access to mysql functions like mysql.escape
+global.mysql = mysql
 
 var allowCrossDomain = function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:9000');
@@ -84,6 +87,8 @@ app.get('/records/:id', records.findById);
 app.get('/projects', projects.findAll);
 app.get('/projects/:id', projects.findById);
 
+app.get('/stats', stats.recordedHours);
+
 
 // private services (need session for those)
 app.get('/logout',         auth, login.logout);
@@ -92,6 +97,7 @@ app.post('/records/:id',   auth, records.update); // POST with ID => update
 app.put('/records/:id',    auth, records.update);
 app.post('/records',       auth, records.add); // POST without ID => add
 app.delete('/records/:id', auth, records.delete);
+
 
 
 // start the server

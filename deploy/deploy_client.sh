@@ -23,12 +23,11 @@ read -p "ARE YOU SURE (might also delete files from target)? (Y/N) " -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-	rsync --delete -rtvze ssh ${DIST_DIR}/ ${REMOTE_TARGET}
+	rsync --delete -rtvz --chmod=ugo=rwX -e ssh ${DIST_DIR}/ ${REMOTE_TARGET}
 else
 	echo "Cancelled by user."
 	exit 2
 fi
 
 echo "Finished - application has been deployed."
-echo "Be sure to restart the node server on the target host for the changes to take effect."
 exit 0
