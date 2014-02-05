@@ -1,6 +1,6 @@
 {
-	"host"     : "db4free.net",
-	"user"     : "timetracker",
-	"password" : "timeIsOnMyS8",
+	"host"     : "localhost",
+	"user"     : "tt",
+	"password" : "tT_timeTime",
 	"database" : "timetracker"
 }

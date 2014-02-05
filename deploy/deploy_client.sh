@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# deploy REST server
+# deploy client
 #
 
-APP_DIR=app
-REMOTE_TARGET=alex@eck-zimmer.at:/var/www/eck-zimmer.at/apps/timetracker.rest
+DIST_DIR=dist
+REMOTE_TARGET=alex@eck-zimmer.at:/var/www/eck-zimmer.at/apps/timetracker
 
 echo "Script executed from: ${PWD}"
 
@@ -17,17 +17,18 @@ if [ "$PWD" != "$BASEDIR" ] ; then
 fi
 
 # get rid of directories of the node_modules containing tests
-echo "WOULD: find ${APP_DIR}/node_modules/ -type d -name test -exec rm -fr {} \;"
+echo "WOULD: find ${DIST_DIR}/node_modules/ -type d -name test -exec rm -fr {} \;"
 
 read -p "ARE YOU SURE (might also delete files from target)? (Y/N) " -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-	rsync --delete -rtvze ssh ${APP_DIR}/ ${REMOTE_TARGET}
+	rsync --delete -rtvze ssh ${DIST_DIR}/ ${REMOTE_TARGET}
 else
 	echo "Cancelled by user."
 	exit 2
 fi
 
-echo "Finished - appilcation has been deployed."
+echo "Finished - application has been deployed."
+echo "Be sure to restart the node server on the target host for the changes to take effect."
 exit 0
