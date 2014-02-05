@@ -1,5 +1,5 @@
 // var config = require(__dirname + '/../config/config.json');
-var utils = require(__dirname + '/../utils');
+var utils = require(__dirname + '/../utils/utils');
 
 
 

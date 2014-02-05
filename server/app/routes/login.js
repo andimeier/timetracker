@@ -1,5 +1,5 @@
-var auth = require(__dirname + '/../auth');
-var error = require(__dirname + '/../error');
+var auth = require(__dirname + '/../utils/auth');
+var error = require(__dirname + '/../utils/error');
 
 exports.login = function(req, res) {
 

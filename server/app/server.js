@@ -1,10 +1,10 @@
 var express = require('express'),
+	mysql = require('mysql'),
 	records = require('./routes/records'),
 	projects = require('./routes/projects'),
 	stats = require('./routes/stats'),
 	login = require('./routes/login'),
-	authenticate = require('./auth'),
-	mysql = require('mysql');
+	authenticate = require('./utils/auth');
 	
 // server port
 var port = 3000;

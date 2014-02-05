@@ -16,7 +16,8 @@ exports.error = function(error) {
 		1000: "Generic error",
 		1001: "Wrong credentials",
 		1002: "SQL error",
-		1003: "Validation error"
+		1003: "Validation error",
+		1004: "Connection error"
 	};
 
 	switch(typeof(error)) {

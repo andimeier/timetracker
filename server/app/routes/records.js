@@ -1,5 +1,5 @@
-var utils = require(__dirname + '/../utils');
-var error = require(__dirname + '/../error');
+var utils = require(__dirname + '/../utils/utils');
+var error = require(__dirname + '/../utils/error');
 
 /*
 Attributes sent over the API in request bodies being accepted for 
