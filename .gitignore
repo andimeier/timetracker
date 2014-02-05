@@ -3,3 +3,8 @@ dist
 .tmp
 .sass-cache
 app/bower_components
+# config files for frontend and REST server are created 
+# by the build process depending on the
+# target environment, no need to be checked in:
+/server/app/config/config.json
+/app/scripts/services/config.js
