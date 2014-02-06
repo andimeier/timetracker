@@ -9,10 +9,10 @@
     "jquery": "~1.10.2",
     "angular-resource": "~1.2.0",
     "angular-route": "~1.2.0",
-    "sass-bootstrap": "~3.0.2",
     "angular-ui-bootstrap": "latest"
   },
   "devDependencies": {
+    "sass-bootstrap": "~3.0.2",
     "angular-mocks": "~1.2.0",
     "angular-scenario": "~1.2.0"
   }

@@ -23,7 +23,8 @@ module.exports = function (grunt) {
 			// configurable paths
 			app: require('./bower.json').appPath || 'app',
 			serverApp: require('./bower.json').serverApp || 'server',
-			dist: 'dist'
+			dist: 'dist',
+			bower_dir: 'bower_components'
 		},
 
 		// Watches files for changes and runs tasks based on the changed files
@@ -117,6 +118,12 @@ module.exports = function (grunt) {
 						'<%= yeoman.dist %>/*',
 						'!<%= yeoman.dist %>/.git*'
 					]
+				}]
+			},
+			dist_bower: {
+				files: [{
+					dot: true,
+					src: '<%= yeoman.dist %>/<%= yeoman.bower_dir %>'
 				}]
 			},
 			server: '.tmp'
@@ -387,6 +394,16 @@ module.exports = function (grunt) {
 			}
 		},
 
+		'bower-install-simple': {
+			dist: {
+				options: {
+					// cwd: '<%= yeoman.dist %>',
+					directory: '<%= yeoman.dist %>/<%= yeoman.bower_dir %>',
+					production: true,
+				}
+			}
+		},
+
 		// Test settings
 		karma: {
 			unit: {
@@ -417,6 +434,7 @@ module.exports = function (grunt) {
 	
 	grunt.loadNpmTasks('grunt-replace');
 	grunt.loadNpmTasks('grunt-scp');
+	grunt.loadNpmTasks('bower-install-simple');
 
 	grunt.registerTask('serve', function (target) {
 		if (target === 'dist') {
@@ -456,6 +474,8 @@ module.exports = function (grunt) {
 		'concat',
 		'ngmin',
 		'copy:dist',
+		'clean:dist_bower',
+		'bower-install-simple:dist',
 		'cdnify',
 		'cssmin',
 		'uglify',
@@ -478,4 +498,11 @@ module.exports = function (grunt) {
 		'replace:production',
 		'scp:production'
 	]);
-};
+
+
+	grunt.registerTask('removeDevDependencies', [
+		'clean:dist_bower',
+		'bower-install-simple:dist'
+	]);
+
+}
