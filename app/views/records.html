@@ -1,56 +1,8 @@
 <!-- show form for new record if the button "new" is clicked -->
 <button type="button" ng-click="editNewRecord()" ng-show="loggedIn">New</button>
 
-<section ng-controller="RecordDetailCtrl" ng-show="data.editMode">
-	<form novalidate ng-submit="processRecordForm()">
-		<!-- edit new record -->
-
-		<h1 ng-show="data.editMode==1">New Record</h1>
-
-		<table>
-			<tr>
-				<td><label for="startdate">Start2</label></td>
-				<td><input type="text" ng-model="data.onerecord.startdate"></td>
-			</tr>
-			<tr>
-				<td><label for="start">Start</label></td>
-				<td>
-					<input type="datetime" ng-model="data.onerecord.starttime" autofocus>
-					<button type="button" ng-click="data.onerecord.starttime= (getNow() | date:'yyyy-MM-dd HH:mm')">Now</button>
-					<!-- <button type="button" ng-click="alert('click for starttime ...'); data.onerecord.starttime=Date.now().toISOString()">Now1</button> -->
-				</td>
-			</tr>
-			<tr>
-				<td><label for="end">End</label></td>
-				<td>
-					<input type="datetime" ng-model="data.onerecord.endtime">
-					<button type="button" ng-click="data.onerecord.endtime= (getNow() | date:'yyyy-MM-dd HH:mm')">Now</button>
-				</td>
-			</tr>
-			<tr>
-				<td><label for="projectId">Project</label></td>
-				<td>
-					<select ng-model="data.onerecord.projectId" 
-						ng-options="p.projectId as p.name for p in data.activeProjects">
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td><label for="description">Description</label></td>
-				<td><textarea ng-model="data.onerecord.description"></textarea></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td>
-					<button type="submit" id="submit" class="submit">Submit</button>
-					<button type="button" id="cancel" class="cancel" ng-click="cancelEditRecord()">Cancel</button>
-				</td>
-			</tr>
-		</table>
-
-		<div xng-show="data.onerecord.error" class="data.onerecord.error">{{data.onerecord.error}}</div>
-
-	</form>
+<section ng-controller="RecordDetailCtrl" ng-show="data.editMode==1">
+	<div ng-include="'views/partials/record_form.html'"></div>
 </section>
 
 <div ng-show="data.success" class="data.success">{{data.success}}</div>
@@ -58,6 +10,13 @@
 
 <section>
 	<h1>Work Records</h1>
+
+	<ul class="pager">
+	  <li ng-class="{disabled: data.page <= 0}"><a href="" ng-click="turnPage(-1)">Previous</a></li>
+	  <li><a href="" ng-click="turnPage(+1)">Next</a></li>
+	</ul>
+
+	Current page: {{data.page}}
 
 	<table>
 		<tr>
@@ -68,12 +27,13 @@
 			<th>Project</th>
 			<th>Description</th>
 		</tr>
-		<tr ng-repeat="record in (filteredRecords = data.records)" 
+		<tr ng-repeat-start="record in (filteredRecords = data.records)" 
 				ng-dblclick="loggedIn ? editRecord(record) : undefined" 
 				ng-class="{editing: record.recordId == data.onerecord.recordId, strike: record.toBeDeleted}" 
 				ng-class-even="'even'"
 				ng-class-odd="'odd'"
-				ng-cloak>
+				ng-cloak
+				ng-animate="'animate'">
 			<td>{{record.recordId}}</td>
 			<td>{{record.starttime | date:'EEE, yyyy-MM-dd'}}</td>
 			<td>{{record.starttime | date:'HH:mm'}}</td>
@@ -82,8 +42,14 @@
 			<td>{{record.description}}</td>
 			<td ng-show="loggedIn"><button type="button" ng-click="remove(record)">Delete</button></td>
 		</tr>
+		<tr ng-repeat-end ng-show="data.onerecord.recordId == record.recordId">
+			<td colspan="7">
+				<div ng-include="'views/partials/record_form.html'"></div>
+			</td>
+		</tr>
 		<tr ng-hide="filteredRecords.length">
 			<td colspan="4" class="norows">no records found</td>
 		</tr>
 	</table>
+
 </section>

@@ -39,6 +39,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 	// initialize data member
 	$scope.data = {};
 	$scope.data.editMode = 0;
+	$scope.data.page = 0; // display first page of record results
 
 	$scope.data.records = Record.query();
 	$scope.data.records.forEach(function(rec) {
@@ -143,6 +144,12 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		return '[' + datetime + ']';
 		return 'Alex was here'.substring(0, 3);
 	};
+
+	$scope.turnPage = function(pages) {
+		// refresh record list, browse forward/backward
+		$scope.data.page = $scope.data.page + pages;
+		$scope.data.records = Record.query({ p: $scope.data.page });
+	};	
 
 }]);
  

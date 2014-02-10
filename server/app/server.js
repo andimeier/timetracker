@@ -9,8 +9,8 @@ var express = require('express'),
 // server port
 var port = 3000;
 
-
 var config = require(__dirname + '/config/config.json');
+
 // global MySql connection pool
 global.dbPool = mysql.createPool({
 	host     : config.host,
