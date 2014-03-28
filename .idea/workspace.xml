@@ -3,21 +3,11 @@
   <component name="ChangeListManager">
     <list id="7a9c6db6-090c-4407-ac52-4b2860d8a32b" name="Default" comment="" />
     <list default="true" id="e0127398-feeb-40c8-9cc7-3c9bb883e4d2" name="Refactor server/routes/projects -&gt; model+route" comment="Refactor server/routes/projects -&gt; model+route">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/app/utils/active_record.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/package.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/app/models/project.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/webResources.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/index.html" afterPath="$PROJECT_DIR$/app/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/controllers/login.js" afterPath="$PROJECT_DIR$/app/scripts/controllers/login.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/package.json" afterPath="$PROJECT_DIR$/server/app/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/app/utils/model.js" />
+      <change type="DELETED" beforePath="D:\users\aez\Projects\timetracker\server\app\utils\active_record.js" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/models/project.js" afterPath="$PROJECT_DIR$/server/app/models/project.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/rest/project.js" afterPath="$PROJECT_DIR$/test/rest/project.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/routes/projects.js" afterPath="$PROJECT_DIR$/server/app/routes/projects.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/views/partials/record_form.html" afterPath="$PROJECT_DIR$/app/views/partials/record_form.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/views/records.html" afterPath="$PROJECT_DIR$/app/views/records.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/controllers/records.js" afterPath="$PROJECT_DIR$/app/scripts/controllers/records.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/routes/records.js" afterPath="$PROJECT_DIR$/server/app/routes/records.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/server.js" afterPath="$PROJECT_DIR$/server/app/server.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/utils/utils.js" afterPath="$PROJECT_DIR$/server/app/utils/utils.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="timetracker.iws" />
@@ -38,7 +28,7 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="timetracker">
-      <favorite_root url="file://$PROJECT_DIR$/server/app/utils/active_record.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+      <favorite_root url="file://$PROJECT_DIR$/server/app/utils/model.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
     </favorites_list>
   </component>
   <component name="FileEditorManager">
@@ -46,16 +36,16 @@
       <file leaf-file-name="projects.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/app/routes/projects.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="0" selection-start="115" selection-end="115" vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="2431">
+            <state line="11" column="0" selection-start="401" selection-end="401" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2431">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="server.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="server.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/app/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1972">
+            <state line="10" column="0" selection-start="290" selection-end="290" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1972">
               <folding />
             </state>
           </provider>
@@ -73,18 +63,16 @@
       <file leaf-file-name="project.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/app/models/project.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="0" selection-start="237" selection-end="237" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1020">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
+            <state line="4" column="0" selection-start="188" selection-end="188" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1190">
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="active_record.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/app/utils/active_record.js">
+      <file leaf-file-name="model.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/server/app/utils/model.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="697">
+            <state line="19" column="30" selection-start="363" selection-end="363" vertical-scroll-proportion="0.47942755" vertical-offset="55" max-vertical-offset="901">
               <folding />
             </state>
           </provider>
@@ -114,14 +102,15 @@
         <option value="$PROJECT_DIR$/test/rest/fixtures/clients.csv" />
         <option value="$PROJECT_DIR$/test/rest/recipe.js" />
         <option value="$PROJECT_DIR$/test/rest/fixtures/init_test_database.sql" />
-        <option value="$PROJECT_DIR$/server/app/utils/active_record.js" />
         <option value="$PROJECT_DIR$/server/Makefile" />
         <option value="$PROJECT_DIR$/Makefile" />
         <option value="$PROJECT_DIR$/server/package.json" />
+        <option value="$PROJECT_DIR$/server/app/server.js" />
+        <option value="$PROJECT_DIR$/server/app/utils/active_record.js" />
+        <option value="$PROJECT_DIR$/test/rest/project.js" />
         <option value="$PROJECT_DIR$/server/app/routes/projects.js" />
         <option value="$PROJECT_DIR$/server/app/models/project.js" />
-        <option value="$PROJECT_DIR$/test/rest/project.js" />
-        <option value="$PROJECT_DIR$/server/app/server.js" />
+        <option value="$PROJECT_DIR$/server/app/utils/model.js" />
       </list>
     </option>
   </component>
@@ -512,9 +501,10 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-4" y="-4" width="1288" height="988" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32912844" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32912844" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32912844" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988507" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2494043" sideWeight="0.49914238" order="1" side_tool="false" content_ui="tabs" />
@@ -546,6 +536,8 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
+    <MESSAGE value="Refactor server/routes/projects -&gt; model+route" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor server/routes/projects -&gt; model+route" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -795,9 +787,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/server/app/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="0" selection-start="290" selection-end="290" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1972">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/server/app/routes/projects.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="0" selection-start="115" selection-end="115" vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="2431">
+        <state line="11" column="0" selection-start="401" selection-end="401" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2431">
           <folding />
         </state>
       </provider>
@@ -811,23 +810,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/app/models/project.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="0" selection-start="237" selection-end="237" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1020">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/app/utils/active_record.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="697">
+        <state line="4" column="0" selection-start="188" selection-end="188" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1190">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/app/server.js">
+    <entry file="file://$PROJECT_DIR$/server/app/utils/model.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1972">
+        <state line="19" column="30" selection-start="363" selection-end="363" vertical-scroll-proportion="0.47942755" vertical-offset="55" max-vertical-offset="901">
           <folding />
         </state>
       </provider>

@@ -1,7 +1,7 @@
 // var config = require(__dirname + '/../config/config.json');
 var utils = require(__dirname + '/../utils/utils');
 var error = require(__dirname + '/../utils/error');
-var project = require(__dirname + '/../models/project');
+var Project = require(__dirname + '/../models/project');
 
 
 exports.findById = function(req, res) {
@@ -9,7 +9,7 @@ exports.findById = function(req, res) {
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
 
-  project.findById(req.params.id, function(data, err) {
+  Project.findById(req.params.id, function(data, err) {
 
     if (err != null) {
       res.send(400, error.error({
