@@ -5,7 +5,7 @@ var request = require('supertest'),
   assert = require('assert'),
   app = require('../../server/app/server.js').app;
 
-var should = require('chai').should();
+var expect = require('chai').expect;
 
 describe('Project API', function() {
   describe('GET /projects', function() {
@@ -24,14 +24,14 @@ describe('Project API', function() {
             throw err;
           }
           var data = res.body;
-          data.should.be.an('array');
+          expect(data).to.be.an('array');
 
           // 7 projects returned
-          data.should.have.length(7);
+          expect(data).to.have.length(7);
 
-          // investigate the first project
+          // investigate the first record
           var proj1 = data[0];
-          proj1.should.contain.keys('name', 'abbreviation', 'active', 'projectId');
+          expect(proj1).to.contain.keys('name', 'abbreviation', 'active', 'projectId');
           done();
         });
     });
@@ -44,29 +44,29 @@ describe('Project API', function() {
             throw err;
           }
           var data = res.body;
-          data.should.be.an('array');
+          expect(data).to.be.an('array');
 
           // 7 projects returned
-          data.should.have.length(7);
+          expect(data).to.have.length(7);
 
-          // investigate the first project
+          // investigate the first record
           var proj1 = data[0];
-          proj1.should.be.an('object');
-          proj1.name.should.be.equal('Active Project 1');
-          proj1.abbreviation.should.be.equal('Proj1');
-          proj1.active.should.be.ok;
-          proj1.projectId.should.be.equal(1);
+          expect(proj1).to.be.an('object');
+          expect(proj1.name).to.be.equal('Active Project 1');
+          expect(proj1.abbreviation).to.be.equal('Proj1');
+          expect(proj1.active).to.be.ok;
+          expect(proj1.projectId).to.be.equal(1);
 
           // check that all returned projects are active
           for (var i = 0; i < data.length; i++) {
-            data[i].active.should.be.ok;
+            expect(data[i].active).to.be.ok;
           }
 
           done();
         });
     });
 
-    it('should return project #1 when doing a findById(1)', function(done) {
+    it('should return record #1 when doing a findById(1)', function(done) {
       request(app)
         .get('/projects/1')
         .end(function(err,res) {
@@ -74,18 +74,20 @@ describe('Project API', function() {
             throw err;
           }
           var data = res.body;
-          data.should.be.an('array');
+          expect(data).to.be.an('array');
 
-          // only 1 project returned
-          data.should.have.length(1);
+          // only 1 record returned
+          expect(data).to.have.length(1);
 
-          // investigate the first project
+          console.log('================>>>>>>>>>>> retrieved: ' + JSON.stringify(data[0]));
+
+          // investigate the first record
           var proj1 = data[0];
-          proj1.should.be.an('object');
-          proj1.name.should.be.equal('Active Project 1');
-          proj1.abbreviation.should.be.equal('Proj1');
-          proj1.active.should.be.ok;
-          proj1.projectId.should.be.equal(1);
+          expect(proj1).to.be.an('object');
+          expect(proj1.name).to.be.equal('Active Project 1');
+          expect(proj1.abbreviation).to.be.equal('Proj1');
+          expect(proj1.active).to.be.ok;
+          expect(proj1.projectId).to.be.equal(1);
           done();
         });
     });

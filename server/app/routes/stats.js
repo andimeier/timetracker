@@ -2,7 +2,7 @@ var report = require(__dirname + '/../utils/report');
 
 
 /**
- * get project statistics: how many hours have been recorded on which project?
+ * get record statistics: how many hours have been recorded on which record?
  */
 exports.recordedHours = function(req, res) {
 

@@ -107,13 +107,13 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		$scope.data.onerecord.date = $scope.extractDate(rec.starttime);
 
 		// fill projects list. This is done with each start of editing on purpose,
-		// because during the last edit the list could contain a non-active project
-		// (because when you edit an existing project, the assigned project is added
-		// to the project list, if not there - by this mechanism, a non-active project
+		// because during the last edit the list could contain a non-active record
+		// (because when you edit an existing record, the assigned record is added
+		// to the record list, if not there - by this mechanism, a non-active record
 		// could have been leaked into the list activeProjects. Thus, now reload the
 		// list)
 		// using the REST query parameter "add", ensure that the currently assigned 
-		// project of the edited record is in the list, regardless if it is active or 
+		// record of the edited record is in the list, regardless if it is active or
 		// not
 		$scope.data.activeProjects = Project.query({ add: r.projectId });
 	};
@@ -126,9 +126,9 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		$scope.data.onerecord = {}
 
 		// fill projects list. This is done with each start of editing on purpose,
-		// because during the last edit the list could contain a non-active project
-		// (because when you edit an existing project, the assigned project is added
-		// to the project list, if not there - by this mechanism, a non-active project
+		// because during the last edit the list could contain a non-active record
+		// (because when you edit an existing record, the assigned record is added
+		// to the record list, if not there - by this mechanism, a non-active record
 		// could have been leaked into the list activeProjects. Thus, now reload the
 		// list)
 		$scope.data.activeProjects = Project.query();

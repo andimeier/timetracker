@@ -8,16 +8,27 @@ var Model = function() {
 
 };
 
-// the select statement for retrieving values
+// the select statement for retrieving values. The statement
+// must be written so that a WHERE clause can be appended without producing
+// a syntax error.
 Model.prototype.select = '';
 
 // the key column used for "findById"
 Model.prototype.keyCol = '';
 
+
+/**
+ * find a specific record by its primary ID and return it
+ * @param id the primary ID to be searched for. The columnn name
+ *   to be used for this is defined in the property this.keyCol.
+ * @param callback a callback function which is called when the
+ *   record has been retrieved. It must accept two parameters:
+ *   data (the record data as array with length==1) and err (error
+ *   object).
+ */
 Model.prototype.findById = function(id, callback) {
 
   var where = this.keyCol + '=' + parseInt(id);
-  console.log('=====> (in model.js) select is [' + this.select + ']');
 
   var sql = this.select + ' where ' + where;
   console.log('=====> (in model.js) NEW select is [' + sql + ']');

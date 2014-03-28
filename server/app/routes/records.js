@@ -1,5 +1,6 @@
 var utils = require(__dirname + '/../utils/utils');
 var error = require(__dirname + '/../utils/error');
+var record = require(__dirname + '/../models/record');
 
 /*
 Attributes sent over the API in request bodies being accepted for 
@@ -61,37 +62,15 @@ var formatDate = function(input) {
 	return r;
 }
 
+
+
 exports.findById = function(req, res) {
 
-	console.log('---------------------------------');
-	console.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
-	
-	var recordId = req.params.id;
-
-	dbPool.getConnection(function(err, connection) {
-
-		// query the database to some data 
-		connection.query("SELECT c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, p.project_id, p.name as project_name, p.abbreviation as project_abbreviation, r.* "
-				+ " from records r "
-				+ " join projects p on p.project_id=r.project_id "
-				+ " join clients c on c.client_id=p.client_id "
-				+ " where record_id=" + recordId, function(err, rows) {
-
-			if (err != null) {
-				res.send(400, error.error({
-					errorCode: 1002,
-					errorObj: err,
-					message: 'Query error'
-				}));
-			} else {
-				res.send(200, utils.changeKeysToCamelCase(rows));
-			}
-		});
-
-		// close connection
-		connection.release();
-	});
+  record.findById(req.params.id, function(data, err) {
+    utils.sendResult(res, data, err);
+  });
 };
+
 
 /**
  * Called with /records

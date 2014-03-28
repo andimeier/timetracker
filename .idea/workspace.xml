@@ -2,11 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list id="7a9c6db6-090c-4407-ac52-4b2860d8a32b" name="Default" comment="" />
-    <list default="true" id="e0127398-feeb-40c8-9cc7-3c9bb883e4d2" name="Refactor server/routes/projects -&gt; model+route" comment="Refactor server/routes/projects -&gt; model+route&#10;Committing before refactoring to a different inheritance approach (just Model, modify instance instead of define child classes)">
+    <list default="true" id="e0127398-feeb-40c8-9cc7-3c9bb883e4d2" name="Refactor server/routes/projects -&gt; model+route" comment="Generic model seems to work for">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/app/models/record.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/rest/record.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/spec/controllers/invoice.js" afterPath="$PROJECT_DIR$/test/spec/controllers/invoice.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/spec/controllers/latex.js" afterPath="$PROJECT_DIR$/test/spec/controllers/latex.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/spec/controllers/login.js" afterPath="$PROJECT_DIR$/test/spec/controllers/login.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/spec/controllers/main.js" afterPath="$PROJECT_DIR$/test/spec/controllers/main.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/utils/model.js" afterPath="$PROJECT_DIR$/server/app/utils/model.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/models/project.js" afterPath="$PROJECT_DIR$/server/app/models/project.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/rest/project.js" afterPath="$PROJECT_DIR$/test/rest/project.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/routes/projects.js" afterPath="$PROJECT_DIR$/server/app/routes/projects.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/controllers/records.js" afterPath="$PROJECT_DIR$/app/scripts/controllers/records.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/routes/records.js" afterPath="$PROJECT_DIR$/server/app/routes/records.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/server.js" afterPath="$PROJECT_DIR$/server/app/server.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/routes/stats.js" afterPath="$PROJECT_DIR$/server/app/routes/stats.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/app/utils/utils.js" afterPath="$PROJECT_DIR$/server/app/utils/utils.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="timetracker.iws" />
@@ -29,49 +40,49 @@
     <favorites_list name="timetracker">
       <favorite_root url="file://$PROJECT_DIR$/server/app/utils/model.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
     </favorites_list>
+    <favorites_list name="Test projects/records">
+      <favorite_root url="file://$PROJECT_DIR$/server/app/models/project.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+      <favorite_root url="file://$PROJECT_DIR$/server/app/models/record.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+      <favorite_root url="file://$PROJECT_DIR$/server/app/routes/projects.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+      <favorite_root url="file://$PROJECT_DIR$/server/app/routes/records.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+      <favorite_root url="file://$PROJECT_DIR$/server/app/utils/model.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+      <favorite_root url="file://$PROJECT_DIR$/test/rest/project.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+      <favorite_root url="file://$PROJECT_DIR$/test/rest/record.js" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+    </favorites_list>
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="records.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/app/routes/records.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6970">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="projects.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/app/routes/projects.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="3" selection-start="404" selection-end="404" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2431">
+            <state line="3" column="53" selection-start="220" selection-end="220" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1751">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="server.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/app/server.js">
+      <file leaf-file-name="record.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/test/rest/record.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="0" selection-start="290" selection-end="290" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1972">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="project.js" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test/rest/project.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="38" column="11" selection-start="1008" selection-end="1008" vertical-scroll-proportion="1.1597846" vertical-offset="0" max-vertical-offset="1700">
+            <state line="18" column="6" selection-start="463" selection-end="463" vertical-scroll-proportion="0.3329384" vertical-offset="25" max-vertical-offset="1428">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="project.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/app/models/project.js">
+        <entry file="file://$PROJECT_DIR$/test/rest/project.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="986">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="model.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/app/utils/model.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="0" selection-start="261" selection-end="261" vertical-scroll-proportion="0.0" vertical-offset="55" max-vertical-offset="901">
+            <state line="38" column="6" selection-start="1012" selection-end="1012" vertical-scroll-proportion="0.0" vertical-offset="365" max-vertical-offset="1734">
               <folding />
             </state>
           </provider>
@@ -90,9 +101,7 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/server/app/utils/utils.js" />
         <option value="$PROJECT_DIR$/Gruntfile.js" />
-        <option value="$PROJECT_DIR$/server/app/routes/records.js" />
         <option value="$PROJECT_DIR$/app/scripts/controllers/records.js" />
         <option value="$PROJECT_DIR$/app/scripts/controllers/login.js" />
         <option value="$PROJECT_DIR$/app/views/records.html" />
@@ -104,12 +113,16 @@
         <option value="$PROJECT_DIR$/server/Makefile" />
         <option value="$PROJECT_DIR$/Makefile" />
         <option value="$PROJECT_DIR$/server/package.json" />
-        <option value="$PROJECT_DIR$/server/app/server.js" />
         <option value="$PROJECT_DIR$/server/app/utils/active_record.js" />
+        <option value="$PROJECT_DIR$/server/app/server.js" />
+        <option value="$PROJECT_DIR$/server/app/utils/utils.js" />
+        <option value="$PROJECT_DIR$/server/app/models/record.js" />
         <option value="$PROJECT_DIR$/server/app/utils/model.js" />
-        <option value="$PROJECT_DIR$/server/app/routes/projects.js" />
+        <option value="$PROJECT_DIR$/server/app/routes/records.js" />
         <option value="$PROJECT_DIR$/server/app/models/project.js" />
+        <option value="$PROJECT_DIR$/server/app/routes/projects.js" />
         <option value="$PROJECT_DIR$/test/rest/project.js" />
+        <option value="$PROJECT_DIR$/test/rest/record.js" />
       </list>
     </option>
   </component>
@@ -365,6 +378,8 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\users\aez\Projects\timetracker\server\app\models" />
+      <recent name="D:\users\aez\Projects\timetracker\test\rest" />
       <recent name="D:\users\aez\Projects\timetracker\server\app" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -478,7 +493,11 @@
       <created>1396003665331</created>
       <updated>1396003665331</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Working with a generic model class Model works for findById (proof of concept)">
+      <created>1396003847053</created>
+      <updated>1396003847053</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <option name="createBranch" value="false" />
     <servers />
   </component>
@@ -506,20 +525,20 @@
     <frame x="-4" y="-4" width="1288" height="988" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32988507" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988507" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32912844" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988507" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2494043" sideWeight="0.49914238" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25496426" sideWeight="0.4974271" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988507" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2494043" sideWeight="0.49885058" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2660842" sideWeight="0.49770114" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25496426" sideWeight="0.50085765" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2660842" sideWeight="0.50229883" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.57816094" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" x="815" y="452" width="1259" height="287" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2412993" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="REST Client" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.30907056" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -541,7 +560,8 @@
     </option>
     <MESSAGE value="Refactor server/routes/projects -&gt; model+route" />
     <MESSAGE value="Refactor server/routes/projects -&gt; model+route&#10;Committing before refactoring to a different inheritance approach (just Model, modify instance instead of define child classes)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor server/routes/projects -&gt; model+route&#10;Committing before refactoring to a different inheritance approach (just Model, modify instance instead of define child classes)" />
+    <MESSAGE value="Working with a generic model class Model works for findById (proof of concept)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working with a generic model class Model works for findById (proof of concept)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -563,7 +583,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Gruntfile.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="306" column="30" selection-start="6492" selection-end="6492" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="8721" />
+        <state line="306" column="30" selection-start="6492" selection-end="6492" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="8721">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/services/services.js">
@@ -677,12 +699,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Gruntfile.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="14" selection-start="1678" selection-end="1679" vertical-scroll-proportion="0.3222749" vertical-offset="833" max-vertical-offset="8721" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/app/routes/records.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="117" column="20" selection-start="3958" selection-end="3958" vertical-scroll-proportion="0.5050505" vertical-offset="1639" max-vertical-offset="7327">
+        <state line="65" column="14" selection-start="1678" selection-end="1679" vertical-scroll-proportion="0.3222749" vertical-offset="833" max-vertical-offset="8721">
           <folding />
         </state>
       </provider>
@@ -695,13 +712,6 @@
     <entry file="file://$PROJECT_DIR$/node_modules/karma/node_modules/socket.io/node_modules/socket.io-client/lib/vendor/web-socket-js/flash-src/com/hurlant/crypto/tls/TLSConfig.as">
       <provider selected="true" editor-type-id="text-editor">
         <state line="17" column="17" selection-start="557" selection-end="557" vertical-scroll-proportion="0.0981241" vertical-offset="0" max-vertical-offset="1071" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/app/utils/utils.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="177" column="8" selection-start="5964" selection-end="5964" vertical-scroll-proportion="0.0" vertical-offset="2735" max-vertical-offset="3587">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/server/app/config/config.json">
@@ -791,37 +801,65 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/app/utils/model.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="0" selection-start="261" selection-end="261" vertical-scroll-proportion="0.0" vertical-offset="55" max-vertical-offset="901">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/app/routes/projects.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="3" selection-start="404" selection-end="404" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2431">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/server/app/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="0" selection-start="290" selection-end="290" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1972">
+        <state line="31" column="28" selection-start="1098" selection-end="1098" vertical-scroll-proportion="0.0" vertical-offset="306" max-vertical-offset="1989">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/app/utils/utils.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="208" column="27" selection-start="6716" selection-end="6716" vertical-scroll-proportion="0.0" vertical-offset="3049" max-vertical-offset="3910">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/app/utils/model.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="16" selection-start="358" selection-end="358" vertical-scroll-proportion="0.0" vertical-offset="55" max-vertical-offset="1088">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/app/models/record.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="0" selection-start="502" selection-end="502" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="340">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/server/app/models/project.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="986">
+        <state line="13" column="0" selection-start="348" selection-end="348" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="459">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/app/routes/records.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6970">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/app/routes/projects.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="53" selection-start="220" selection-end="220" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1751">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/rest/project.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="11" selection-start="1008" selection-end="1008" vertical-scroll-proportion="1.1597846" vertical-offset="0" max-vertical-offset="1700">
+        <state line="38" column="6" selection-start="1012" selection-end="1012" vertical-scroll-proportion="0.0" vertical-offset="365" max-vertical-offset="1734">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/rest/record.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="6" selection-start="463" selection-end="463" vertical-scroll-proportion="0.3329384" vertical-offset="25" max-vertical-offset="1428">
           <folding />
         </state>
       </provider>

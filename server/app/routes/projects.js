@@ -6,49 +6,9 @@ var project = require(__dirname + '/../models/project');
 
 exports.findById = function(req, res) {
 
-	console.log('---------------------------------');
-	console.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
-
   project.findById(req.params.id, function(data, err) {
-
-    if (err != null) {
-      res.send(400, error.error({
-        errorCode: 1002,
-        errorObj: err,
-        message: 'Query error'
-      }));
-    } else {
-
-      res.send(200, data);
-    }
+    utils.sendResult(res, data, err);
   });
-
-
-	dbPool.getConnection(function(err, connection) {
-
-		// query the database to some data 
-		connection.query("SELECT p.project_id, p.name, p.abbreviation, p.active "
-				+ " from projects p where project_id=" + req.params.id, function(err, rows) {
-
-			if (err != null) {
-				res.send(400, error.error({
-					errorCode: 1002,
-					errorObj: err,
-					message: 'Query error'
-				}));
-			} else {
-
-				var result = utils.changeKeysToCamelCase(rows);
-				if (result instanceof Error) {
-					console.error('Error at mapping keys to JSON keys: ' + result);
-				}
-				res.send(200, result);
-			}
-		});
-
-		// close connection
-		connection.release();
-	});
 };
 
 /**
@@ -61,8 +21,8 @@ exports.findById = function(req, res) {
  *   - set ... specify set of projects to be returned, can be one of the following values:
  *       all ... all projects in the database
  *       active ... only active projects (with attribute "active")
- *   - add ... add a specific project into the result set, the value of the parameter is the 
- *       project_id of the project to be added to the result set. This project will be 
+ *   - add ... add a specific record into the result set, the value of the parameter is the
+ *       project_id of the record to be added to the result set. This record will be
  *       included in the result set in any case, regardless of the other query parameters.
  */
 exports.findAll = function(req, res) {
@@ -90,7 +50,7 @@ exports.findAll = function(req, res) {
 		constraints.push('active'); 
 	}
 	if (req.query.add) {
-		// parameter "add" will include a specific project into the result set,
+		// parameter "add" will include a specific record into the result set,
 		// regardless of other contraints
 		include = parseInt(req.query.add);
 	}

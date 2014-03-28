@@ -44,6 +44,7 @@ var allowCrossDomain = function(req, res, next) {
 
 var app = exports.app = express();
 
+
 app.use(function(req, res, next) {
 	console.log('=======================================================');
 	console.log('==================== New request ======================');
