@@ -4,22 +4,10 @@ var Model = require(__dirname + '/../utils/model');
 var utils = require(__dirname + '/../utils/utils');
 
 
-// define the Student class
-function Project() {
-  // Call the parent constructor
-  Model.call(this);
-  console.log('MODEL ---------------- inherited');
-};
+var project = new Model();
 
-// inherit Model
-Project.prototype = new Model();
-
-// correct the constructor pointer because it points to Person
-Project.prototype.constructor = Model;
-
-// replace some inherited values
-Project.prototype.keyCol = 'project_id';
-Project.prototype.select = "SELECT p.project_id, p.name, p.abbreviation, " +
+project.keyCol = 'project_id';
+project.select = "SELECT p.project_id, p.name, p.abbreviation, " +
   "p.active from projects p";
 
 
@@ -62,4 +50,4 @@ var attrs = exports.attrs = {
 };
 
 
-module.exports = Project;
+module.exports = project;

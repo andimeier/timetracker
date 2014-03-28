@@ -9,14 +9,14 @@ var should = require('chai').should();
 
 describe('Project API', function() {
   describe('GET /projects', function() {
-    it.skip('should return an array of projects', function(done) {
+    it('should return an array of projects', function(done) {
       request(app)
         .get('/projects')
         .expect('Content-Type', /json/)
         .expect(200, done);
     });
 
-    it.skip('should return the expected fields', function(done) {
+    it('should return the expected fields', function(done) {
       request(app)
         .get('/projects')
         .end(function(err,res) {
@@ -36,7 +36,7 @@ describe('Project API', function() {
         });
     });
 
-    it.skip('should return the list of active projects', function(done) {
+    it('should return the list of active projects', function(done) {
       request(app)
         .get('/projects')
         .end(function(err,res) {

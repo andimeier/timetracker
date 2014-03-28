@@ -9,12 +9,12 @@ var Model = function() {
 };
 
 // the select statement for retrieving values
-Model.select = '';
+Model.prototype.select = '';
 
 // the key column used for "findById"
-Model.keyCol = '';
+Model.prototype.keyCol = '';
 
-Model.findById = function(id, callback) {
+Model.prototype.findById = function(id, callback) {
 
   var where = this.keyCol + '=' + parseInt(id);
   console.log('=====> (in model.js) select is [' + this.select + ']');
