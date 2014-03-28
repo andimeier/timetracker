@@ -42,7 +42,10 @@
     "karma-ng-html2js-preprocessor": "~0.1.0",
     "grunt-bower-install": "~0.8.0",
     "grunt-replace": "~0.5.1",
-    "grunt-bower-install-simple": "~0.9.1"
+    "grunt-bower-install-simple": "~0.9.1",
+    "chai": "~1.9.1",
+    "mocha": "~1.18.2",
+    "supertest": "~0.10.0"
   },
   "engines": {
     "node": ">=0.8.0"

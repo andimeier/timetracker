@@ -16,7 +16,11 @@ global.dbPool = mysql.createPool({
 	host     : config.host,
 	user     : config.user,
 	password : config.password,
-	database : config.database
+	database : config.database,
+    dateStrings: true // don't convert date fields into Date objects (since
+        // it would make the process vulnerable due to implicit, automatic timezone
+        // conversions. We do not want that, so let's treat these fields simply as
+        // strings.
 });
 
 // enable routers access to mysql functions like mysql.escape
@@ -38,7 +42,7 @@ var allowCrossDomain = function(req, res, next) {
 };
 
 
-var app = express();
+var app = exports.app = express();
 
 app.use(function(req, res, next) {
 	console.log('=======================================================');
@@ -103,3 +107,4 @@ app.delete('/records/:id', auth, records.delete);
 // start the server
 app.listen(port);
 console.log('Listening on port ' + port + ' ...');
+

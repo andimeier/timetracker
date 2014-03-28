@@ -1,12 +1,28 @@
 // var config = require(__dirname + '/../config/config.json');
 var utils = require(__dirname + '/../utils/utils');
-
+var error = require(__dirname + '/../utils/error');
+var project = require(__dirname + '/../models/project');
 
 
 exports.findById = function(req, res) {
 
 	console.log('---------------------------------');
 	console.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
+
+  project.findById(req.params.id, function(data, err) {
+
+    if (err != null) {
+      res.send(400, error.error({
+        errorCode: 1002,
+        errorObj: err,
+        message: 'Query error'
+      }));
+    } else {
+
+      res.send(200, data);
+    }
+  });
+
 
 	dbPool.getConnection(function(err, connection) {
 
@@ -47,7 +63,7 @@ exports.findById = function(req, res) {
  *       active ... only active projects (with attribute "active")
  *   - add ... add a specific project into the result set, the value of the parameter is the 
  *       project_id of the project to be added to the result set. This project will be 
- *       included in the result set, regardless of the other query parameters.
+ *       included in the result set in any case, regardless of the other query parameters.
  */
 exports.findAll = function(req, res) {
 

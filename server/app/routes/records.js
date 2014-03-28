@@ -31,7 +31,7 @@ var userId = 10; //@TODO: remove!!!! replace with session user id
 // default values for parameters not specified via REST API
 var defaultParams = {
 	limit: 10, // number of records delivered at once
-	page: 0 // deliver first page of result set
+	page: 1 // deliver first page of result set
 }
 
 
@@ -103,7 +103,7 @@ exports.findById = function(req, res) {
  *   - n ... specify number of records to be delivered at a maximum, of not specified, theconfigured 
  *       default value will be used.
  *   - p ... number of page to be delivered. The size of one page can be set with the parameter 
- *      'limit', defaulting to the default value otherwise. The first page is page 0.
+ *      'limit', defaulting to the default value otherwise. The first page is page 1.
  */
 exports.findAll = function(req, res) {
 
@@ -158,7 +158,7 @@ exports.findAll = function(req, res) {
 				+ " left join projects p on p.project_id=r.project_id "
 				+ " left join clients c on c.client_id=p.client_id "
 				+ " order by r.starttime desc "
-				+ " limit " + params.limit + ' offset ' + params.page * (params.limit);
+				+ " limit " + params.limit + ' offset ' + (params.page - 1) * (params.limit);
 		console.log('SQL string: ' + sql);
 		connection.query(sql, function(err, rows) {
 			console.log('   ... got answer from DB server');

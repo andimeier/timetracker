@@ -7,7 +7,7 @@ angular.module('timetrackerApp')
 	$scope.data = {};
 
  	// any message to be displayed?
- 	console.log('paramer=' + JSON.stringify($routeParams));
+ 	console.log('parameter=' + JSON.stringify($routeParams));
 
  	if ($routeParams.msg) {
  		$scope.data.message = $routeParams.msg;

@@ -38,12 +38,12 @@
 		<tr>
 			<td></td>
 			<td>
-				<button type="submit" id="submit" class="submit">Submit</button>
+				<button type="submit" id="submit" class="submit" ng-click="alert('uiui')">Submit</button>
 				<button type="button" id="cancel" class="cancel" ng-click="cancelEditRecord()">Cancel</button>
 			</td>
 		</tr>
 	</table>
 
-	<div xng-show="data.onerecord.error" class="data.onerecord.error">{{data.onerecord.error}}</div>
-
 </form>
+
+<div ng-show="data.onerecord.error" class="data.onerecord.error">{{data.onerecord.error}}</div>

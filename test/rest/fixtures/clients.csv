@@ -1,0 +1,3 @@
+client_id,abbreviation,name,rate,active,cdate
+1,TST1,"Test Client 1",40,1,'2014-01-01'
+2,TST2,"Test Client 2",75,1,'2014-01-02'

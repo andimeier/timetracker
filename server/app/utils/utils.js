@@ -2,6 +2,7 @@ var changeCase = require('change-case');
 
 
 /**
+ * maps
  * @return Error object on error
  */
 exports.mapToJsonKeys = function(rows, fieldMapping) {
