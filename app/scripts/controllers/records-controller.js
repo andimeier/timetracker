@@ -1,6 +1,6 @@
 'use strict';
 
-var recordControllers = angular.module('recordControllers', []);
+var recordControllers = angular.module('recordControllers', ['timetrackerApi', 'projectsFactory']);
 
 var formatJSONDate = function(input) {
 	if (!input) {
@@ -35,13 +35,13 @@ var containsObject = function(list, attribute, value) {
 	return null;
 }
 
-recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', function($scope, Record, Project) {
+recordControllers.controller('RecordListCtrl', ['$scope', 'Api', 'Project', function($scope, Api, Project) {
 	// initialize data member
 	$scope.data = {};
 	$scope.data.editMode = 0;
 	$scope.data.page = 0; // display first page of record results
-
-	$scope.data.records = Record.query();
+	
+	$scope.data.records = Api.records.query();
 	$scope.data.records.forEach(function(rec) {
 		rec.startdate = 'Alex' + 'asdf';
 	});
@@ -70,7 +70,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		rec.toBeDeleted = 1;
 
 		// try to delete it in DB first
-		Record.remove({ recordId: rec.recordId }, function(response) {
+		Api.records.remove({ recordId: rec.recordId }, function(response) {
 			
 			// delete went ok
 			$scope.data.success = 'Successfully deleted record [' + recordId + '].';
@@ -79,7 +79,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 			$scope.data.records.splice($scope.data.records.indexOf(rec), 1);
 
 			// refresh record list
-			$scope.data.records = Record.query();
+			$scope.data.records = Api.records.query();
 
 		}, function(response) {
 			// delete did not succeed
@@ -148,13 +148,13 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 	$scope.turnPage = function(pages) {
 		// refresh record list, browse forward/backward
 		$scope.data.page = $scope.data.page + pages;
-		$scope.data.records = Record.query({ p: $scope.data.page });
+		$scope.data.records = Api.records.query({ p: $scope.data.page });
 	};	
 
 }]);
  
-recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Record', function($scope, $routeParams, Record) {
-	//$scope.data.onerecord = Record.get({recordId: $routeParams.recordId}, function(record) {});
+recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Api', function($scope, $routeParams, Api) {
+	//$scope.data.onerecord = Api.records.get({recordId: $routeParams.recordId}, function(record) {});
 
 	$scope.processRecordForm = function() {
 		var rec = $scope.data.onerecord;
@@ -167,7 +167,7 @@ recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Rec
 			rec.endtime = formatJSONDate(rec.endtime);
 		}
 
-		Record.save($scope.data.onerecord, function(response) {
+		Api.records.save($scope.data.onerecord, function(response) {
 			// save went ok
 			$scope.data.onerecord = {}; // empty the form after saving
 
@@ -178,7 +178,7 @@ recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Rec
 			}
 
 			// refresh record list
-			$scope.data.records = Record.query();
+			$scope.data.records = Api.records.query();
 			$scope.data.editMode = 0;
 
 		}, function(response) {

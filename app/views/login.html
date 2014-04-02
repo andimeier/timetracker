@@ -3,11 +3,11 @@
 <div class="alert alert-info " ng-show="data.message" ng-cloak>{{data.message}}</div>
 
 <form novalidate ng-submit="alert('ASDF'); submitLoginForm()" ng-controller="LoginCtrl">
-	<div class="alert alert-error" ng-show="loginError" ng-cloak>Username and/or password incorrect</div>
-	<div class="alert alert-info " ng-show="loginSuccess" ng-cloak>Successfully logged in</div>
+	<div class="alert alert-error" ng-show="loginData.errorMessage" ng-cloak>Username and/or password incorrect</div>
+	<div class="alert alert-info " ng-show="loginData.successMessage" ng-cloak>Successfully logged in</div>
   
-  	<label for="username">Username</label><input type="text" id="username" ng-model="logindata.username" placeholder="Username" autofocus>
-	<label for="password">Password</label><input type="password" id="password" ng-model="logindata.password" placeholder="Password">
+  	<label for="username">Username</label><input type="text" id="username" ng-model="loginData.username" placeholder="Username" autofocus>
+	<label for="password">Password</label><input type="password" id="password" ng-model="loginData.password" placeholder="Password">
 	<button type="submit">Login</button>
 </form>
 
