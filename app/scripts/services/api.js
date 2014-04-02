@@ -1,8 +1,11 @@
-var timetrackerApi = angular.module('timetrackerApi', ['ngResource', 'restangular']);
+var timetrackerApi = angular.module('timetrackerApi', ['ngResource', 'restangular', 'services.config']);
+
+timetrackerApi.config(['RestangularProvider', 'configuration', function(RestangularProvider, configuration) {
+	RestangularProvider.setBaseUrl(configuration.serviceBaseUrl);
+}]);
 
 timetrackerApi.service('Api', ['$resource', 'Restangular', 'configuration', function($resource, Restangular, configuration){
 
-	Restangular.setBaseUrl('http://127.0.0.1:3000');
 	this.records = Restangular.all('records');
 	this.projects = $resource(configuration.serviceBaseUrl + 'projects/:projectId', {projectId:'@projectId'});
 	this.login = $resource(
