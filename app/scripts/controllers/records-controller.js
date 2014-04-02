@@ -41,7 +41,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Api', 'Project', func
 	$scope.data.editMode = 0;
 	$scope.data.page = 0; // display first page of record results
 	
-	$scope.data.records = Api.records.query();
+	$scope.data.records = Api.records.getList().$object;
 	$scope.data.records.forEach(function(rec) {
 		rec.startdate = 'Alex' + 'asdf';
 	});
