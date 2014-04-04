@@ -12,4 +12,5 @@ record.select = "SELECT " +
 				+ " left join projects p on p.project_id=r.project_id "
 				+ " left join clients c on c.client_id=p.client_id";
 
+
 module.exports = record;

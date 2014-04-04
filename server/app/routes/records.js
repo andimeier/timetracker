@@ -63,7 +63,11 @@ var formatDate = function(input) {
 }
 
 
-
+/**
+ * find a specific record by primary key. Called with /records/:id
+ * @param req express request object
+ * @param res express response object
+ */
 exports.findById = function(req, res) {
 
   record.findById(req.params.id, function(data, err) {
@@ -83,6 +87,8 @@ exports.findById = function(req, res) {
  *       default value will be used.
  *   - p ... number of page to be delivered. The size of one page can be set with the parameter 
  *      'limit', defaulting to the default value otherwise. The first page is page 1.
+ * @param req express request object
+ * @param res express response object
  */
 exports.findAll = function(req, res) {
 

@@ -3,9 +3,9 @@
  */
 var request = require('supertest'),
   assert = require('assert'),
+  expect = require('chai').expect,
   app = require('../../server/app/server.js').app;
 
-var expect = require('chai').expect;
 
 describe('Project API', function() {
   describe('GET /projects', function() {
