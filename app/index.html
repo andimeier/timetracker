@@ -42,8 +42,10 @@
     <!-- Add your site or application content here -->
     <div class="container" ng-view=""></div>
 
-    <script src="bower_components/jquery/jquery.js"></script>
+	<script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/lodash/dist/lodash.min.js"></script>
+    <script src="bower_components/restangular/dist/restangular.min.js"></script>
 
         <!-- build:js scripts/plugins.js -->
         <script src="bower_components/sass-bootstrap/js/affix.js"></script>
@@ -67,10 +69,13 @@
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/app.js"></script>
-        <script src="scripts/controllers/records.js"></script>
-        <script src="scripts/controllers/login.js"></script>
+        <script src="scripts/controllers/records-controller.js"></script>
+        <script src="scripts/services/record-model.js"></script>
+        <script src="scripts/services/projects-factory.js"></script>
+        <script src="scripts/controllers/login-controller.js"></script>
+        <script src="scripts/services/login-service.js"></script>
         <script src="scripts/services/config.js"></script>
-        <script src="scripts/services/services.js"></script>
+        <script src="scripts/services/api.js"></script>
         <!-- endbuild -->
 
 </body>

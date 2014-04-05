@@ -1,13 +1,11 @@
 'use strict';
 
 angular.module('timetrackerApp', [
-  'ngResource',
   'ngRoute',
   'recordControllers',
-  'timetrackerServices',
-  'services.config'
+  'loginService'
 ])
-  .config(function ($routeProvider, $httpProvider) {
+.config(function ($routeProvider, $httpProvider) {
   
     $httpProvider.defaults.withCredentials = true;
 
