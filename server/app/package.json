@@ -10,6 +10,5 @@
   },
   "scripts": {
     "test": "mocha --reporter spec ../test/rest/*.js"
-
   }
 }

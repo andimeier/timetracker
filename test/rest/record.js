@@ -125,7 +125,7 @@ describe('Record API', function() {
           // investigate the first record, it
           var rec1 = data[0];
           expect(rec1).to.be.an('object');
-          expect(rec1.recordId).to.be.equal(3655);
+          expect(rec1.recordId).to.be.equal(3653);
           expect(rec1.description).to.be.equal('asdf');
 
           done();
