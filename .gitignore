@@ -1,4 +1,4 @@
-node_modules
+**/node_modules*
 dist
 .tmp
 .sass-cache
@@ -8,3 +8,4 @@ app/bower_components
 # target environment, no need to be checked in:
 /server/app/config/config.json
 /app/scripts/services/config.js
+.idea/

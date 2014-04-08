@@ -3,8 +3,8 @@ var error = require(__dirname + '/../utils/error');
 
 exports.login = function(req, res) {
 
-	logger.log('---------------------------------');
-	logger.log('[' +  (new Date()).toLocaleTimeString() + '] POST Request for login: ' + JSON.stringify(req.body));
+	logger.verbose('---------------------------------');
+	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] POST Request for login: ' + JSON.stringify(req.body));
 
 	auth.authenticate(req.body['user'], req.body['pass'], function(result, userId, user){
 		if (result) {
@@ -13,7 +13,7 @@ exports.login = function(req, res) {
 			req.session.userId = userId;
 			req.session.username = user.username;
 			req.session.firstName = user.first_name;
-			logger.log('Stored user Id [' + userId + '] and firstName [' + user.first_name + '] in session');
+			logger.verbose('Stored user Id [' + userId + '] and firstName [' + user.first_name + '] in session');
 
 			res.send(200, { 
 				userId: userId, 
@@ -33,11 +33,11 @@ exports.login = function(req, res) {
 
 exports.logout = function(req, res) {
 
-	logger.log('---------------------------------');
-	logger.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request for logout');
+	logger.verbose('---------------------------------');
+	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] GET Request for logout');
 
 	// remove session data
 	req.session = null;
-	logger.log('Session cleared');
+	logger.verbose('Session cleared');
 	res.send(200, { message: 'Logout successful' });
 };

@@ -29,8 +29,8 @@ global.mysql = mysql
 
 global.logger = new (winston.Logger)({
     transports: [
-        new (winston.transports.Console)(),
-        new (winston.transports.File)({ filename: 'timetracker.log' })
+        //new (winston.transports.Console)(),
+        new (winston.transports.File)({ filename: 'timetracker.log', level: 'verbose' })
     ]
 });
 
@@ -54,10 +54,10 @@ var app = exports.app = express();
 
 
 app.use(function(req, res, next) {
-	logger.log('=======================================================');
-	logger.log('==================== New request ======================');
-	logger.log('=======================================================');
-	logger.log('Query parameters: ' + JSON.stringify(req.query, null, 2));
+	logger.verbose('=======================================================');
+	logger.verbose('==================== New request ======================');
+	logger.verbose('=======================================================');
+	logger.verbose('Query parameters: ' + JSON.stringify(req.query, null, 2));
 	next();
 });
 
@@ -68,19 +68,19 @@ app.use(express.cookieParser('asdr84353$^@k;1B'));
 app.use(express.cookieSession({cookie: { httpOnly: false }}));
 // app.use(express.csrf());
 // app.use(function(req, res, next) {
-// 	logger.log('XSRF-TOKEN from the request: [' + req.csrfToken() + ']');
+// 	logger.verbose('XSRF-TOKEN from the request: [' + req.csrfToken() + ']');
 // 	res.cookie('XSRF-TOKEN', req.csrfToken());
 // 	next();
 // });
 
 // user validation using session cookies
 var auth = function(req, res, next) {
-	logger.log('!!!!!!----- In auth(), session is ' + JSON.stringify(req.session, undefined, 2));
+	logger.verbose('!!!!!!----- In auth(), session is ' + JSON.stringify(req.session, undefined, 2));
 	if (!req.session.userId) {
 		res.status(401);
 		res.end('Unauthorized access.');
 	} else {
-		logger.log('SESSION DETECTED: userId=[' + req.session.userId + '], firstName=[' + req.session.firstName + ']');
+		logger.verbose('SESSION DETECTED: userId=[' + req.session.userId + '], firstName=[' + req.session.firstName + ']');
     	next();
     }
 };
@@ -115,5 +115,5 @@ app.delete('/records/:id', auth, records.delete);
 
 // start the server
 app.listen(port);
-logger.log('Listening on port ' + port + ' ...');
+logger.verbose('Listening on port ' + port + ' ...');
 

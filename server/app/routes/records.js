@@ -47,18 +47,18 @@ var formatDate = function(input) {
 		return null;
 	}
 
-	logger.log('called formatDate with [' + input + ']');
+	logger.verbose('called formatDate with [' + input + ']');
 	var components = input.split(/[T ]/, 2);
 
 	// get date portion
 	var date = components[0];
-	logger.log(' --- extracted: date_part = [' + date + ']');
+	logger.verbose(' --- extracted: date_part = [' + date + ']');
 
 	// split time
 	var time_parts = components[1].split(':', 3);		
 
 	var r = date + ' ' + time_parts.splice(0,2).join(':'); 
-	logger.log(' --- will return: ' + r);
+	logger.verbose(' --- will return: ' + r);
 	return r;
 }
 
@@ -92,9 +92,9 @@ exports.findById = function(req, res) {
  */
 exports.findAll = function(req, res) {
 
-	logger.log('---------------------------------');
-	logger.log('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
-	logger.log('  All Query parameters: ' + JSON.stringify(req.query));
+	logger.verbose('---------------------------------');
+	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
+	logger.verbose('  All Query parameters: ' + JSON.stringify(req.query));
 
 	// parse parameters
 	// ----------------
@@ -111,22 +111,22 @@ exports.findAll = function(req, res) {
 	}
 
 	if (req.query.n) {
-		logger.log('Parameter n given: [' + req.query.n + ']');
+		logger.verbose('Parameter n given: [' + req.query.n + ']');
 		params.limit = parseInt(req.query.n);
 		delete req.query.limit;
 	}
 
 	if (req.query.p) {
-		logger.log('Parameter p given: [' + req.query.p + ']');
+		logger.verbose('Parameter p given: [' + req.query.p + ']');
 		params.page = parseInt(req.query.p);
 		delete req.query.page;
 	}
 
-	logger.log('Params are now: ' + JSON.stringify(params, null, 2));
+	logger.verbose('Params are now: ' + JSON.stringify(params, null, 2));
 
 	if (req.query) {
 		// there are query parameters left which could not be processed
-		console.error('Unknown query parameter(s) used: ' + JSON.stringify(req.query, null, 2));
+		logger.error('Unknown query parameter(s) used: ' + JSON.stringify(req.query, null, 2));
 	}
 
 	// let's fetch the data
@@ -136,7 +136,7 @@ exports.findAll = function(req, res) {
 
 		// Query the database to some data 
 		//connection.query("SELECT * from records limit 10where starttime >= date_sub(current_date, interval 30 day) order by starttime desc limit 10", function(err, rows) {
-		logger.log('2Params are now: ' + JSON.stringify(params, null, 2));
+		logger.verbose('2Params are now: ' + JSON.stringify(params, null, 2));
 		var sql = "SELECT c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, p.project_id, p.name as project_name, p.abbreviation as project_abbreviation, "
 				+ "r.record_id, r.starttime, r.endtime, r.pause, r.description, r.user_id, r.invoice_id "
 				+ " from records r "
@@ -144,9 +144,9 @@ exports.findAll = function(req, res) {
 				+ " left join clients c on c.client_id=p.client_id "
 				+ " order by r.starttime desc "
 				+ " limit " + params.limit + ' offset ' + (params.page - 1) * (params.limit);
-		logger.log('SQL string: ' + sql);
+		logger.verbose('SQL string: ' + sql);
 		connection.query(sql, function(err, rows) {
-			logger.log('   ... got answer from DB server');
+			logger.verbose('   ... got answer from DB server');
 
 			if (err != null) {
 				res.send(404, "Query error:" + err);
@@ -163,21 +163,21 @@ exports.findAll = function(req, res) {
 
 		// close connection
 		connection.release();
-		logger.log('   Connection closed');
+		logger.verbose('   Connection closed');
 	});
 };
 
 exports.add = function(req, res) {
 
-	logger.log('---------------------------------');
-	logger.log('[' +  (new Date()).toLocaleTimeString() + '] add: ' + JSON.stringify(req.body));
+	logger.verbose('---------------------------------');
+	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] add: ' + JSON.stringify(req.body));
 
 	var obj = req.body;
 
 	// remove unacceptable fields
 	for (key in obj) {
 		if (!acceptedPropertiesApi[key] || acceptedPropertiesApi[key].indexOf('add') == -1) {
-			logger.log('Removed attribute [' + key + '] (illegal over API)');
+			logger.verbose('Removed attribute [' + key + '] (illegal over API)');
 			delete obj[key];
 		}
 	}
@@ -227,7 +227,7 @@ exports.add = function(req, res) {
 				+ ') select '
 				+ [dataFields['values'], calcFields['values']].join(',');
 
-			logger.log("SQL = " + sql);
+			logger.verbose("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
 
 				if (err != null) {
@@ -249,15 +249,15 @@ exports.add = function(req, res) {
 
 exports.update = function(req, res) {
 
-	logger.log('---------------------------------');
-	logger.log('[' +  (new Date()).toLocaleTimeString() + '] update: ' + JSON.stringify(req.body));
+	logger.verbose('---------------------------------');
+	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] update: ' + JSON.stringify(req.body));
 
 	var obj = req.body;
 
 	// remove unacceptable fields
 	for (key in obj) {
 		if (!acceptedPropertiesApi[key] || acceptedPropertiesApi[key].indexOf('update') == -1) {
-			logger.log('Removed attribute [' + key + '] (illegal over API)');
+			logger.verbose('Removed attribute [' + key + '] (illegal over API)');
 			delete obj[key];
 		}
 	}
@@ -315,7 +315,7 @@ exports.update = function(req, res) {
 				+ [dataFields, calcFields].join(',') 
 				+ ' where record_id=' + recordId;
 
-			logger.log("SQL = " + sql);
+			logger.verbose("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
 
 				if (err != null) {
@@ -323,7 +323,7 @@ exports.update = function(req, res) {
 
 					res.end("Query error:" + err);
 					rows.error = 'Error at updating: ' + err.code;
-					logger.log('Error at updating: ' + err.code);
+					logger.verbose('Error at updating: ' + err.code);
 					res.send(error.error({
 						errorCode: 1002,
 						errorObj: rows,
@@ -348,7 +348,7 @@ exports.update = function(req, res) {
 
 			// close connection
 			connection.release();
-			logger.log("Connection released");
+			logger.verbose("Connection released");
 		});
 	}
 }
@@ -356,8 +356,8 @@ exports.update = function(req, res) {
 exports.delete = function(req, res) {
 
 	// Query the database to some data 
-	logger.log('---------------------------------');
-	logger.log('[' +  (new Date()).toLocaleTimeString() + '] delete: ' + JSON.stringify(req.body));
+	logger.verbose('---------------------------------');
+	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] delete: ' + JSON.stringify(req.body));
 
 	// begin input validation
 	// ----------------------
@@ -378,7 +378,7 @@ exports.delete = function(req, res) {
 		dbPool.getConnection(function(err, connection) {
 			// write to DB
 			var sql = 'DELETE from records where record_id=' + recordId;
-			logger.log("SQL = " + sql);
+			logger.verbose("SQL = " + sql);
 			connection.query(sql, function(err, rows) {
 
 				if (err != null) {
