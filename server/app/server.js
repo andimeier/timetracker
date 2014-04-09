@@ -7,7 +7,7 @@ var express = require('express'),
 	authenticate = require('./utils/auth'),
     winston = require('winston');
 	
-// server poonrt
+// server port
 var port = 3000;
 
 var config = require(__dirname + '/config/config.json');
@@ -25,14 +25,36 @@ global.dbPool = mysql.createPool({
 });
 
 // enable routers access to mysql functions like mysql.escape
-global.mysql = mysql
+global.mysql = mysql;
 
-global.logger = new (winston.Logger)({
-    transports: [
-        new (winston.transports.Console)(),
-        new (winston.transports.File)({ filename: 'timetracker.log', level: 'verbose' })
-    ]
-});
+if (process.env.NODE_ENV !== 'test') {
+	global.logger = new (winston.Logger)({
+		transports: [
+			new (winston.transports.Console)({
+				level: 'verbose',
+				handleExceptions: true
+			}),
+			new (winston.transports.File)({
+				filename: 'timetracker.prod.log',
+				level: 'verbose',
+				handleExceptions: true
+			})
+		]
+	});
+	logger.cli();
+} else {
+	// while testing, log only to file
+	global.logger = new (winston.Logger)({
+		transports: [
+			new (winston.transports.File)({
+				filename: 'timetracker.test.log',
+				level: 'verbose',
+				handleExceptions: true
+			})
+		]
+	});
+	logger.cli();
+}
 
 var allowCrossDomain = function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:9000');

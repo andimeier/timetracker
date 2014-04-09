@@ -1,9 +1,9 @@
 var crypto = require('crypto');
 
-exports.authenticate = function(user, pass, callback) {
+exports.authenticate = function(username, pass, callback) {
 
-	if (!user || !pass) {
-		logger.verbose('username or password missing ...');
+	if (!username || !pass) {
+		logger.info('Username or password missing at login request');
 		callback(false);
 		return;
 	}
@@ -12,16 +12,16 @@ exports.authenticate = function(user, pass, callback) {
 	md5sum.update(pass);
 	var passHash = md5sum.digest('hex');
 
-	logger.verbose('get connection from dbPool ...');
+	logger.verbose('trying to get connection from dbPool ...');
 	dbPool.getConnection(function(err, connection) {
 
 		// secure text input
-		user = connection.escape(user);
-		logger.verbose('replaced: ' + user);
+		usernameEscaped = connection.escape(username);
+		logger.verbose('Escaped user name', { user: usernameEscaped });
 
 		// query the database to some data 
-		var sql = "SELECT first_name, last_name, user_id, username, password, lastlogin from users where username=" + user;
-		logger.verbose('SQL: [' + sql + ']');
+		var sql = "SELECT first_name, last_name, user_id, username, password, lastlogin from users where username=" + usernameEscaped;
+		logger.verbose('Trying to retrieve specified user', { sql: sql });
 		connection.query(sql, function(err, rows) {
 
 			logger.verbose('Query result: ' + JSON.stringify(rows));
@@ -32,14 +32,13 @@ exports.authenticate = function(user, pass, callback) {
 				var user = rows[0];
 				if (user.password == passHash) {
 					logger.verbose('Whoa! Correct password! Congrats!');
-					logger.verbose('+++++++++++++++++++ HOW DID WE GET HERE? RETURNING 1');
 					callback(true, user.user_id, user);
+					logger.info('User [' + username + '] logged in successfully.');
 					return;
 				} else {
-					logger.verbose('Oh my! Wrong password!');
+					logger.info('Wrong username or password (user: [' + username + '])');
 				}
 			}
-			logger.verbose('--------------------- HOW DID WE GET HERE? RETURNING 0');
 			callback(false);
 			return;
 		});

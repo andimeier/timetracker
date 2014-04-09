@@ -32,11 +32,13 @@ exports.login = function (req, res) {
 
 exports.logout = function (req, res) {
 
-	logger.verbose('---------------------------------');
-	logger.verbose('[' + (new Date()).toLocaleTimeString() + '] GET Request for logout');
+	logger.verbose('GET Request for logout');
+
+	// remember username for logging purposes
+	var username = req.session.username;
 
 	// remove session data
 	req.session = null;
-	logger.verbose('Session cleared');
+	logger.info('Session cleared, user [' + username + '] logged out.');
 	res.send(200, { message: 'Logout successful' });
 };

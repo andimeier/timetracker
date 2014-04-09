@@ -1,11 +1,13 @@
 /**
  * Created by azimmer on 27.03.14.
  */
+// set test environment (to switch logging behavior)
+process.env.NODE_ENV = 'test';
+
 var request = require('supertest'),
   assert = require('assert'),
   expect = require('chai').expect,
   app = require('../../server/app/server.js').app;
-
 
 describe('Project API', function() {
   describe('GET /projects', function() {
@@ -78,8 +80,6 @@ describe('Project API', function() {
 
           // only 1 record returned
           expect(data).to.have.length(1);
-
-          console.log('================>>>>>>>>>>> retrieved: ' + JSON.stringify(data[0]));
 
           // investigate the first record
           var proj1 = data[0];

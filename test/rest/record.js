@@ -1,11 +1,13 @@
 /**
  * Created by azimmer on 28.03.14.
  */
+// set test environment (to switch logging behavior)
+process.env.NODE_ENV = 'test';
+
 var request = require('supertest'),
   assert = require('assert'),
   expect = require('chai').expect,
   app = require('../../server/app/server.js').app;
-
 
 /**
  * retrieve a specific record from database and provide it via callback
@@ -176,7 +178,7 @@ describe('Record API', function() {
   });
 
   describe('POST /records', function() {
-    it('should return the correct records', function(done) {
+    it.skip('should accept a new (added) record', function(done) {
       request(app)
         .post('/records')
         .send({
