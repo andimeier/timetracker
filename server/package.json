@@ -10,5 +10,8 @@
   },
   "scripts": {
     "test": "mocha --reporter spec ../test/rest/*.js"
+  },
+  "devDependencies": {
+    "winston": "~0.7.3"
   }
 }

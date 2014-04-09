@@ -2,6 +2,7 @@ var changeCase = require('change-case');
 
 
 /**
+ * maps
  * @return Error object on error
  */
 exports.mapToJsonKeys = function(rows, fieldMapping) {
@@ -201,4 +202,24 @@ exports.filterProperties = function(obj, fields) {
 		result = filter(obj, fields);
 	}
 	return result;
+}
+
+/**
+ * sends the result of the operation back to the client
+ * @param res the response object which will be used for the response
+ * @param data the retrieved data. This will be sent as JSON data in the response body
+ * @param err the error, if any. If there, the error object will be sent back in the
+ *   response body as JSON object with a HTTP error status code
+ */
+exports.sendResult = function(res, data, err) {
+  if (err != null) {
+    res.send(400, error.error({
+      errorCode: 1002,
+      errorObj: err,
+      message: 'Query error'
+    }));
+  } else {
+
+    res.send(200, data);
+  }
 }

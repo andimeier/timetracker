@@ -12,7 +12,7 @@
 	<h1>Work Records</h1>
 
 	<ul class="pager">
-	  <li ng-class="{disabled: data.page <= 0}"><a href="" ng-click="turnPage(-1)">Previous</a></li>
+	  <li ng-class="{disabled: data.page < 2}"><a href="" ng-click="turnPage(-1)">Previous</a></li>
 	  <li><a href="" ng-click="turnPage(+1)">Next</a></li>
 	</ul>
 

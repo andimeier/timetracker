@@ -1,22 +1,20 @@
 'use strict';
 
-describe('Controller: InvoiceCtrl', function () {
+describe('Controller: LoginCtrl', function () {
 
   // load the controller's module
   beforeEach(module('timetrackerApp'));
 
-  var InvoiceCtrl,
+  var LoginCtrl,
     scope;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    InvoiceCtrl = $controller('InvoiceCtrl', {
+    LoginCtrl = $controller('LoginCtrl', {
       $scope: scope
     });
   }));
 
-  it('should attach a list of awesomeThings to the scope', function () {
-    expect(scope.awesomeThings.length).toBe(5);
-  });
+  it('should attach a list of awesomeThings to the scope', function () {});
 });

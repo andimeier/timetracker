@@ -1,6 +1,6 @@
 'use strict';
 
-var recordControllers = angular.module('recordControllers', []);
+var recordControllers = angular.module('recordControllers', ['timetrackerApi', 'projectsFactory']);
 
 var formatJSONDate = function(input) {
 	if (!input) {
@@ -35,13 +35,13 @@ var containsObject = function(list, attribute, value) {
 	return null;
 }
 
-recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', function($scope, Record, Project) {
+recordControllers.controller('RecordListCtrl', ['$scope', 'Api', 'Project', function($scope, Api, Project) {
 	// initialize data member
 	$scope.data = {};
 	$scope.data.editMode = 0;
-	$scope.data.page = 0; // display first page of record results
+	$scope.data.page = 1; // display first page of record results
 
-	$scope.data.records = Record.query();
+	$scope.data.records = Api.records.getList().$object;
 	$scope.data.records.forEach(function(rec) {
 		rec.startdate = 'Alex' + 'asdf';
 	});
@@ -62,7 +62,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
     		return; // do nothing
     	}
 
-		console.log('Going to deleted record: [' + rec.recordId + ']');
+		console.log('Going to delete record: [' + rec.recordId + ']');
 
 		$scope.data.editMode = 0;
 
@@ -70,7 +70,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		rec.toBeDeleted = 1;
 
 		// try to delete it in DB first
-		Record.remove({ recordId: rec.recordId }, function(response) {
+		Api.records.remove({ recordId: rec.recordId }, function(response) {
 			
 			// delete went ok
 			$scope.data.success = 'Successfully deleted record [' + recordId + '].';
@@ -79,7 +79,7 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 			$scope.data.records.splice($scope.data.records.indexOf(rec), 1);
 
 			// refresh record list
-			$scope.data.records = Record.query();
+			$scope.data.records = Api.records.query();
 
 		}, function(response) {
 			// delete did not succeed
@@ -107,15 +107,15 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		$scope.data.onerecord.date = $scope.extractDate(rec.starttime);
 
 		// fill projects list. This is done with each start of editing on purpose,
-		// because during the last edit the list could contain a non-active project
-		// (because when you edit an existing project, the assigned project is added
-		// to the project list, if not there - by this mechanism, a non-active project
+		// because during the last edit the list could contain a non-active record
+		// (because when you edit an existing record, the assigned record is added
+		// to the record list, if not there - by this mechanism, a non-active record
 		// could have been leaked into the list activeProjects. Thus, now reload the
 		// list)
 		// using the REST query parameter "add", ensure that the currently assigned 
-		// project of the edited record is in the list, regardless if it is active or 
+		// record of the edited record is in the list, regardless if it is active or
 		// not
-		$scope.data.activeProjects = Project.query({ add:r.projectId });
+		$scope.data.activeProjects = Project.query({ add: r.projectId });
 	};
 
 
@@ -126,9 +126,9 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 		$scope.data.onerecord = {}
 
 		// fill projects list. This is done with each start of editing on purpose,
-		// because during the last edit the list could contain a non-active project
-		// (because when you edit an existing project, the assigned project is added
-		// to the project list, if not there - by this mechanism, a non-active project
+		// because during the last edit the list could contain a non-active record
+		// (because when you edit an existing record, the assigned record is added
+		// to the record list, if not there - by this mechanism, a non-active record
 		// could have been leaked into the list activeProjects. Thus, now reload the
 		// list)
 		$scope.data.activeProjects = Project.query();
@@ -140,23 +140,28 @@ recordControllers.controller('RecordListCtrl', ['$scope', 'Record', 'Project', f
 	};
 
 	$scope.extractDate = function(datetime) {
-		//return 'Alex extracted (extractDate)';
 		return '[' + datetime + ']';
 		return 'Alex was here'.substring(0, 3);
 	};
 
 	$scope.turnPage = function(pages) {
 		// refresh record list, browse forward/backward
-		$scope.data.page = $scope.data.page + pages;
-		$scope.data.records = Record.query({ p: $scope.data.page });
-	};	
+        var newPage = $scope.data.page + pages;
+        if (newPage < 1) {
+            // do nothing
+            return;
+        }
+		$scope.data.page = newPage;
+		$scope.data.records = Api.records.query({ p: $scope.data.page });
+	};
 
 }]);
  
-recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Record', function($scope, $routeParams, Record) {
-	//$scope.data.onerecord = Record.get({recordId: $routeParams.recordId}, function(record) {});
+recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Api', function($scope, $routeParams, Api) {
+	//$scope.data.onerecord = Api.records.get({recordId: $routeParams.recordId}, function(record) {});
 
 	$scope.processRecordForm = function() {
+        console.log('Form submitted, starting processing form ...');
 		var rec = $scope.data.onerecord;
 
 		// convert date input to JSON format
@@ -167,7 +172,7 @@ recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Rec
 			rec.endtime = formatJSONDate(rec.endtime);
 		}
 
-		Record.save($scope.data.onerecord, function(response) {
+		Api.records.save($scope.data.onerecord, function(response) {
 			// save went ok
 			$scope.data.onerecord = {}; // empty the form after saving
 
@@ -178,7 +183,7 @@ recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Rec
 			}
 
 			// refresh record list
-			$scope.data.records = Record.query();
+			$scope.data.records = Api.records.query();
 			$scope.data.editMode = 0;
 
 		}, function(response) {
@@ -189,6 +194,7 @@ recordControllers.controller('RecordDetailCtrl', ['$scope', '$routeParams', 'Rec
 	};
 
 	$scope.getNow = function() {
+        console.log('In function "getNow"');
 		return new Date();
 	};
 

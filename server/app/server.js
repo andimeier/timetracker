@@ -4,9 +4,10 @@ var express = require('express'),
 	projects = require('./routes/projects'),
 	stats = require('./routes/stats'),
 	login = require('./routes/login'),
-	authenticate = require('./utils/auth');
+	authenticate = require('./utils/auth'),
+    winston = require('winston');
 	
-// server port
+// server poonrt
 var port = 3000;
 
 var config = require(__dirname + '/config/config.json');
@@ -16,11 +17,22 @@ global.dbPool = mysql.createPool({
 	host     : config.host,
 	user     : config.user,
 	password : config.password,
-	database : config.database
+	database : config.database,
+    dateStrings: true // don't convert date fields into Date objects (since
+        // it would make the process vulnerable due to implicit, automatic timezone
+        // conversions. We do not want that, so let's treat these fields simply as
+        // strings.
 });
 
 // enable routers access to mysql functions like mysql.escape
 global.mysql = mysql
+
+global.logger = new (winston.Logger)({
+    transports: [
+        new (winston.transports.Console)(),
+        new (winston.transports.File)({ filename: 'timetracker.log' })
+    ]
+});
 
 var allowCrossDomain = function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:9000');
@@ -38,13 +50,14 @@ var allowCrossDomain = function(req, res, next) {
 };
 
 
-var app = express();
+var app = exports.app = express();
+
 
 app.use(function(req, res, next) {
-	console.log('=======================================================');
-	console.log('==================== New request ======================');
-	console.log('=======================================================');
-	console.log('Query parameters: ' + JSON.stringify(req.query, null, 2));
+	logger.log('=======================================================');
+	logger.log('==================== New request ======================');
+	logger.log('=======================================================');
+	logger.log('Query parameters: ' + JSON.stringify(req.query, null, 2));
 	next();
 });
 
@@ -55,19 +68,19 @@ app.use(express.cookieParser('asdr84353$^@k;1B'));
 app.use(express.cookieSession({cookie: { httpOnly: false }}));
 // app.use(express.csrf());
 // app.use(function(req, res, next) {
-// 	console.log('XSRF-TOKEN from the request: [' + req.csrfToken() + ']');
+// 	logger.log('XSRF-TOKEN from the request: [' + req.csrfToken() + ']');
 // 	res.cookie('XSRF-TOKEN', req.csrfToken());
 // 	next();
 // });
 
 // user validation using session cookies
 var auth = function(req, res, next) {
-	console.log('!!!!!!----- In auth(), session is ' + JSON.stringify(req.session, undefined, 2));
+	logger.log('!!!!!!----- In auth(), session is ' + JSON.stringify(req.session, undefined, 2));
 	if (!req.session.userId) {
 		res.status(401);
 		res.end('Unauthorized access.');
 	} else {
-		console.log('SESSION DETECTED: userId=[' + req.session.userId + '], firstName=[' + req.session.firstName + ']');
+		logger.log('SESSION DETECTED: userId=[' + req.session.userId + '], firstName=[' + req.session.firstName + ']');
     	next();
     }
 };
@@ -102,4 +115,5 @@ app.delete('/records/:id', auth, records.delete);
 
 // start the server
 app.listen(port);
-console.log('Listening on port ' + port + ' ...');
+logger.log('Listening on port ' + port + ' ...');
+

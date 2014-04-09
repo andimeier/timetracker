@@ -4,8 +4,8 @@ var error = require(__dirname + '/error');
 
 exports.genericReport = function(req, res, sql) {
 
-	console.log('---------------------------------');
-	console.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
+	logger.log('---------------------------------');
+	logger.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
 
 	dbPool.getConnection(function(err, connection) {
 
