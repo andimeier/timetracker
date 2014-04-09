@@ -1,4 +1,5 @@
-var changeCase = require('change-case');
+var changeCase = require('change-case'),
+	error = require('./error');
 
 
 /**
