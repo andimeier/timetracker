@@ -7,7 +7,8 @@ process.env.NODE_ENV = 'test';
 var request = require('supertest'),
 	assert = require('assert'),
 	expect = require('chai').expect,
-	app = require('../app/server.js').app;
+	app = require('../app/server.js').app,
+	credentials = require('./credentials.json');
 
 var Session = require('supertest-session')({
 	app: require('../app/server.js').app
@@ -28,13 +29,6 @@ var retrieveRecord = function (recordId, callback) {
 		});
 
 }
-
-// the correct login credentials
-var credentials = {
-	username: 'test',
-	password: 'test',
-	userId: 2
-};
 
 describe('Record API', function () {
 
@@ -211,20 +205,23 @@ describe('Record API', function () {
 		it('should login', function (done) {
 			this.sess.post('/login')
 				.send({
-					user: credentials.username,
-					pass: credentials.password
+					user: credentials.login.username,
+					pass: credentials.login.password
 				})
 				.expect(200)
 				.end(done);
 		});
 
 		it('should accept a new (added) record', function (done) {
+
+			var testRec = {
+				projectId: 1,
+				starttime: '20140328T1342',
+				description: 'Sample test description, new record'
+			};
+
 			this.sess.post('/records')
-				.send({
-					projectId: 1,
-					starttime: '20140328T1342',
-					description: 'Sample test description'
-				})
+				.send(testRec)
 				.end(function (err, res) {
 					if (err) {
 						throw err;
@@ -250,14 +247,34 @@ describe('Record API', function () {
 
 						// investigate the first record
 						var rec = data[0];
+						logger.verbose('Retrieved record []' + recordId, { data: rec });
 						expect(rec).to.be.an('object');
-						expect(rec.description).to.be.equal('Sample test description');
-						expect(rec.projectId).to.be(l);
-						expect(rec.starttime).to.be('20140328T1342');
+						expect(rec.description).to.be.equal(testRec.description);
+						expect(rec.projectId).to.be.equal(testRec.projectId);
+						expect(rec.starttime).to.be.equal(testRec.starttime);
 					});
 
 					done();
 				});
+		});
+
+		it('should logout', function (done) {
+			this.sess.get('/logout')
+				.expect(200, done);
+		});
+
+		it('should reject request because we are already logged out', function (done) {
+
+			var testRec = {
+				projectId: 1,
+				starttime: '20140328T1343',
+				description: 'Sample test description (should fail)'
+			};
+
+			request(app)
+				.post('/records')
+				.send(testRec)
+				.expect(401, done);
 		});
 
 	});
