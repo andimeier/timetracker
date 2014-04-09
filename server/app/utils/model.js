@@ -31,7 +31,7 @@ Model.prototype.findById = function(id, callback) {
   var where = this.keyCol + '=' + parseInt(id);
 
   var sql = this.select + ' where ' + where;
-  logger.log('=====> (in model.js) NEW select is [' + sql + ']');
+  logger.verbose('=====> (in model.js) NEW select is [' + sql + ']');
 
 
   dbPool.getConnection(function(err, connection) {

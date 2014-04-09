@@ -27,9 +27,9 @@ exports.findById = function(req, res) {
  */
 exports.findAll = function(req, res) {
 
-	logger.log('---------------------------------');
-	logger.log('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
-	logger.log('  Query parameters: ' + JSON.stringify(req.query, undefined, 2));
+	logger.verbose('---------------------------------');
+	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
+	logger.verbose('  Query parameters: ' + JSON.stringify(req.query, undefined, 2));
 
 	// parse parameters
 	// ----------------
@@ -71,13 +71,13 @@ exports.findAll = function(req, res) {
 	}
 	var sql = "SELECT p.project_id, p.name, p.abbreviation, p.active " 
 				+ " from projects p where " + where + " order by p.name";
-	logger.log('sql = [' + sql + ']');
+	logger.verbose('sql = [' + sql + ']');
 
 	dbPool.getConnection(function(err, connection) {
 
 		// Query the database to some data 
 		connection.query(sql, function(err, rows) {
-			logger.log('   ... got answer from DB server');
+			logger.verbose('   ... got answer from DB server');
 
 			if (err != null) {
 				res.send(404, "Query error:" + err);

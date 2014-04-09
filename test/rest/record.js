@@ -48,7 +48,7 @@ describe('Record API', function() {
           // investigate the first record, it
           var rec1 = data[0];
           expect(rec1).to.be.an('object');
-          expect(rec1.recordId).to.be.equal(3658);
+          expect(rec1.recordId).to.be.equal(3657);
           expect(rec1.description).to.be.equal('asdfasdf');
 
           done();
@@ -146,7 +146,7 @@ describe('Record API', function() {
           // only 1 record returned
           expect(data).to.have.length(1);
 
-          console.log('================>>>>>>>>>>> retrieved: ' + JSON.stringify(data[0]));
+          logger.verbose('=============[record.js]>>> just retrieved: ' + JSON.stringify(data[0]));
 
           // investigate the first record
           var rec1 = data[0];
@@ -176,7 +176,7 @@ describe('Record API', function() {
           // no error on saving
           expect(data).to.not.contain.key('error');
 
-          console.log(':::::::::::::::::::::::::::::::' + JSON.stringify(data, null, 2));
+          logger.verbose(':::::::::::::::::::::::::::::::' + JSON.stringify(data, null, 2));
 
           // recordId returned
           expect(data.insertId).to.be.a('number');

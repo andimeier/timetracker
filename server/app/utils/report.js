@@ -4,8 +4,8 @@ var error = require(__dirname + '/error');
 
 exports.genericReport = function(req, res, sql) {
 
-	logger.log('---------------------------------');
-	logger.log('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
+	logger.verbose('---------------------------------');
+	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] GET Request: ' + req);
 
 	dbPool.getConnection(function(err, connection) {
 
@@ -25,7 +25,7 @@ exports.genericReport = function(req, res, sql) {
 
 					var result = utils.changeKeysToCamelCase(rows);
 					if (result instanceof Error) {
-						console.error('Error at mapping keys to JSON keys: ' + result);
+						logger.error('Error at mapping keys to JSON keys: ' + result);
 					}
 					res.send(200, result);
 				}
@@ -38,7 +38,7 @@ exports.genericReport = function(req, res, sql) {
 		}  else {
 			// an error has occurred during connection
 
-			console.error('DB connection error: ' + JSON.stringify(err, null, 2));
+			logger.error('DB connection error: ' + JSON.stringify(err, null, 2));
 
 			/* send error message back to client (in minimized form because
 			the error details on failing to establish a connection is not 
