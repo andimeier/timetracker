@@ -29,7 +29,7 @@ global.mysql = mysql
 
 global.logger = new (winston.Logger)({
     transports: [
-        //new (winston.transports.Console)(),
+        new (winston.transports.Console)(),
         new (winston.transports.File)({ filename: 'timetracker.log', level: 'verbose' })
     ]
 });
@@ -52,18 +52,15 @@ var allowCrossDomain = function(req, res, next) {
 
 var app = exports.app = express();
 
-
 app.use(function(req, res, next) {
-	logger.verbose('=======================================================');
-	logger.verbose('==================== New request ======================');
-	logger.verbose('=======================================================');
-	logger.verbose('Query parameters: ' + JSON.stringify(req.query, null, 2));
+	logger.verbose('=== NEW REQUEST', { query: req });
 	next();
 });
 
 
 app.use(allowCrossDomain);
-app.use(express.bodyParser());
+app.use(express.urlencoded())
+app.use(express.json())
 app.use(express.cookieParser('asdr84353$^@k;1B'));
 app.use(express.cookieSession({cookie: { httpOnly: false }}));
 // app.use(express.csrf());
@@ -75,12 +72,12 @@ app.use(express.cookieSession({cookie: { httpOnly: false }}));
 
 // user validation using session cookies
 var auth = function(req, res, next) {
-	logger.verbose('!!!!!!----- In auth(), session is ' + JSON.stringify(req.session, undefined, 2));
+	logger.verbose('Entering auth handler, try to identify user', { 'req.session': req.session });
 	if (!req.session.userId) {
 		res.status(401);
 		res.end('Unauthorized access.');
 	} else {
-		logger.verbose('SESSION DETECTED: userId=[' + req.session.userId + '], firstName=[' + req.session.firstName + ']');
+		logger.verbose('Session detected', { userId: req.session.userId, firstName: req.session.firstName });
     	next();
     }
 };
@@ -111,7 +108,10 @@ app.put('/records/:id',    auth, records.update);
 app.post('/records',       auth, records.add); // POST without ID => add
 app.delete('/records/:id', auth, records.delete);
 
-
+app.use(function(req, res){
+    logger.verbose('Unrecognized API call', { req: req });
+    res.send(404);
+});
 
 // start the server
 app.listen(port);
