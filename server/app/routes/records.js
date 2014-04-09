@@ -38,26 +38,23 @@ var defaultParams = {
 
 /*
  * Formats a JSON date string for being used in an SQL expression.
- * @return null if input is null or undefined, the datetime expressionin SQL format otherwise
+ * @param datetime date time string in the compact format 20140301T180103 (YYYYMMDD'T'hhmmss)
+ * @return null if input is null or undefined, the datetime expression in SQL format otherwise
  */
-var formatDate = function(input) {
-	// parse a date in yyyy-mm-dd formatDate
+var formatDate = function(datetime) {
+	// parse a date/time string in yyyymmdd'T'HHMMSS format
 
-	if (!input) {
+	if (!datetime) {
 		return null;
 	}
 
-	logger.verbose('called formatDate with [' + input + ']');
-	var components = input.split(/[T ]/, 2);
-
-	// get date portion
-	var date = components[0];
-	logger.verbose(' --- extracted: date_part = [' + date + ']');
-
-	// split time
-	var time_parts = components[1].split(':', 3);		
-
-	var r = date + ' ' + time_parts.splice(0,2).join(':'); 
+	logger.verbose('called formatDate with [' + datetime + ']');
+	var r = datetime.slice(0, 4)
+		+ '-' + datetime.slice(4, 6)
+		+ '-' + datetime.slice(6, 8)
+		+ ' ' + datetime.slice(9, 11)
+		+ ':' + datetime.slice(11, 13)
+		+ ':' + datetime.slice(13, 15)
 	logger.verbose(' --- will return: ' + r);
 	return r;
 }
@@ -169,8 +166,7 @@ exports.findAll = function(req, res) {
 
 exports.add = function(req, res) {
 
-	logger.verbose('---------------------------------');
-	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] add: ' + JSON.stringify(req.body));
+	logger.verbose('User attempts to post a new record', { body: req.body });
 
 	var obj = req.body;
 
@@ -356,8 +352,7 @@ exports.update = function(req, res) {
 exports.delete = function(req, res) {
 
 	// Query the database to some data 
-	logger.verbose('---------------------------------');
-	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] delete: ' + JSON.stringify(req.body));
+	logger.verbose('Delete a record', { data: req.body });
 
 	// begin input validation
 	// ----------------------
@@ -405,6 +400,4 @@ exports.delete = function(req, res) {
 			connection.release();
 		});
 	}
-
-
 }
