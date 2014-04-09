@@ -43,7 +43,7 @@ describe('Record API', function () {
 	// the first record when doing a 'select * from records order by starttime desc'
 	var firstRec = {
 		recordId: 3593,
-		description: 'Test-Eintrag mit gewissen Taetigkeiten am 03.03.2011'
+		description: 'Newest record so far'
 	};
 
 	var testRec1 = {
@@ -55,6 +55,16 @@ describe('Record API', function () {
 	var testRec2 = {
 		recordId: 3590,
 		description: 'Test-Eintrag mit gewissen Taetigkeiten am 01.03.2011'
+	};
+
+	var testUpdate = {
+		recordId: 3591,
+		description: 'Updated!',
+		starttime: '20140409T163800'
+	};
+
+	var testDelete = {
+		recordId: 3580
 	};
 
 	describe('GET /records', function () {
@@ -197,7 +207,7 @@ describe('Record API', function () {
 				.send({
 					projectId: 1,
 					starttime: '20140328T1342',
-					description: 'Sample test description'
+					description: 'Sample test description (rejected - not logged in)'
 				})
 				.expect(401, done);
 		});
@@ -216,7 +226,7 @@ describe('Record API', function () {
 
 			var testRec = {
 				projectId: 1,
-				starttime: '20140328T1342',
+				starttime: '20140328T134200',
 				description: 'Sample test description, new record'
 			};
 
@@ -251,7 +261,74 @@ describe('Record API', function () {
 						expect(rec).to.be.an('object');
 						expect(rec.description).to.be.equal(testRec.description);
 						expect(rec.projectId).to.be.equal(testRec.projectId);
+						logger.verbose('Comparing start time', { rec: rec.starttime, testRec: testRec.starttime });
 						expect(rec.starttime).to.be.equal(testRec.starttime);
+					});
+
+					done();
+				});
+		});
+
+		it('should update a record', function (done) {
+
+			this.sess.post('/records/' + testUpdate.recordId)
+				.send(testUpdate)
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var data = res.body;
+
+					// no error on saving
+					expect(data).to.not.contain.key('error');
+
+					logger.verbose('Posted data', { data: data });
+
+					expect(data.affectedRows).to.be.equal(1);
+					expect(data.changedRows).to.be.equal(1);
+
+					// retrieve record and check if saved correctly
+					retrieveRecord(testUpdate.recordId, function (data, err) {
+
+						expect(err).to.be.null;
+
+						// only 1 record returned
+						expect(data).to.have.length(1);
+
+						// investigate the first (and only) record
+						var rec = data[0];
+						logger.verbose('Retrieved record []' + testUpdate.recordId, { data: rec });
+						expect(rec).to.be.an('object');
+						expect(rec.description).to.be.equal(testUpdate.description);
+						expect(rec.starttime).to.be.equal(testUpdate.starttime);
+					});
+
+					done();
+				});
+		});
+
+		it('should delete a record', function (done) {
+
+			this.sess.del('/records/' + testDelete.recordId)
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var data = res.body;
+
+					// no error on saving
+					expect(data).to.not.contain.key('error');
+
+					expect(data.affectedRows).to.be.equal(1);
+
+					// retrieve record and check if saved correctly
+					retrieveRecord(testDelete.recordId, function (data, err) {
+
+						expect(err).to.be.null;
+
+						// no records returned
+						expect(data).to.be.an('array');
+						expect(data).to.have.length(0);
 					});
 
 					done();
@@ -263,7 +340,7 @@ describe('Record API', function () {
 				.expect(200, done);
 		});
 
-		it('should reject request because we are already logged out', function (done) {
+		it('should reject add request because we are already logged out', function (done) {
 
 			var testRec = {
 				projectId: 1,
@@ -273,6 +350,26 @@ describe('Record API', function () {
 
 			request(app)
 				.post('/records')
+				.send(testRec)
+				.expect(401, done);
+		});
+
+		it('should reject update request because we are already logged out', function (done) {
+
+			request(app)
+				.post('/records/' + testUpdate.recordId)
+				.send(testUpdate)
+				.expect(401, done);
+		});
+
+		it('should reject delete request because we are already logged out', function (done) {
+
+			var testRec = {
+				recordId: 3581
+			};
+
+			request(app)
+				.del('/records/' + testRec.recordId)
 				.send(testRec)
 				.expect(401, done);
 		});
