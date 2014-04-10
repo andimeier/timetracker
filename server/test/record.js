@@ -40,7 +40,7 @@ describe('Record API', function () {
 		this.sess.destroy();
 	});
 
-	// the first record when doing a 'select * from records order by starttime desc'
+	// the first record when doing a 'select * from records order by starttime desc limit 1'
 	var firstRec = {
 		recordId: 3593,
 		description: 'Newest record so far'
@@ -52,10 +52,7 @@ describe('Record API', function () {
 		description: 'Test-Eintrag mit gewissen Taetigkeiten am 04.10.2010'
 	};
 
-	var testRec2 = {
-		recordId: 3590,
-		description: 'Test-Eintrag mit gewissen Taetigkeiten am 01.03.2011'
-	};
+	var recsOnPage3 = [ 3590, 3589 ];
 
 	var testUpdate = {
 		recordId: 3591,
@@ -85,10 +82,10 @@ describe('Record API', function () {
 					var data = res.body;
 					expect(data).to.be.an('array');
 
-					// 10 projects returned
+					// 10 records returned
 					expect(data).to.have.length(10);
 
-					// investigate the first record, it
+					// investigate the first record
 					var rec1 = data[0];
 					expect(rec1).to.be.an('object');
 					expect(rec1.recordId).to.be.equal(firstRec.recordId);
@@ -162,14 +159,15 @@ describe('Record API', function () {
 					var data = res.body;
 					expect(data).to.be.an('array');
 
-					// 10 projects returned
+					// 2 projects returned per page
 					expect(data).to.have.length(2);
 
-					// investigate the first record, it
-					var rec1 = data[0];
-					expect(rec1).to.be.an('object');
-					expect(rec1.recordId).to.be.equal(testRec2.recordId);
-					expect(rec1.description).to.be.equal(testRec2.description);
+					// investigate the records on this page
+					for (var i = 0; i < 2; i++) {
+						var rec = data[i];
+						expect(rec).to.be.an('object');
+						expect(rec.recordId).to.be.equal(recsOnPage3[i]);
+					}
 
 					done();
 				});
@@ -375,4 +373,5 @@ describe('Record API', function () {
 		});
 
 	});
-});
+})
+;

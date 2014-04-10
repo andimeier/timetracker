@@ -2,6 +2,7 @@ var express = require('express'),
 	mysql = require('mysql'),
 	records = require('./routes/records'),
 	projects = require('./routes/projects'),
+	invoices = require('./routes/invoices'),
 	stats = require('./routes/stats'),
 	login = require('./routes/login'),
 	authenticate = require('./utils/auth'),
@@ -28,6 +29,7 @@ global.dbPool = mysql.createPool({
 global.mysql = mysql;
 
 if (process.env.NODE_ENV !== 'test') {
+	// production settings for logging
 	global.logger = new (winston.Logger)({
 		transports: [
 			new (winston.transports.Console)({
@@ -43,13 +45,13 @@ if (process.env.NODE_ENV !== 'test') {
 	});
 	logger.cli();
 } else {
-	// while testing, log only to file
+	// in unit test mode, log only to file
 	global.logger = new (winston.Logger)({
 		transports: [
 			new (winston.transports.File)({
 				filename: 'timetracker.test.log',
-				level: 'verbose',
-				handleExceptions: true
+				level: 'verbose'
+				//handleExceptions: true
 			})
 		]
 	});
@@ -108,7 +110,8 @@ var auth = function(req, res, next) {
 // express routes config starts here
 // ---------------------------------
 
-// ATTENTION: BE SURE TO ADD THE AUTH HANDLER TO ALL ROUTES WHICH CHANGE DATA!
+// ATTENTION: BE SURE TO ADD THE AUTH HANDLER TO ALL ROUTES WHICH CHANGE DATA OR MUST
+// IN ANY OTHER SENSE BE CONSIDERED PRIVATE!
 
 // public services (without authentication)
 app.post('/login', login.login);
@@ -130,8 +133,13 @@ app.put('/records/:id',    auth, records.update);
 app.post('/records',       auth, records.add); // POST without ID => add
 app.delete('/records/:id', auth, records.delete);
 
+app.get('/invoices',       auth, invoices.findAll);
+app.get('/invoices/:id',   auth, invoices.findById);
+//app.get('/invoices',       invoices.findAll);
+//app.get('/invoices/:id',   invoices.findById);
+
 app.use(function(req, res){
-    logger.verbose('Unrecognized API call', { req: req });
+    logger.verbose('Unrecognized API call', { url: req.originalUrl });
     res.send(404);
 });
 

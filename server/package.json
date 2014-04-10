@@ -6,7 +6,8 @@
   "dependencies": {
     "express": "3.x",
     "mysql": "~2.0",
-    "change-case": "~1.0.5"
+    "change-case": "~1.0.5",
+    "lodash": "~2.4.1"
   },
   "scripts": {
     "test": "mocha --reporter spec test/*.js"

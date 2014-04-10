@@ -89,9 +89,7 @@ exports.findById = function(req, res) {
  */
 exports.findAll = function(req, res) {
 
-	logger.verbose('---------------------------------');
-	logger.verbose('[' +  (new Date()).toLocaleTimeString() + '] Query (find all) called...');
-	logger.verbose('  All Query parameters: ' + JSON.stringify(req.query));
+	logger.verbose('Query "findAll" called...', { query: req.query });
 
 	// parse parameters
 	// ----------------
