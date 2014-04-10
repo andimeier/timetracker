@@ -135,8 +135,6 @@ app.delete('/records/:id', auth, records.delete);
 
 app.get('/invoices',       auth, invoices.findAll);
 app.get('/invoices/:id',   auth, invoices.findById);
-//app.get('/invoices',       invoices.findAll);
-//app.get('/invoices/:id',   invoices.findById);
 
 app.use(function(req, res){
     logger.verbose('Unrecognized API call', { url: req.originalUrl });

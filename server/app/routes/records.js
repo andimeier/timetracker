@@ -89,76 +89,8 @@ exports.findById = function(req, res) {
  */
 exports.findAll = function(req, res) {
 
-	logger.verbose('Query "findAll" called...', { query: req.query });
-
-	// parse parameters
-	// ----------------
-	var params = {};
-
-	// start with default values
-	for (key in defaultParams) {
-		params[key] = defaultParams[key];
-	}
-
-	if (req.query.fields) {
-		params.fields = req.query.fields.split(',');
-		delete req.query.fields;
-	}
-
-	if (req.query.n) {
-		logger.verbose('Parameter n given: [' + req.query.n + ']');
-		params.limit = parseInt(req.query.n);
-		delete req.query.limit;
-	}
-
-	if (req.query.p) {
-		logger.verbose('Parameter p given: [' + req.query.p + ']');
-		params.page = parseInt(req.query.p);
-		delete req.query.page;
-	}
-
-	logger.verbose('Params are now: ' + JSON.stringify(params, null, 2));
-
-	if (req.query) {
-		// there are query parameters left which could not be processed
-		logger.error('Unknown query parameter(s) used: ' + JSON.stringify(req.query, null, 2));
-	}
-
-	// let's fetch the data
-	// --------------------
-
-	dbPool.getConnection(function(err, connection) {
-
-		// Query the database to some data 
-		//connection.query("SELECT * from records limit 10where starttime >= date_sub(current_date, interval 30 day) order by starttime desc limit 10", function(err, rows) {
-		logger.verbose('2Params are now: ' + JSON.stringify(params, null, 2));
-		var sql = "SELECT c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, p.project_id, p.name as project_name, p.abbreviation as project_abbreviation, "
-				+ "r.record_id, r.starttime, r.endtime, r.pause, r.description, r.user_id, r.invoice_id "
-				+ " from records r "
-				+ " left join projects p on p.project_id=r.project_id "
-				+ " left join clients c on c.client_id=p.client_id "
-				+ " order by r.starttime desc "
-				+ " limit " + params.limit + ' offset ' + (params.page - 1) * (params.limit);
-		logger.verbose('SQL string: ' + sql);
-		connection.query(sql, function(err, rows) {
-			logger.verbose('   ... got answer from DB server');
-
-			if (err != null) {
-				res.send(404, "Query error:" + err);
-			} else {
-
-				rows = utils.changeKeysToCamelCase(rows);
-				if (params.fields) {
-					rows = utils.filterProperties(rows, params.fields);
-				}
-
-				res.send(200, rows);
-			}
-		});
-
-		// close connection
-		connection.release();
-		logger.verbose('   Connection closed');
+	record.findAll(req.query, function(data, err) {
+		utils.sendResult(res, data, err);
 	});
 };
 

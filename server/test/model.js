@@ -64,4 +64,14 @@ describe('Model object', function () {
 
 		done();
 	});
+
+	it('should map alternative parameter names correctly', function (done) {
+
+		var p = { n: 10, p: 3 };
+		model.mapParams(p);
+		expect(p).to.have.keys(['limit', 'page']);
+		expect(p.limit).to.be.equal(10);
+		expect(p.page).to.be.equal(3);
+		done();
+	});
 });

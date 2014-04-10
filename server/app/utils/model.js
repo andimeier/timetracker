@@ -31,6 +31,31 @@ Model.prototype.limit = 10;
 //   'clientId DESC, invoiceDate' ... order by client ID descending, then by invoice date
 Model.prototype.orderBy = '';
 
+
+// map alternative names for REST parameters
+Model.prototype.paramMap = {
+	'n': 'limit',
+	'p': 'page'
+};
+
+/**
+ * Maps alternative names for REST parameters to the "official" ones.
+ * The passed parameters list is manipulated and the modified list
+ * will be returned as well. Parameters which are not defined in the
+ * mapping will be left untouched.
+ * @param params the parameters object
+ * @returns {*} the modified parameters list
+ */
+Model.prototype.mapParams = function(params) {
+	_(params).forIn(function(value, key) {
+		if (this.paramMap[key]) {
+			params[this.paramMap[key]] = value;
+			delete params[key];
+		}
+	}, this);
+	return params;
+};
+
 /**
  * find a specific record by its primary ID and return it
  * @param id the primary ID to be searched for. The columnn name
@@ -131,22 +156,41 @@ Model.prototype.findAll = function (params, callback) {
 
 	var constraints = [ '1=1'], // find constraints, default: not constrained
 		fields, // list of fields to be displayed in the output
-		orderBy; // order by fields
+		orderBy = this.orderBy, // order by fields
+		limit = [this.limit, 1], // limit/pageNr for limit/offset clause
+		limitClause, // assembled limit clause
+		whereClause, // assembled where clause
+		sortClause; // assembled sort clause
+
+	this.mapParams(params);
 
 	if (params.fields) {
 		fields = params.fields.split(',');
 	}
 
-	orderBy = params.orderBy ? params.orderBy : this.orderBy;
+	if (params.orderBy) {
+		orderBy = params.orderBy;
+	}
+	sortClause = this.buildOrderByString(orderBy)
 
 	// build 'where' constraint
-	var where = constraints.join(' and ');
+	whereClause = constraints.join(' and ');
 
-	var limit = ' LIMIT ' + this.limit;
+	if (params.limit) {
+		limit[0] = params.limit;
+	}
+	if (params.page) {
+		limit[1] = params.page;
+	}
+	if (limit[0]) {
+		limitClause = 'LIMIT ' + limit[0];
+		if (limit[1]) {
+			limitClause += ' OFFSET ' +  (limit[1] - 1) * limit[0];
+		}
+	};
 
-	var sort = this.buildOrderByString(orderBy)
 
-	var sql = this.select + ' where ' + [where, sort, limit].join(' ');
+	var sql = this.select + ' where ' + _.compact([whereClause, sortClause, limitClause]).join(' ');
 	logger.verbose('=====> (in model.js) NEW select is [' + sql + ']');
 
 	dbPool.getConnection(function (err, connection) {
