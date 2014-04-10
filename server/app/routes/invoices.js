@@ -6,6 +6,8 @@ var invoice = require(__dirname + '/../models/invoice');
 /**
  * Called with /invoices/:invoiceId
  * Retrieves the specified invoice.
+ * @param req express request object
+ * @param res express response object
  */
 exports.findById = function(req, res) {
 
@@ -17,10 +19,9 @@ exports.findById = function(req, res) {
 /**
  * Called with /invoices
  * Retrieves all specified invoices.
- * 
- * REST parameters (in query string):
- *   - fields ... specify list of fields to be delivered. All other fields are ignored. If unknown fields
- *       are specified here, they will be silently ignored. The list of fields must be comma-separated.
+ * @see model.findAll for details on possible parameters
+ * @param req express request object
+ * @param res express response object
  */
 exports.findAll = function(req, res) {
 

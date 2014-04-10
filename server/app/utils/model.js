@@ -147,6 +147,10 @@ Model.prototype.buildOrderByString = function (orderBy) {
  *   'fields' ... restrict output to the specified attributes
  *   'orderBy' ... an order by expression (comma-separated list of attributes,
  *     each optionally followed by 'ASC' or 'DESC' (case insensitive)
+ *   'n'/'limit' ... specify number of records to be delivered at a maximum, of not specified, theconfigured
+ *       default value will be used.
+ *   'p'/'page' ... number of page to be delivered. The size of one page can be set with the parameter
+ *      'limit', defaulting to the default value otherwise. The first page is page 1.
  * @param callback a callback function which is called when the
  *   records have been retrieved. It must accept two parameters:
  *   data (the record data as array of retrieved records) and err (error

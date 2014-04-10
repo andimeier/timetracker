@@ -76,14 +76,7 @@ exports.findById = function(req, res) {
 /**
  * Called with /records
  * Retrieves all specified records.
- * 
- * REST parameters (in query string):
- *   - fields ... specify list of fields to be delivered. All other fields are ignored. If unknown fields
- *       are specified here, they will be silently ignored. The list of fields must be comma-separated.
- *   - n ... specify number of records to be delivered at a maximum, of not specified, theconfigured 
- *       default value will be used.
- *   - p ... number of page to be delivered. The size of one page can be set with the parameter 
- *      'limit', defaulting to the default value otherwise. The first page is page 1.
+ * @see model.findAll for details on possible parameters
  * @param req express request object
  * @param res express response object
  */
