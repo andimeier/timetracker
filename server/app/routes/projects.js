@@ -1,12 +1,14 @@
-// var config = require(__dirname + '/../config/config.json');
+//var config = require(__dirname + '/../config/config.json');
 var utils = require(__dirname + '/../utils/utils');
 var error = require(__dirname + '/../utils/error');
 var project = require(__dirname + '/../models/project');
 
+var userId = 10; //@TODO REMOVE ME!!
+
 
 exports.findById = function(req, res) {
 
-  project.findById(req.params.id, function(data, err) {
+  project.findById(req.params.id, userId, function(data, err) {
     utils.sendResult(res, data, err);
   });
 };

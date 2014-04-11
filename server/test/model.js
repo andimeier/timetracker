@@ -12,11 +12,19 @@ var app = require('../app/server.js').app,
 var model = new Model();
 
 // mapping from model attribute names to query column names
-model.attrs = {
-	'invoiceId': 'i.invoice_id',
-	'clientId': 'i.client_id',
-	'invoiceYear': 'i.invoice_year',
-	'invoiceDate': 'i.invoice_date'
+model.attributes = {
+	'invoiceId': {
+		column: 'i.invoice_id',
+		safe: [ 'update' ]},
+	'clientId': {
+		column: 'i.client_id',
+		safe: [ 'add', 'update' ]},
+	'invoiceYear': {
+		column: 'i.invoice_year',
+		safe: [ 'add', 'update' ]},
+	'invoiceDate': {
+		column: 'i.invoice_date',
+		safe: [ 'add', 'update' ]}
 };
 
 model.limit = 10;
@@ -65,7 +73,7 @@ describe('Model object', function () {
 		done();
 	});
 
-	it('should map alternative parameter names correctly', function (done) {
+	it('should map abbreviated parameter names correctly', function (done) {
 
 		var p = { n: 10, p: 3 };
 		model.mapParams(p);

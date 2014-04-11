@@ -1,0 +1,518 @@
+{
+    "project": {},
+    "files": {
+        "routes\\invoices.js": {
+            "name": "routes\\invoices.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "routes\\projects.js": {
+            "name": "routes\\projects.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "routes\\records.js": {
+            "name": "routes\\records.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "routes\\stats.js": {
+            "name": "routes\\stats.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "utils\\error.js": {
+            "name": "utils\\error.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "utils\\model.js": {
+            "name": "utils\\model.js",
+            "modules": {
+                "model": 1
+            },
+            "classes": {
+                "Model": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "utils\\utils.js": {
+            "name": "utils\\utils.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "model": {
+            "name": "model",
+            "submodules": {},
+            "classes": {
+                "Model": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "utils\\model.js",
+            "line": 10,
+            "description": "A generic model class. This is instantiated by specialized model classes\nwhich represent e.g. database entities."
+        }
+    },
+    "classes": {
+        "Model": {
+            "name": "Model",
+            "shortname": "Model",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "model",
+            "namespace": "",
+            "file": "utils\\model.js",
+            "line": 10,
+            "is_constructor": 1
+        }
+    },
+    "classitems": [
+        {
+            "file": "routes\\invoices.js",
+            "line": 6,
+            "description": "Called with /invoices/:invoiceId\nRetrieves the specified invoice.",
+            "params": [
+                {
+                    "name": "req",
+                    "description": "express request object"
+                },
+                {
+                    "name": "res",
+                    "description": "express response object"
+                }
+            ],
+            "class": "Model"
+        },
+        {
+            "file": "routes\\invoices.js",
+            "line": 19,
+            "description": "Called with /invoices\nRetrieves all specified invoices.",
+            "see": [
+                "model.findAll for details on possible parameters"
+            ],
+            "params": [
+                {
+                    "name": "req",
+                    "description": "express request object"
+                },
+                {
+                    "name": "res",
+                    "description": "express response object"
+                }
+            ],
+            "class": "Model"
+        },
+        {
+            "file": "routes\\projects.js",
+            "line": 14,
+            "description": "Called with /projects\nRetrieves all specified projects.\n\nREST parameters (in query string):\n  - fields ... specify list of fields to be delivered. All other fields are ignored. If unknown fields\n      are specified here, they will be silently ignored. The list of fields must be comma-separated.\n  - set ... specify set of projects to be returned, can be one of the following values:\n      all ... all projects in the database\n      active ... only active projects (with attribute \"active\")\n  - add ... add a specific record into the result set, the value of the parameter is the\n      project_id of the record to be added to the result set. This record will be\n      included in the result set in any case, regardless of the other query parameters.",
+            "class": "Model"
+        },
+        {
+            "file": "routes\\records.js",
+            "line": 63,
+            "description": "find a specific record by primary key. Called with /records/:id",
+            "params": [
+                {
+                    "name": "req",
+                    "description": "express request object"
+                },
+                {
+                    "name": "res",
+                    "description": "express response object"
+                }
+            ],
+            "class": "Model"
+        },
+        {
+            "file": "routes\\records.js",
+            "line": 76,
+            "description": "Called with /records\nRetrieves all specified records.",
+            "see": [
+                "model.findAll for details on possible parameters"
+            ],
+            "params": [
+                {
+                    "name": "req",
+                    "description": "express request object"
+                },
+                {
+                    "name": "res",
+                    "description": "express response object"
+                }
+            ],
+            "class": "Model"
+        },
+        {
+            "file": "routes\\stats.js",
+            "line": 4,
+            "description": "get record statistics: how many hours have been recorded on which record?",
+            "class": "Model"
+        },
+        {
+            "file": "utils\\error.js",
+            "line": 1,
+            "params": [
+                {
+                    "name": "error",
+                    "description": "can be an object, a number (error code) or a string. If object,\n  it must consists of:\n    errorCode: errorCode\n    message (optional) a descriptive message for the user, if omitted, \n    the default message related to the errorCode is returned instead.\n    errorObj (optional) further tech/dev info, arbitrary data, e.g. MySql \n    error information\n  If numeric, it must represent a valid error code.\n  If a string, it is treated a error message for a generic error, an errorCode\n    1000 (generic error) will be used for this."
+                }
+            ],
+            "class": "Model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 18,
+            "description": "The select statement for retrieving values.\nThe statement ust be written so that a WHERE clause can be appended\nwithout producing a syntax error.",
+            "itemtype": "property",
+            "name": "select",
+            "type": "String",
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 27,
+            "description": "The list of attributes. Key is the attribute (model) name, value is\nthe column name as used in the SQL string, which may include a table\nor alias prefix.",
+            "itemtype": "property",
+            "name": "attributes",
+            "type": "Object",
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 36,
+            "description": "The key column used for \"findById\"",
+            "itemtype": "property",
+            "name": "keyCol",
+            "type": "String",
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 44,
+            "description": "Number of objects to be retrieved by default on findAll()",
+            "itemtype": "property",
+            "name": "limit",
+            "type": "Number",
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 51,
+            "description": "Default sort order.\nThis is a string consisting of a comma-separated list of model\nattributes, each optionally followed by a space and\nthe literal 'ASC' or 'DESC' to specify the direction.\n\nExamples:\n* 'projectDate' ... order by project date ascending\n* 'projectDate DESC' ... order by project date descending\n* 'projectDate desc' ... order by project date descending (case insensitive)\n* 'clientId DESC, invoiceDate' ... order by client ID descending, then by invoice date",
+            "itemtype": "property",
+            "name": "orderBy",
+            "type": "String",
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 68,
+            "description": "Map alternative names for REST parameters",
+            "itemtype": "property",
+            "name": "paramMap",
+            "access": "private",
+            "tagname": "",
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 78,
+            "description": "Maps alternative names for REST parameters to the \"official\" ones.\nThe passed parameters list is manipulated and the modified list\nwill be returned as well. Parameters which are not defined in the\nmapping will be left untouched.",
+            "itemtype": "method",
+            "name": "mapParams",
+            "params": [
+                {
+                    "name": "params",
+                    "description": "the parameters object",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "the modified parameters list",
+                "type": "Object"
+            },
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 97,
+            "description": "Finds a specific record by its primary ID and return it",
+            "itemtype": "method",
+            "name": "findById",
+            "params": [
+                {
+                    "name": "id",
+                    "description": "the primary ID to be searched for. The columnn name\n  to be used for this is defined in the property this.keyCol.",
+                    "type": "Integer"
+                },
+                {
+                    "name": "callback",
+                    "description": "a callback function which is called when the\n  record has been retrieved. It must accept two parameters:\n  data (the record data as array with length==1) and err (error\n  object).",
+                    "type": "Function"
+                }
+            ],
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 137,
+            "description": "Builds a valid \"ORDER BY\" string suitable for an SQL statement. Basically this\nhelper function does just a translation of all attribute names in the given\norderBy string, translating them from model attribute names to the database\nentity names (column names). The keywords \"ASC\" and \"DESC\" are recognized and\nwill be preserved.\n\nExample:\nThe input string \"clientId, date DESC\" will be translated to \"client_id, date DESC\"",
+            "itemtype": "method",
+            "name": "buildOrderByString",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "orderBy",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "String"
+            },
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 197,
+            "description": "Finds a specific record by its primary ID and return it",
+            "itemtype": "method",
+            "name": "findAll",
+            "params": [
+                {
+                    "name": "params",
+                    "description": "object containing parameters for the query.\n  Parameter set depends on the model instance, but typical parameters are:\n  * 'fields' ... restrict output to the specified attributes\n  * 'orderBy' ... an order by expression (comma-separated list of attributes,\n    each optionally followed by 'ASC' or 'DESC' (case insensitive)\n  * 'n'/'limit' ... specify number of records to be delivered at a maximum, of not specified, theconfigured\n      default value will be used.\n  * 'p'/'page' ... number of page to be delivered. The size of one page can be set with the parameter\n     'limit', defaulting to the default value otherwise. The first page is page 1.",
+                    "type": "Object"
+                },
+                {
+                    "name": "callback",
+                    "description": "a callback function which is called when the\n  records have been retrieved. It must accept two parameters:\n  data (the record data as array of retrieved records) and err (error\n  object).",
+                    "type": "Function"
+                }
+            ],
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\model.js",
+            "line": 282,
+            "description": "Inserts a new record into the database.",
+            "itemtype": "method",
+            "name": "add",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "the object to be written",
+                    "type": "Object"
+                },
+                {
+                    "name": "callback",
+                    "description": "a callback function which is called when the\n  record has been written. It must accept two parameters:\n  data (the record data as array of retrieved records) and err (error\n  object).",
+                    "type": "Function"
+                }
+            ],
+            "class": "Model",
+            "module": "model"
+        },
+        {
+            "file": "utils\\utils.js",
+            "line": 5,
+            "description": "maps",
+            "return": {
+                "description": "Error object on error"
+            },
+            "class": "",
+            "module": "model"
+        },
+        {
+            "file": "utils\\utils.js",
+            "line": 46,
+            "description": "Converts all keys of the passed object into snake_case.",
+            "params": [
+                {
+                    "name": "Can",
+                    "description": "be a (single) object or a list of objects."
+                }
+            ],
+            "return": {
+                "description": "If a single object was passed as a parameter, the modified object will be returned.\n  If a list of objects was passed as a parameter, then a list of modified objects will be \n  returned."
+            },
+            "class": "",
+            "module": "model"
+        },
+        {
+            "file": "utils\\utils.js",
+            "line": 76,
+            "description": "Converts all properties of an object into two lists. One list is the list of database fields,\nthe other list is the list of the corresponding database values. These 2 lists can be used\nto be inserted into an UPDATE SQL statement.\nAdditionally, the field names (the keys) will be snake_cased. After this, they should correspond\nto the column names of the underlying database.",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "a single object representing the data to be written to the database"
+                },
+                {
+                    "name": "escape",
+                    "description": "(optional) an escaping function for the value. If given, all values (but not the keys)\n  will be passed through this function via callback.\n  If not given, the values will not be altered (i.e., not escaped). The escape function\n  must accept one parameter (for the value to be escaped) and return the escaped value.\n  A suitable candidate would be e.g. mysql.escape of the node-mysql package."
+                }
+            ],
+            "return": {
+                "description": "a result object consisting of the two lists 'keys' and 'values'. Example: if the \nfollowing object will be passed:\n  obj = \nthen the returned object would be:\n  {\n    keys: [ key1, key2, ... ],\n    values: [ value1, value2, ... ],\n  }",
+                "type": "!~YUIDOC_LINE~!    key1: value1,!~YUIDOC_LINE~!    key2: value2,!~YUIDOC_LINE~!    ...!~YUIDOC_LINE~!"
+            },
+            "throws": {
+                "description": "Error if the passed object is an array instead of a single object"
+            },
+            "class": "",
+            "module": "model"
+        },
+        {
+            "file": "utils\\utils.js",
+            "line": 125,
+            "description": "Converts all properties of an object into a column string for an SQL UPDATE statement.\nThis string can be used to insert into a update statement in the place of XXX:\n  UPDATE table set XXX where ...\nAdditionally, the field names (the keys) will be snake_cased. After this, they should correspond\nto the column names of the underlying database.",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "a single object representing the data to be written to the database"
+                },
+                {
+                    "name": "escape",
+                    "description": "(optional) an escaping function for the value. If given, all values (but not the keys)\n  will be passed through this function via callback.\n  If not given, the values will not be altered (i.e., not escaped). The escape function\n  must accept one parameter (for the value to be escaped) and return the escaped value.\n  A suitable candidate would be e.g. mysql.escape of the node-mysql package."
+                }
+            ],
+            "return": {
+                "description": "the ready-made string to be inserted into an SQL UPDATE function. \n\nExample: if the following object will be passed:\n  obj = \nthen the returned string would be:\n  \"key='value1', key2='value2', ...",
+                "type": "!~YUIDOC_LINE~!    key1: value1,!~YUIDOC_LINE~!    key2: value2,!~YUIDOC_LINE~!    ...!~YUIDOC_LINE~!"
+            },
+            "throws": {
+                "description": "Error if the passed object is an array instead of a single object"
+            },
+            "class": "",
+            "module": "model"
+        },
+        {
+            "file": "utils\\utils.js",
+            "line": 167,
+            "description": "Filters the list of objects or the single object given so that for each object\nonly the specified attributes are used. All other attributes are discarded. If an unknown\nfield is specified which cannot be found as an object property, it is silently ignored \n(no error produced).",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "either a single object or a list of objects whose properties will be filtered"
+                },
+                {
+                    "name": "properties",
+                    "description": "a list of properties, all other properties will be discarded"
+                }
+            ],
+            "return": {
+                "description": "a single obj resp. a list of objects showing only the specified properties.\n  If obj is a single object, then the filtered single object is returned. If obj is a\n  list of objects, a list of filtered objects is returned."
+            },
+            "class": "",
+            "module": "model"
+        },
+        {
+            "file": "utils\\utils.js",
+            "line": 208,
+            "description": "sends the result of the operation back to the client",
+            "params": [
+                {
+                    "name": "res",
+                    "description": "the response object which will be used for the response"
+                },
+                {
+                    "name": "data",
+                    "description": "the retrieved data. This will be sent as JSON data in the response body"
+                },
+                {
+                    "name": "err",
+                    "description": "the error, if any. If there, the error object will be sent back in the\n  response body as JSON object with a HTTP error status code"
+                }
+            ],
+            "class": "",
+            "module": "model"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type\nCalled with /invoices/:invoiceId\nRetrieves the specified invoice.",
+            "line": " routes\\invoices.js:6"
+        },
+        {
+            "message": "Missing item type\nCalled with /invoices\nRetrieves all specified invoices.",
+            "line": " routes\\invoices.js:19"
+        },
+        {
+            "message": "Missing item type\nCalled with /projects\nRetrieves all specified projects.\n\nREST parameters (in query string):\n  - fields ... specify list of fields to be delivered. All other fields are ignored. If unknown fields\n      are specified here, they will be silently ignored. The list of fields must be comma-separated.\n  - set ... specify set of projects to be returned, can be one of the following values:\n      all ... all projects in the database\n      active ... only active projects (with attribute \"active\")\n  - add ... add a specific record into the result set, the value of the parameter is the\n      project_id of the record to be added to the result set. This record will be\n      included in the result set in any case, regardless of the other query parameters.",
+            "line": " routes\\projects.js:14"
+        },
+        {
+            "message": "Missing item type\nfind a specific record by primary key. Called with /records/:id",
+            "line": " routes\\records.js:63"
+        },
+        {
+            "message": "Missing item type\nCalled with /records\nRetrieves all specified records.",
+            "line": " routes\\records.js:76"
+        },
+        {
+            "message": "Missing item type\nget record statistics: how many hours have been recorded on which record?",
+            "line": " routes\\stats.js:4"
+        },
+        {
+            "message": "Missing item type",
+            "line": " utils\\error.js:1"
+        },
+        {
+            "message": "Missing item type\nmaps",
+            "line": " utils\\utils.js:5"
+        },
+        {
+            "message": "Missing item type\nConverts all keys of the passed object into snake_case.",
+            "line": " utils\\utils.js:46"
+        },
+        {
+            "message": "Missing item type\nConverts all properties of an object into two lists. One list is the list of database fields,\nthe other list is the list of the corresponding database values. These 2 lists can be used\nto be inserted into an UPDATE SQL statement.\nAdditionally, the field names (the keys) will be snake_cased. After this, they should correspond\nto the column names of the underlying database.",
+            "line": " utils\\utils.js:76"
+        },
+        {
+            "message": "Missing item type\nConverts all properties of an object into a column string for an SQL UPDATE statement.\nThis string can be used to insert into a update statement in the place of XXX:\n  UPDATE table set XXX where ...\nAdditionally, the field names (the keys) will be snake_cased. After this, they should correspond\nto the column names of the underlying database.",
+            "line": " utils\\utils.js:125"
+        },
+        {
+            "message": "Missing item type\nFilters the list of objects or the single object given so that for each object\nonly the specified attributes are used. All other attributes are discarded. If an unknown\nfield is specified which cannot be found as an object property, it is silently ignored \n(no error produced).",
+            "line": " utils\\utils.js:167"
+        },
+        {
+            "message": "Missing item type\nsends the result of the operation back to the client",
+            "line": " utils\\utils.js:208"
+        }
+    ]
+}

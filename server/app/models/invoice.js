@@ -5,21 +5,47 @@ var utils = require(__dirname + '/../utils/utils');
 var invoice = new Model();
 
 // mapping from model attribute names to query column names
-invoice.attrs = {
-	'invoiceId': 'i.invoice_id',
-	'clientId': 'i.client_id',
-	'invoiceYear': 'i.invoice_year',
-	'invoiceNumber': 'i.invoice_number',
-	'cancelled': 'i.cancelled',
-	'sumNet': 'i.sum_net',
-	'sumGross': 'i.sum_gross',
-	'invoiceDate': 'i.invoice_date',
-	'paid': 'i.paid',
-	'paidOn': 'i.paid_on',
-	'comment': 'i.comment',
-	'cdate': 'i.cdate',
-	'clientName': 'c.client_name',
-	'clientAbbreviation': 'c.client_abbreviation'
+invoice.attributes = {
+	'invoiceId': {
+		column: 'i.invoice_id',
+		safe: [ 'update' ]},
+	'clientId': {
+		column: 'i.client_id',
+		safe: [ 'add', 'update' ]},
+	'invoiceYear': {
+		column: 'i.invoice_year',
+		safe: [ 'add', 'update' ]},
+	'invoiceNumber': {
+		column: 'i.invoice_number',
+		safe: [ 'add', 'update' ]},
+	'cancelled': {
+		column: 'i.cancelled',
+		safe: [ 'add', 'update' ]},
+	'sumNet': {
+		column: 'i.sum_net',
+		safe: [ 'add', 'update' ]},
+	'sumGross': {
+		column: 'i.sum_gross',
+		safe: [ 'add', 'update' ]},
+	'invoiceDate': {
+		column: 'i.invoice_date',
+		safe: [ 'add', 'update' ]},
+	'paid': {
+		column: 'i.paid',
+		safe: [ 'add', 'update' ]},
+	'paidOn': {
+		column: 'i.paid_on',
+		safe: [ 'add', 'update' ]},
+	'comment': {
+		column: 'i.comment',
+		safe: [ 'add', 'update' ]},
+	'cdate': {
+		column: 'i.cdate',
+		default: '@NOW'},
+	'clientName': {
+		column: 'c.client_name'},
+	'clientAbbreviation': {
+		column: 'c.client_abbreviation'}
 };
 
 invoice.limit = 10;

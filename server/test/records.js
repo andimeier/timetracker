@@ -267,10 +267,35 @@ describe('Record API', function () {
 				});
 		});
 
+		it('should reject add request because required fields are missing', function (done) {
+
+			var testRec = {
+				projectId: 1,
+				description: 'Sample test description (should fail)'
+			};
+
+			this.sess.post('/records')
+				.send(testRec)
+				.expect(400)
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var data = res.body;
+
+					expect(data).to.be.an('Object');
+					expect(data).to.have.keys('errorCode', 'errorObj', 'message');
+					expect(data.errorCode).to.be.at.least(1000);
+
+					done();
+				});
+		});
+
 		it('should update a record', function (done) {
 
 			this.sess.post('/records/' + testUpdate.recordId)
 				.send(testUpdate)
+				.expect(200)
 				.end(function (err, res) {
 					if (err) {
 						throw err;
@@ -280,7 +305,7 @@ describe('Record API', function () {
 					// no error on saving
 					expect(data).to.not.contain.key('error');
 
-					logger.verbose('Posted data', { data: data });
+					logger.verbose('In "should update a record": posted data', { data: data });
 
 					expect(data.affectedRows).to.be.equal(1);
 					expect(data.changedRows).to.be.equal(1);
@@ -373,5 +398,59 @@ describe('Record API', function () {
 		});
 
 	});
-})
-;
+
+	describe.skip('TEST TEST', function () {
+
+		it('should login', function (done) {
+			this.sess.post('/login')
+				.send({
+					user: credentials.login.username,
+					pass: credentials.login.password
+				})
+				.expect(200)
+				.end(done);
+		});
+
+
+		it('should update a record', function (done) {
+
+			this.sess.post('/records/' + testUpdate.recordId)
+				.send(testUpdate)
+				.expect(200)
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var data = res.body;
+
+					// no error on saving
+					expect(data).to.not.contain.key('error');
+
+					logger.verbose('In "should update a record": posted data', { data: data });
+
+					expect(data.affectedRows).to.be.equal(1);
+					expect(data.changedRows).to.be.equal(1);
+
+					// retrieve record and check if saved correctly
+					retrieveRecord(testUpdate.recordId, function (data, err) {
+
+						expect(err).to.be.null;
+
+						// only 1 record returned
+						expect(data).to.have.length(1);
+
+						// investigate the first (and only) record
+						var rec = data[0];
+						logger.verbose('Retrieved record []' + testUpdate.recordId, { data: rec });
+						expect(rec).to.be.an('object');
+						expect(rec.description).to.be.equal(testUpdate.description);
+						expect(rec.starttime).to.be.equal(testUpdate.starttime);
+					});
+
+					done();
+				});
+		});
+	});
+});
+
+

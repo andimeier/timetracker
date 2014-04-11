@@ -2,6 +2,7 @@ var utils = require(__dirname + '/../utils/utils');
 var error = require(__dirname + '/../utils/error');
 var invoice = require(__dirname + '/../models/invoice');
 
+var userId = 10; //@TODO REMOVE ME!!!!!
 
 /**
  * Called with /invoices/:invoiceId
@@ -11,7 +12,7 @@ var invoice = require(__dirname + '/../models/invoice');
  */
 exports.findById = function(req, res) {
 
-  invoice.findById(req.params.id, function(data, err) {
+  invoice.findById(req.params.id, userId, function(data, err) {
     utils.sendResult(res, data, err);
   });
 };
@@ -25,7 +26,7 @@ exports.findById = function(req, res) {
  */
 exports.findAll = function(req, res) {
 
-	invoice.findAll(req.query, function(data, err) {
+	invoice.findAll(req.query, userId, function(data, err) {
 		utils.sendResult(res, data, err);
 	});
 };

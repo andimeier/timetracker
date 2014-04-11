@@ -2,62 +2,8 @@ var utils = require(__dirname + '/../utils/utils');
 var error = require(__dirname + '/../utils/error');
 var record = require(__dirname + '/../models/record');
 
-/*
-Attributes sent over the API in request bodies being accepted for 
-writing to the database.
-Any attributes (properties) of the objects sent in a request body
-over the API during POST/PUT/DELETE operations which are not listed
-here will be ignored.
-The value in this list describes in which REST functions the 
-corresponding attributes are valid. For example, a recordId is valid
-(and necessary) in an 'update' operation, but it not legal in an
-'add' operation under normal circumstances, because the recordId 
-should  be assigned by the database server in this case.
-Nevertheless, other attributes can be set by the REST service itself
-(e.g. cdate, userId), but they are silently ignored when coming over
-the API form the outside world
-*/
-var acceptedPropertiesApi = {
-	'recordId'   : [ 'update' ],
-	'starttime'  : [ 'add', 'update' ],
-	'endtime'    : [ 'add', 'update' ],
-	'pause'      : [ 'add', 'update' ],
-	'projectId'  : [ 'add', 'update' ],
-	'description': [ 'add', 'update' ],
-	'invoiceId'  : [ 'add', 'update' ]
-};
-
 var userId = 10; //@TODO: remove!!!! replace with session user id
 
-// default values for parameters not specified via REST API
-var defaultParams = {
-	limit: 10, // number of records delivered at once
-	page: 1 // deliver first page of result set
-}
-
-
-/*
- * Formats a JSON date string for being used in an SQL expression.
- * @param datetime date time string in the compact format 20140301T180103 (YYYYMMDD'T'hhmmss)
- * @return null if input is null or undefined, the datetime expression in SQL format otherwise
- */
-var formatDate = function(datetime) {
-	// parse a date/time string in yyyymmdd'T'HHMMSS format
-
-	if (!datetime) {
-		return null;
-	}
-
-	logger.verbose('called formatDate with [' + datetime + ']');
-	var r = datetime.slice(0, 4)
-		+ '-' + datetime.slice(4, 6)
-		+ '-' + datetime.slice(6, 8)
-		+ ' ' + datetime.slice(9, 11)
-		+ ':' + datetime.slice(11, 13)
-		+ ':' + datetime.slice(13, 15)
-	logger.verbose(' --- will return: ' + r);
-	return r;
-}
 
 
 /**
@@ -67,7 +13,7 @@ var formatDate = function(datetime) {
  */
 exports.findById = function(req, res) {
 
-  record.findById(req.params.id, function(data, err) {
+  record.findById(req.params.id, userId, function(data, err) {
     utils.sendResult(res, data, err);
   });
 };
@@ -82,89 +28,17 @@ exports.findById = function(req, res) {
  */
 exports.findAll = function(req, res) {
 
-	record.findAll(req.query, function(data, err) {
+	record.findAll(req.query, userId, function(data, err) {
 		utils.sendResult(res, data, err);
 	});
 };
 
 exports.add = function(req, res) {
 
-	logger.verbose('User attempts to post a new record', { body: req.body });
-
-	var obj = req.body;
-
-	// remove unacceptable fields
-	for (key in obj) {
-		if (!acceptedPropertiesApi[key] || acceptedPropertiesApi[key].indexOf('add') == -1) {
-			logger.verbose('Removed attribute [' + key + '] (illegal over API)');
-			delete obj[key];
-		}
-	}
-
-	// convert date fields
-	[ 'starttime', 'endtime' ].forEach(function(field) {
-		if (obj[field]) {
-			obj[field] = formatDate(obj[field]);
-		}
+	record.add(req.body, userId, function(data, err) {
+		utils.sendResult(res, data, err);
 	});
-
-	
-	// set additional (calculated) attributes, these will not be escaped,
-	// but used literally in the query string. The keys here are exactly
-	// the database table column names, no changing of case will take place
-	var calculatedAttributes = {
-		cdate: "now()",
-		mdate: "now()",
-		user_id: userId
-	};
-
-	// begin input validation
-	// ----------------------
-	var ok = true; // optimistic assumption
-
-	// check for mandatory fields
-	if (!obj.starttime) {
-		res.send(400, error.error({
-			errorCode: 1003,
-			message: 'Missing starttime parameter - starttime is mandatory'
-		}));
-		ok = false;
-	}
-
-	if (ok) {
-		// input is ok, let's write to DB
-		// ------------------------------
-		dbPool.getConnection(function(err, connection) {
-
-
-			// convert case of the column names into database syntax
-			obj = utils.changeKeysToSnakeCase(obj);
-			var dataFields = utils.getInsertLists(obj, global.mysql.escape);
-			var calcFields = utils.getInsertLists(calculatedAttributes);
-			var sql = 'INSERT into records('
-				+ [dataFields['keys'], calcFields['keys']].join(',')
-				+ ') select '
-				+ [dataFields['values'], calcFields['values']].join(',');
-
-			logger.verbose("SQL = " + sql);
-			connection.query(sql, function(err, rows) {
-
-				if (err != null) {
-					res.send(400, "Query error:" + err);
-				} else {
-					// Shows the result on console window
-					res.send(201, {
-						insertId: rows['insertId'],
-						db: rows
-					});
-				}
-			});
-
-			// close connection
-			connection.release();
-		});
-	}
-}
+};
 
 exports.update = function(req, res) {
 
