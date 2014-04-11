@@ -119,6 +119,7 @@ Model.prototype.mapParams = function (params) {
 	return params;
 };
 
+
 //
 /**
  * Converts field values, if applicable. The values of the object's
@@ -441,7 +442,7 @@ Model.prototype.findAll = function (params, userId, callback) {
 	sortClause = this.buildOrderByString(orderBy)
 
 	// build 'where' constraint
-	whereClause = constraints.join(' and ');
+	whereClause = 'WHERE ' + constraints.join(' and ');
 
 	if (params.limit) {
 		limit[0] = params.limit;
@@ -458,7 +459,7 @@ Model.prototype.findAll = function (params, userId, callback) {
 	;
 
 
-	var sql = this.select + ' where ' + _.compact([whereClause, sortClause, limitClause]).join(' ');
+	var sql = _.compact([this.select, whereClause, sortClause, limitClause]).join(' ');
 	logger.verbose('=====> (in model.js) NEW select is [' + sql + ']');
 
 	dbPool.getConnection(function (err, connection) {

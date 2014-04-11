@@ -26,7 +26,7 @@ exports.findById = function(req, res) {
  *       are specified here, they will be silently ignored. The list of fields must be comma-separated.
  *   - set ... specify set of projects to be returned, can be one of the following values:
  *       all ... all projects in the database
- *       active ... only active projects (with attribute "active")
+ *       active ... only active projects (with attribute "active"). This is also the default.
  *   - add ... add a specific record into the result set, the value of the parameter is the
  *       project_id of the record to be added to the result set. This record will be
  *       included in the result set in any case, regardless of the other query parameters.
@@ -57,7 +57,7 @@ exports.findAll = function(req, res) {
 	}
 	if (req.query.add) {
 		// parameter "add" will include a specific record into the result set,
-		// regardless of other contraints
+		// regardless of other constraints
 		include = parseInt(req.query.add);
 	}
 

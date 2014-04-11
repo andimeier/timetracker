@@ -5,6 +5,7 @@ var utils = require(__dirname + '/../utils/utils');
 var record = new Model();
 
 record.keyCol = 'record_id';
+
 record.select = "SELECT " +
 	"c.client_id, c.name as client_name, c.abbreviation as client_abbreviation, " +
 	"p.name as project_name, p.abbreviation as project_abbreviation, " +
@@ -64,31 +65,6 @@ record.attributes = {
 		column: 'r.mdate',
 		type: 'datetime',
 		default: '@NOW' }
-};
-
-/*
- Attributes sent over the API in request bodies being accepted for
- writing to the database.
- Any attributes (properties) of the objects sent in a request body
- over the API during POST/PUT/DELETE operations which are not listed
- here will be ignored.
- The value in this list describes in which REST functions the
- corresponding attributes are valid. For example, a recordId is valid
- (and necessary) in an 'update' operation, but it not legal in an
- 'add' operation under normal circumstances, because the recordId
- should  be assigned by the database server in this case.
- Nevertheless, other attributes can be set by the REST service itself
- (e.g. cdate, userId), but they are silently ignored when coming over
- the API form the outside world
- */
-var acceptedPropertiesApi = {
-	'recordId': [ 'update' ],
-	'starttime': [ 'add', 'update' ],
-	'endtime': [ 'add', 'update' ],
-	'pause': [ 'add', 'update' ],
-	'projectId': [ 'add', 'update' ],
-	'description': [ 'add', 'update' ],
-	'invoiceId': [ 'add', 'update' ]
 };
 
 record.orderBy = 'starttime DESC';
