@@ -256,7 +256,7 @@ Model.prototype.formatDate = function (datetime) {
  * @param column {String} the column name which may or may not contain a table alias
  * @return {String} the pure column name with no table alias
  */
-Model.prototype.stripTableAlias = function(column) {
+Model.prototype.stripTableAlias = function (column) {
 	var ix = column.indexOf('.');
 	if (ix) {
 		column = column.slice(ix + 1);
@@ -454,7 +454,8 @@ Model.prototype.findAll = function (params, userId, callback) {
 		if (limit[1]) {
 			limitClause += ' OFFSET ' + (limit[1] - 1) * limit[0];
 		}
-	};
+	}
+	;
 
 
 	var sql = this.select + ' where ' + _.compact([whereClause, sortClause, limitClause]).join(' ');
@@ -657,5 +658,58 @@ Model.prototype.update = function (id, obj, userId, callback) {
 		});
 	}
 };
+
+
+/**
+ * Deletes an existing record from the database.
+ * @method delete
+ * @param id {Number} the primary ID identifying the object to be deleted. The column name
+ *   to be used for this is defined in the property this.keyCol.
+ * @param userId the user ID of the session user
+ * @param callback {Function} a callback function which is called when the
+ *   record has been written. It must accept two parameters:
+ *   data (some info data with respect to the written record) and err (error
+ *   object).
+ */
+Model.prototype.delete = function (id, userId, callback) {
+
+	var recordId = parseInt(id);
+	if (!recordId) {
+		callback(null, error.error({
+			errorCode: 1003,
+			message: 'No ID passed in the API call'
+		}));
+		return;
+	}
+
+	dbPool.getConnection(function (err, connection) {
+		// write to DB
+		var sql = 'DELETE from records where record_id=' + recordId;
+		logger.verbose("SQL = " + sql);
+		connection.query(sql, function (err, rows) {
+
+			var result;
+			if (err === null) {
+				if (!rows.affectedRows) {
+					err = error.error({
+						errorCode: 1002,
+						errorObj: rows,
+						message: 'No rows matched'
+					});
+				}
+
+				result = {
+					affectedRows: rows.affectedRows,
+					db: rows
+				};
+			}
+			// close connection
+			connection.release();
+
+			callback(result, err);
+		});
+	});
+};
+
 
 module.exports = Model;

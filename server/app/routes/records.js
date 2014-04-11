@@ -44,54 +44,7 @@ exports.update = function(req, res) {
 };
 
 exports.delete = function(req, res) {
-
-	// Query the database to some data 
-	logger.verbose('Delete a record', { data: req.body });
-
-	// begin input validation
-	// ----------------------
-	var ok = true; // optimistic assumption
-
-	var recordId = parseInt(req.params.id);
-	if (!recordId) {
-		res.send(400, error.error({
-			errorCode: 1003,
-			message: 'No ID passed in the API call'
-		}));
-		ok = false;
-	}
-
-	if (ok) {
-		// input is ok, let's write to DB
-		// ------------------------------
-		dbPool.getConnection(function(err, connection) {
-			// write to DB
-			var sql = 'DELETE from records where record_id=' + recordId;
-			logger.verbose("SQL = " + sql);
-			connection.query(sql, function(err, rows) {
-
-				if (err != null) {
-					res.end("Query error:" + err);
-				} else {
-
-					if (!rows.affectedRows) {
-						res.status(400);
-						res.send(error.error({
-							errorCode: 1002,
-							errorObj: rows,
-							message: 'No rows matched'
-						}));
-					} else {
-						res.status(200);
-					}	
-
-					// send the result
-					res.send(rows);
-				}
-			});		
-
-			// close connection
-			connection.release();
-		});
-	}
+	record.delete(req.params.id, userId, function(data, err) {
+		utils.sendResult(res, data, err);
+	});
 }
