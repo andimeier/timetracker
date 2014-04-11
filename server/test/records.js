@@ -308,7 +308,6 @@ describe('Record API', function () {
 					logger.verbose('In "should update a record": posted data', { data: data });
 
 					expect(data.affectedRows).to.be.equal(1);
-					expect(data.changedRows).to.be.equal(1);
 
 					// retrieve record and check if saved correctly
 					retrieveRecord(testUpdate.recordId, function (data, err) {

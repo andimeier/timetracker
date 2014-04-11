@@ -20,50 +20,50 @@ record.select = "SELECT " +
 record.attributes = {
 	'clientId': {
 		column: 'c.client_id',
-		safe: [ 'add', 'update' ]},
+		safe: [ 'add', 'update' ] },
 	'clientName': {
-		column: 'c.name'},
+		column: 'c.name' },
 	'clientAbbreviation,': {
-		column: 'c.abbreviation'},
+		column: 'c.abbreviation' },
 	'projectName': {
-		column: 'p.name'},
+		column: 'p.name' },
 	'projectAbbreviation': {
-		column: 'p.abbreviation'},
+		column: 'p.abbreviation' },
 	'recordId': {
 		column: 'r.record_id',
-		safe: [ 'update' ]},
+		safe: [ 'update' ] },
 	'starttime': {
 		column: 'r.starttime',
 		type: 'datetime',
 		safe: [ 'add', 'update' ],
-		required: true},
+		required: true },
 	'endtime': {
 		column: 'r.endtime',
 		type: 'datetime',
-		safe: [ 'add', 'update' ]},
+		safe: [ 'add', 'update' ] },
 	'pause': {
 		column: 'r.pause',
-		safe: [ 'add', 'update' ]},
+		safe: [ 'add', 'update' ] },
 	'projectId': {
 		column: 'r.project_id',
-		safe: [ 'add', 'update' ]},
+		safe: [ 'add', 'update' ] },
 	'description': {
 		column: 'r.description',
-		safe: [ 'add', 'update' ]},
+		safe: [ 'add', 'update' ] },
 	'userId': {
 		column: 'r.user_id',
-		default: '@USER_ID'},
+		default: '@USER_ID' },
 	'invoiceId': {
 		column: 'r.invoice_id',
-		safe: [ 'add', 'update' ]},
+		safe: [ 'add', 'update' ] },
 	'cdate': {
 		column: 'r.cdate',
 		type: 'datetime',
-		default: '@NOW'},
+		default: '@NOW' },
 	'mdate': {
 		column: 'r.mdate',
 		type: 'datetime',
-		default: '@NOW'},
+		default: '@NOW' }
 };
 
 /*

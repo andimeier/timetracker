@@ -39,6 +39,7 @@ Model.prototype.select = '';
  * which will be used as field value or one of the following special values:
  * '@NOW' (will be translated to MySql's now() function), '@USER_ID' (the user ID of the
  * session user)
+ * * 'required' ... a truthy value indicates that this attribute is mandatory
  * * 'safe' ... list of methods where this attribute is considered "safe". This means,
  * the attribute is "allowed" to be used with the defined methods. If an attribute is
  * not safe, it is silently ignored.
@@ -57,7 +58,8 @@ Model.prototype.select = '';
 Model.prototype.attributes = {};
 
 /**
- * The key column used for "findById"
+ * The key column used for findById() and as required identifier for
+ * update() and delete().
  * @property keyCol
  * @type String
  */
@@ -163,9 +165,9 @@ Model.prototype.removeUnacceptableFields = function (obj, method) {
 			// no safe values defined
 			logger.verbose('Attribute [%s] removed (no "safe" config defined for this attribute)', key);
 			remove = true;
-		} else if (_.indexOf(attrDef.safe, 'add') === -1) {
+		} else if (_.indexOf(attrDef.safe, method) === -1) {
 			// no 'add' safe value defined
-			logger.verbose('Attribute [%s] removed ("safe" config does not contain "add" value)', key);
+			logger.verbose('Attribute [%s] removed ("safe" config does not contain method "%s")', key, method);
 //				console.log('safe for [%s] is' + JSON.stringify(attrDef.safe), key);
 			remove = true;
 		}
@@ -262,8 +264,9 @@ Model.prototype.stripTableAlias = function(column) {
 	return column;
 }
 
+
 /**
- * Validates the attributes and returns validation errors.
+ * Validates the attributse and returns validation errors.
  * @method validate
  * @param obj {Object} the object (model) to be validated
  * @return {Array} list of validation error messages. If the method returns an empty array,
@@ -274,7 +277,7 @@ Model.prototype.validate = function (obj) {
 	_(this.attributes).forIn(function (value, key) {
 		if (value.required && !obj[key]) {
 //			console.log('Attribute [' + key + '] is required for new records but was not given, obj is: ' + JSON.stringify(obj));
-			errorMessages.push('Attribute [' + key + '] is required for new records but was not given');
+			errorMessages.push('Attribute [' + key + '] is mandatory and missing');
 		}
 	}, this);
 
@@ -283,11 +286,10 @@ Model.prototype.validate = function (obj) {
 };
 
 
-
 /**
  * Finds a specific record by its primary ID and return it
  * @method findById
- * @param id {Integer} the primary ID to be searched for. The columnn name
+ * @param id {Number} the primary ID to be searched for. The column name
  *   to be used for this is defined in the property this.keyCol.
  * @param userId the user ID of the session user
  * @param callback {Function} a callback function which is called when the
@@ -324,6 +326,7 @@ Model.prototype.findById = function (id, userId, callback) {
 	});
 
 };
+
 
 /**
  * Builds a valid "ORDER BY" string suitable for an SQL statement. Basically this
@@ -399,7 +402,7 @@ Model.prototype.buildOrderByString = function (orderBy) {
 }
 
 /**
- * Finds a specific record by its primary ID and return it
+ * Finds some records by specified criteria and return them
  * @method findAll
  * @param params {Object} object containing parameters for the query.
  *   Parameter set depends on the model instance, but typical parameters are:
@@ -490,7 +493,7 @@ Model.prototype.findAll = function (params, userId, callback) {
  * @param userId the user ID of the session user
  * @param callback {Function} a callback function which is called when the
  *   record has been written. It must accept two parameters:
- *   data (the record data as array of retrieved records) and err (error
+ *   data (some info data with respect to the written record) and err (error
  *   object).
  */
 Model.prototype.add = function (obj, userId, callback) {
@@ -498,7 +501,7 @@ Model.prototype.add = function (obj, userId, callback) {
 	logger.verbose('User attempts to post a new record', { obj: obj });
 //	console.log('User attempts to post a new record: ' + JSON.stringify(obj));
 
-	this.removeUnacceptableFields(obj);
+	this.removeUnacceptableFields(obj, 'add');
 	this.convertFieldValues(obj);
 	var calculatedAttributes = this.getCalculatedAttributes(obj, userId);
 
@@ -548,7 +551,7 @@ Model.prototype.add = function (obj, userId, callback) {
 				var result;
 				if (err === null) {
 					result = {
-						insertId: rows['insertId'],
+						insertId: rows.insertId,
 						db: rows
 					};
 				}
@@ -562,21 +565,32 @@ Model.prototype.add = function (obj, userId, callback) {
 };
 
 /**
- * Inserts a new record into the database.
- * @method add
+ * Updates an existing record in the database.
+ * @method update
+ * @param id {Number} the primary ID identifying the object to be updated. The column name
+ *   to be used for this is defined in the property this.keyCol.
  * @param obj {Object} the object to be written
  * @param userId the user ID of the session user
  * @param callback {Function} a callback function which is called when the
  *   record has been written. It must accept two parameters:
- *   data (the record data as array of retrieved records) and err (error
+ *   data (some info data with respect to the written record) and err (error
  *   object).
  */
-Model.prototype.update = function (obj, userId, callback) {
+Model.prototype.update = function (id, obj, userId, callback) {
 
-	logger.verbose('User attempts to post a new record', { obj: obj });
-//	console.log('User attempts to post a new record: ' + JSON.stringify(obj));
+	var recordId = parseInt(id);
+	if (!recordId) {
+		callback(null, error.error({
+			errorCode: 1003,
+			message: 'No ID passed in the API call'
+		}));
+		return;
+	}
 
-	this.removeUnacceptableFields(obj);
+	logger.verbose('User attempts to update a record', { obj: obj });
+//	console.log('User attempts to update an existing record: ' + JSON.stringify(obj));
+
+	this.removeUnacceptableFields(obj, 'update');
 	this.convertFieldValues(obj);
 	var calculatedAttributes = this.getCalculatedAttributes(obj, userId);
 
@@ -601,32 +615,37 @@ Model.prototype.update = function (obj, userId, callback) {
 
 			// convert case of the column names into database syntax
 			obj = utils.changeKeysToSnakeCase(obj);
-			var dataFields = utils.getInsertLists(obj, global.mysql.escape);
+			var fieldAssignments = utils.getUpdateString(obj, global.mysql.escape);
 
-			var columnNames = dataFields['keys'].join(',');
-			var values = dataFields['values'].join(',');
 			if (!_.isEmpty(calculatedAttributes)) {
 //				console.log('-----calc fields: ' + JSON.stringify(calculatedAttributes));
 //				convertFieldValues(calculatedAttributes, this);
 //				console.log('-----AFTER CONVERT calc fields: ' + JSON.stringify(calculatedAttributes));
 //				console.log('YES there are calc fields');
-				var calcFields = utils.getInsertLists(calculatedAttributes);
-//				console.log('calcFields: ' + JSON.stringify(calcFields));
-				columnNames += ',' + calcFields['keys'].join(',');
-				values += ',' + calcFields['values'].join(',');
+
+				fieldAssignments += ',' + utils.getUpdateString(calculatedAttributes);
 //			} else {
 //				console.log('NO there are no calc fields: ' + JSON.stringify(calculatedAttributes));
 			}
-			var sql = 'INSERT into records(' + columnNames + ') values ('
-				+ values + ')';
+
+
+			var sql = 'UPDATE records set ' + fieldAssignments + ' where record_id=' + recordId;
 
 			logger.verbose("SQL = " + sql);
 			connection.query(sql, function (err, rows) {
 
 				var result;
 				if (err === null) {
+					if (!rows.affectedRows) {
+						err = error.error({
+							errorCode: 1002,
+							errorObj: rows,
+							message: 'No rows matched'
+						});
+					}
+
 					result = {
-						insertId: rows['insertId'],
+						affectedRows: rows.affectedRows,
 						db: rows
 					};
 				}

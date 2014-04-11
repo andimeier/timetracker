@@ -58,8 +58,8 @@ exports.changeKeysToCamelCase = function(rows) {
 /**
  * Converts all keys of the passed object into snake_case.
  * @method changeKeysToSnakeCase
- * @param Can be a (single) object or a list of objects.
- * @return If a single object was passed as a parameter, the modified object will be returned.
+ * @param obj {Object/Array} Can be a (single) object or a list of objects.
+ * @return {Object/Array} If a single object was passed as a parameter, the modified object will be returned.
  *   If a list of objects was passed as a parameter, then a list of modified objects will be 
  *   returned.
  */
@@ -93,13 +93,13 @@ exports.changeKeysToSnakeCase = function(obj) {
  * Additionally, the field names (the keys) will be snake_cased. After this, they should correspond
  * to the column names of the underlying database.
  * @method getInsertLists
- * @param obj a single object representing the data to be written to the database
- * @param escape (optional) an escaping function for the value. If given, all values (but not the keys)
+ * @param obj {Object} a single object representing the data to be written to the database
+ * @param escape {Function} (optional) an escaping function for the value. If given, all values (but not the keys)
  *   will be passed through this function via callback.
  *   If not given, the values will not be altered (i.e., not escaped). The escape function
  *   must accept one parameter (for the value to be escaped) and return the escaped value.
  *   A suitable candidate would be e.g. mysql.escape of the node-mysql package.
- * @return a result object consisting of the two lists 'keys' and 'values'. Example: if the 
+ * @return {Object} a result object consisting of the two lists 'keys' and 'values'. Example: if the
  * following object will be passed:
  *   obj = {
  *     key1: value1,
@@ -111,7 +111,7 @@ exports.changeKeysToSnakeCase = function(obj) {
  *     keys: [ key1, key2, ... ],
  *     values: [ value1, value2, ... ],
  *   }
- * @throws Error if the passed object is an array instead of a single object
+ * @throws Error if the passed object is an array instead of a single object (should never happen)
  */
 exports.getInsertLists = function(obj, escape) {
 
@@ -143,13 +143,13 @@ exports.getInsertLists = function(obj, escape) {
  * Additionally, the field names (the keys) will be snake_cased. After this, they should correspond
  * to the column names of the underlying database.
  * @method getUpdateString
- * @param obj a single object representing the data to be written to the database
- * @param escape (optional) an escaping function for the value. If given, all values (but not the keys)
+ * @param obj {Object} a single object representing the data to be written to the database
+ * @param escape {Function} (optional) an escaping function for the value. If given, all values (but not the keys)
  *   will be passed through this function via callback.
  *   If not given, the values will not be altered (i.e., not escaped). The escape function
  *   must accept one parameter (for the value to be escaped) and return the escaped value.
  *   A suitable candidate would be e.g. mysql.escape of the node-mysql package.
- * @return the ready-made string to be inserted into an SQL UPDATE function. 
+ * @return {String} the ready-made string to be inserted into an SQL UPDATE function.
  *
  * Example: if the following object will be passed:
  *   obj = {
@@ -159,7 +159,7 @@ exports.getInsertLists = function(obj, escape) {
  *   }
  * then the returned string would be:
  *   "key='value1', key2='value2', ...
- * @throws Error if the passed object is an array instead of a single object
+ * @throws Error if the passed object is an array instead of a single object (should never happen)
  */
 exports.getUpdateString = function(obj, escape) {
 
