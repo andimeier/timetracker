@@ -1,16 +1,29 @@
 /**
- * @param error can be an object, a number (error code) or a string. If object,
- *   it must consists of:
- *     errorCode: errorCode
- *     message (optional) a descriptive message for the user, if omitted, 
+ * Provides a standardized form of a error message to be sent over the REST API.
+ * Use this class to assemble error message to be sure that each error message
+ * will have:
+ * * an error code
+ * * an error message
+ * * an additional error object, containing additional, arbitrary information
+ * @module error
+ * @main error
+ */
+
+/**
+ * Assembles a standardized error message object.
+ * @param error {*} can be an object, a number (error code) or a string. If object,
+ *   it must consist of:
+ *   * errorCode: errorCode
+ *   * message (optional) a descriptive message for the user, if omitted,
  *     the default message related to the errorCode is returned instead.
  *     errorObj (optional) further tech/dev info, arbitrary data, e.g. MySql 
  *     error information
  *   If numeric, it must represent a valid error code.
  *   If a string, it is treated a error message for a generic error, an errorCode
  *     1000 (generic error) will be used for this.
+ *  @return {Object} the standardized error object
  */
-exports.error = function(error) {
+var error = function(error) {
 
 	var errorCodes = {
 		1000: "Generic error",
@@ -60,3 +73,5 @@ exports.error = function(error) {
 	}
 
 };
+
+module.exports = error;

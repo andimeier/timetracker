@@ -240,7 +240,7 @@ exports.sendResult = function(res, data, err) {
 	  if (typeof(err) === 'object' && err.errorCode) {
 //		  console.log('already an error object prepared => propagate it');
 		  // already an error object prepared => propagate it:
-		  e = error.error({
+		  e = error({
 			  errorCode: err.errorCode,
 			  errorObj: err.errorObj,
 			  message: err.message || 'Query error'
@@ -250,7 +250,7 @@ exports.sendResult = function(res, data, err) {
 //		  console.log('typepf = [%s], err.errorCode=[%s]', typeof(err), err.errorCode || 'NULL');
 		  // error is not an object or no object looking like "our"
 		  // error object => wrap it into "our" error object
-		  e = error.error({
+		  e = error({
 			  errorCode: 1002,
 			  errorObj: err,
 			  message: 'Query error'

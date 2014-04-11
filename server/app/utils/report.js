@@ -16,7 +16,7 @@ exports.genericReport = function(req, res, sql) {
 			connection.query(sql, function(err, rows) {
 
 				if (err != null) {
-					res.send(400, error.error({
+					res.send(400, error({
 						errorCode: 1002,
 						errorObj: err,
 						message: 'Query error'
@@ -44,7 +44,7 @@ exports.genericReport = function(req, res, sql) {
 			the error details on failing to establish a connection is not 
 			intended to be delivered to the client
 			*/
-			res.send(400, error.error({
+			res.send(400, error({
 				errorCode: 1004,
 				message: 'Error trying to connect to database. See the server\'s logfile for details.'
 			}));

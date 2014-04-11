@@ -22,7 +22,7 @@ exports.login = function (req, res) {
 				lastLogin: user.lastlogin
 			});
 		} else {
-			res.send(401, error.error({
+			res.send(401, error({
 				errorCode: 1001,
 				errorObj: result
 			}));

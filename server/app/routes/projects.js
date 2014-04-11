@@ -1,4 +1,8 @@
-//var config = require(__dirname + '/../config/config.json');
+/**
+ * CRUD Routes for projects.
+ * @module projects
+ * @type {*|Object}
+ */
 var utils = require(__dirname + '/../utils/utils');
 var error = require(__dirname + '/../utils/error');
 var project = require(__dirname + '/../models/project');

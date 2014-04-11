@@ -513,7 +513,7 @@ Model.prototype.add = function (obj, userId, callback) {
 	var validationErrors = this.validate(obj);
 	if (validationErrors.length) {
 		// validation error
-		var err = error.error({
+		var err = error({
 			errorCode: 1003,
 			message: 'Validation error',
 			errorObj: validationErrors
@@ -581,7 +581,7 @@ Model.prototype.update = function (id, obj, userId, callback) {
 
 	var recordId = parseInt(id);
 	if (!recordId) {
-		callback(null, error.error({
+		callback(null, error({
 			errorCode: 1003,
 			message: 'No ID passed in the API call'
 		}));
@@ -602,7 +602,7 @@ Model.prototype.update = function (id, obj, userId, callback) {
 	var validationErrors = this.validate(obj);
 	if (validationErrors.length) {
 		// validation error
-		var err = error.error({
+		var err = error({
 			errorCode: 1003,
 			message: 'Validation error',
 			errorObj: validationErrors
@@ -638,7 +638,7 @@ Model.prototype.update = function (id, obj, userId, callback) {
 				var result;
 				if (err === null) {
 					if (!rows.affectedRows) {
-						err = error.error({
+						err = error({
 							errorCode: 1002,
 							errorObj: rows,
 							message: 'No rows matched'
@@ -675,7 +675,7 @@ Model.prototype.delete = function (id, userId, callback) {
 
 	var recordId = parseInt(id);
 	if (!recordId) {
-		callback(null, error.error({
+		callback(null, error({
 			errorCode: 1003,
 			message: 'No ID passed in the API call'
 		}));
@@ -691,7 +691,7 @@ Model.prototype.delete = function (id, userId, callback) {
 			var result;
 			if (err === null) {
 				if (!rows.affectedRows) {
-					err = error.error({
+					err = error({
 						errorCode: 1002,
 						errorObj: rows,
 						message: 'No rows matched'
