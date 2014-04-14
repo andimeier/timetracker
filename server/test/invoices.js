@@ -88,7 +88,7 @@ describe('Invoice API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// 10 invoices returned
@@ -110,7 +110,7 @@ describe('Invoice API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// 10 invoices returned
@@ -144,7 +144,7 @@ describe('Invoice API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// investigate the first invoice
@@ -164,7 +164,7 @@ describe('Invoice API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// only 1 invoice returned
@@ -210,16 +210,18 @@ describe('Invoice API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var result = res.body;
 
 					// no error on saving
-					expect(data).to.not.contain.key('error');
+					expect(result).to.not.contain.key('error').and.contain.key('info');
 
-					logger.verbose('Posted data', { data: data });
+					logger.verbose('Posted data', { data: testNewInv });
+
+					var info = result.info;
 
 					// invoiceId returned
-					expect(data.insertId).to.be.a('number');
-					var invoiceId = data.insertId;
+					var invoiceId = info.insertId;
+					expect(invoiceId).to.be.a('number');
 
 					// retrieve invoice and check if saved correctly
 					retrieveInvoice(invoiceId, function (data, err) {
@@ -227,10 +229,10 @@ describe('Invoice API', function () {
 						expect(err).to.be.null;
 
 						// only 1 invoice returned
-						expect(data).to.have.length(1);
+						expect(data.data).to.have.length(1);
 
 						// investigate the first invoice
-						var inv = data[0];
+						var inv = data.data[0];
 						logger.verbose('Retrieved invoice []' + invoiceId, { data: inv });
 						logger.verbose('Comparing start time', { invoice: inv.starttime, testInvoice: testInv.starttime });
 						expect(inv).to.be.an('object');
@@ -252,15 +254,16 @@ describe('Invoice API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var result = res.body;
 
 					// no error on saving
-					expect(data).to.not.contain.key('error');
+					expect(result).to.not.contain.key('error').and.contain.key('info');
 
-					logger.verbose('Posted data', { data: data });
+					logger.verbose('Posted data', { data: testUpdate });
 
-					expect(data.affectedRows).to.be.equal(1);
-					expect(data.changedRows).to.be.equal(1);
+					var info = result.info;
+					expect(info.affectedRows).to.be.equal(1);
+					expect(info.changedRows).to.be.equal(1);
 
 					// retrieve invoice and check if saved correctly
 					retrieveInvoice(testUpdate.invoiceId, function (data, err) {
@@ -268,10 +271,10 @@ describe('Invoice API', function () {
 						expect(err).to.be.null;
 
 						// only 1 invoice returned
-						expect(data).to.have.length(1);
+						expect(data.data).to.have.length(1);
 
 						// investigate the first (and only) invoice
-						var inv = data[0];
+						var inv = data.data[0];
 						logger.verbose('Retrieved invoice []' + testUpdate.invoiceId, { data: inv });
 						expect(inv).to.be.an('object');
 						expect(inv.comment).to.be.equal(testUpdate.comment);
@@ -290,12 +293,13 @@ describe('Invoice API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var result = res.body;
 
 					// no error on saving
-					expect(data).to.not.contain.key('error');
+					expect(result).to.not.contain.key('error').and.contain.key('info');
 
-					expect(data.affectedRows).to.be.equal(1);
+					var info = result.info;
+					expect(info.affectedRows).to.be.equal(1);
 
 					// retrieve invoice and check if saved correctly
 					retrieveInvoice(testDelete.invoiceId, function (data, err) {
@@ -303,8 +307,8 @@ describe('Invoice API', function () {
 						expect(err).to.be.null;
 
 						// no invoices returned
-						expect(data).to.be.an('array');
-						expect(data).to.have.length(0);
+						expect(data.data).to.be.an('array');
+						expect(data.data).to.have.length(0);
 					});
 
 					done();

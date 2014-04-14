@@ -80,7 +80,7 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// 10 records returned
@@ -103,7 +103,7 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// 10 records returned
@@ -137,7 +137,7 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// investigate the first record
@@ -157,7 +157,7 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// 2 projects returned per page
@@ -182,7 +182,7 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// only 1 record returned
@@ -198,19 +198,16 @@ describe('Record API', function () {
 				});
 		});
 
-		it.skip('should return a complete month using the parameter "month"', function (done) {
-			var month = '201301';
-			var nrOfRecords = 17; // expected number of records for this month
+		it('should return a complete month using the parameter "month"', function (done) {
+			var month = '201011';
+			var nrOfRecords = 22; // expected number of records for this month
 			request(app)
-				.get('/records?month=' + month)
+				.get('/records?n=100&month=' + month)
 				.end(function (err, res) {
 					if (err) {
 						throw err;
 					}
-					var result = res.body;
-					expect(result).to.be.an('array');
-
-					var data = result.data;
+					var data = res.body.data;
 
 					// 17 records returned for this month
 					expect(data).to.have.length(nrOfRecords);
@@ -235,10 +232,7 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var result = res.body;
-					expect(result).to.be.an('array');
-
-					var data = result.data;
+					var data = res.body.data;
 
 					// 17 records returned for this month
 					expect(data).to.have.length(nrOfRecords);
@@ -264,10 +258,7 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var result = res.body;
-					expect(result).to.be.an('array');
-
-					var data = result.data;
+					var data = res.body.data;
 
 					// 17 records returned for this month
 					expect(data).to.have.length(nrOfRecords);
@@ -324,16 +315,17 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var result = res.body;
 
 					// no error on saving
-					expect(data).to.not.contain.key('error');
+					expect(result).to.not.contain.key('error');
+					var info = result.info;
 
-					logger.verbose('Posted data', { data: data });
+					logger.verbose('Posted data', { data: testRec });
 
 					// recordId returned
-					expect(data.insertId).to.be.a('number');
-					var recordId = data.insertId;
+					var recordId = info.insertId;
+					expect(recordId).to.be.a('number');
 
 					// retrieve record and check if saved correctly
 					retrieveRecord(recordId, function (data, err) {
@@ -341,10 +333,10 @@ describe('Record API', function () {
 						expect(err).to.be.null;
 
 						// only 1 record returned
-						expect(data).to.have.length(1);
+						expect(data.data).to.have.length(1);
 
 						// investigate the first record
-						var rec = data[0];
+						var rec = data.data[0];
 						logger.verbose('Retrieved record []' + recordId, { data: rec });
 						expect(rec).to.be.an('object');
 						expect(rec.description).to.be.equal(testRec.description);
@@ -371,11 +363,13 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var result = res.body;
+					expect(result).to.be.an('Object').and.have.key('error');
 
-					expect(data).to.be.an('Object');
-					expect(data).to.have.keys('errorCode', 'errorObj', 'message');
-					expect(data.errorCode).to.be.at.least(1000);
+					var error = result.error;
+					expect(error).to.be.an('Object')
+						.and.have.keys('errorCode', 'errorObj', 'message')
+					expect(error.errorCode).to.be.at.least(1000);
 
 					done();
 				});
@@ -390,14 +384,15 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var result = res.body;
 
 					// no error on saving
-					expect(data).to.not.contain.key('error');
+					expect(result).to.not.contain.key('error');
+					expect(result).to.contain.key('info');
 
-					logger.verbose('In "should update a record": posted data', { data: data });
+					logger.verbose('In "should update a record": posted data', { data: testUpdate });
 
-					expect(data.affectedRows).to.be.equal(1);
+					expect(result.info.affectedRows).to.be.equal(1);
 
 					// retrieve record and check if saved correctly
 					retrieveRecord(testUpdate.recordId, function (data, err) {
@@ -405,10 +400,10 @@ describe('Record API', function () {
 						expect(err).to.be.null;
 
 						// only 1 record returned
-						expect(data).to.have.length(1);
+						expect(data.data).to.have.length(1);
 
 						// investigate the first (and only) record
-						var rec = data[0];
+						var rec = data.data[0];
 						logger.verbose('Retrieved record []' + testUpdate.recordId, { data: rec });
 						expect(rec).to.be.an('object');
 						expect(rec.description).to.be.equal(testUpdate.description);
@@ -426,12 +421,13 @@ describe('Record API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var result = res.body;
 
 					// no error on saving
-					expect(data).to.not.contain.key('error');
+					expect(result).to.not.contain.key('error');
+					expect(result).to.contain.key('info');
 
-					expect(data.affectedRows).to.be.equal(1);
+					expect(result.info.affectedRows).to.be.equal(1);
 
 					// retrieve record and check if saved correctly
 					retrieveRecord(testDelete.recordId, function (data, err) {
@@ -439,8 +435,8 @@ describe('Record API', function () {
 						expect(err).to.be.null;
 
 						// no records returned
-						expect(data).to.be.an('array');
-						expect(data).to.have.length(0);
+						expect(data.data).to.be.an('array');
+						expect(data.data).to.have.length(0);
 					});
 
 					done();

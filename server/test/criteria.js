@@ -20,8 +20,7 @@ describe('Criteria object', function () {
 		c.addRaw(literalCriterion);
 		var result = c.get();
 
-		expect(result).to.be.an('Array');
-		expect(result).to.have.lengthOf(1);
+		expect(result).to.be.an('Array').and.have.a.lengthOf(1);
 		expect(result[0]).to.be.equal(literalCriterion);
 
 		done();
@@ -36,12 +35,10 @@ describe('Criteria object', function () {
 		c.add(attr).equalTo(value);
 		var result = c.get();
 
-		expect(result).to.be.an('Array');
-		expect(result).to.have.lengthOf(1);
+		expect(result).to.be.an('Array').and.have.a.lengthOf(1);
 
 		var item = result[0];
-		expect(item).to.be.a('String');
-		expect(item).to.be.equal(attr + '=' + value);
+		expect(item).to.be.a('String').equal(attr + '=' + value);
 
 		done();
 	});
@@ -61,12 +58,11 @@ describe('Criteria object', function () {
 		c.add(attr).between(from, to);
 		var result = c.get();
 
-		expect(result).to.be.an('Array');
-		expect(result).to.have.lengthOf(1);
+		expect(result).to.be.an('Array').and.have.a.lengthOf(1);
 
 		var item = result[0];
-		expect(item).to.be.a('String');
-		expect(item).to.be.equal(attr + ' between \'2014-02-01 08:01:02\' and \'2014-02-01 16:30:07\'');
+		expect(item).to.be.a('String')
+			.equal(attr + ' between \'2014-02-01 08:01:02\' and \'2014-02-01 16:30:07\'');
 
 		done();
 	});

@@ -1,5 +1,6 @@
-var Model = require(__dirname + '/../utils/model');
-var utils = require(__dirname + '/../utils/utils');
+var Model = require(__dirname + '/../utils/model'),
+	utils = require(__dirname + '/../utils/utils'),
+	moment = require('moment');
 
 
 var record = new Model();
@@ -79,5 +80,27 @@ record.attributes = {
 
 record.orderBy = 'starttime DESC';
 
-
+/**
+ * Model-specific API parameters
+ * @method setCriteria
+ * @param params will be passed by Model and contains request.query.params
+ * @param criteria {Object{} a Criteria object which will be passed by Model and
+ *   must be used to add model-specific criteria
+ */
+record.setCriteria = function(params, criteria) {
+	var m = params.month;
+	if (m) {
+		if (m.length == 6 && m >= 190000 && m <= 230000) {
+			var start = m + '01';
+			// month in new Date(year, month) must be beginning with 0, so if we
+			// don't substract  1 from the month, it means automatically the next
+			// month - which is exactly what we need:
+			var d = new Date(m.substr(0, 4), parseInt(m.substr(4, 2)));
+			var end = moment(d).format('YYYYMMDD');
+			criteria.add('starttime').between(start, end);
+		} else {
+			logger.error('Illegal parameter format for parameter records/month: [%s], should be YYYYMM', m);
+		}
+	}
+};
 module.exports = record;

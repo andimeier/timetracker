@@ -12,14 +12,14 @@ var changeCase = require('change-case'),
  * @method mapToJsonKeys
  * @return {Object} Error object on error
  */
-exports.mapToJsonKeys = function(rows, fieldMapping) {
+exports.mapToJsonKeys = function (rows, fieldMapping) {
 
 	if (!fieldMapping) {
 		return new Error("function [mapToJsonKeys]: Missing parameter fieldMapping");
 	}
 
 	var result = [];
-	rows.forEach(function(item) {
+	rows.forEach(function (item) {
 		// map field names
 		for (jsonKey in fieldMapping) {
 			if (item[fieldMapping[jsonKey]] !== undefined && fieldMapping[jsonKey] != jsonKey) {
@@ -38,10 +38,10 @@ exports.mapToJsonKeys = function(rows, fieldMapping) {
  * @param {Array} rows
  * @returns {Array}
  */
-exports.changeKeysToCamelCase = function(rows) {
+exports.changeKeysToCamelCase = function (rows) {
 
 	var result = [];
-	rows.forEach(function(item) {
+	rows.forEach(function (item) {
 		// map field names
 		for (key in item) {
 			var newKey = changeCase.camelCase(key);
@@ -60,16 +60,16 @@ exports.changeKeysToCamelCase = function(rows) {
  * @method changeKeysToSnakeCase
  * @param obj {Object/Array} Can be a (single) object or a list of objects.
  * @return {Object/Array} If a single object was passed as a parameter, the modified object will be returned.
- *   If a list of objects was passed as a parameter, then a list of modified objects will be 
+ *   If a list of objects was passed as a parameter, then a list of modified objects will be
  *   returned.
  */
-exports.changeKeysToSnakeCase = function(obj) {
+exports.changeKeysToSnakeCase = function (obj) {
 
 	var result;
 	if (Array.isArray(obj)) {
 		// list of objects => call recursively
 		result = [];
-		obj.forEach(function(o) {
+		obj.forEach(function (o) {
 			result.push(changeKeysToSnakeCase(o));
 		});
 	} else {
@@ -113,14 +113,16 @@ exports.changeKeysToSnakeCase = function(obj) {
  *   }
  * @throws Error if the passed object is an array instead of a single object (should never happen)
  */
-exports.getInsertLists = function(obj, escape) {
+exports.getInsertLists = function (obj, escape) {
 
 	if (Array.isArray(obj)) {
 		throw new Error("Function 'getUpdateLists': passed object is not a single object, but an array");
 	}
 
 	// if no escaping callback is given, do not transform at all
-	escape = escape || function(value) { return value; };
+	escape = escape || function (value) {
+		return value;
+	};
 
 	// loop through all properties of the given object and build the result lists
 	var keys = [],
@@ -161,14 +163,16 @@ exports.getInsertLists = function(obj, escape) {
  *   "key='value1', key2='value2', ...
  * @throws Error if the passed object is an array instead of a single object (should never happen)
  */
-exports.getUpdateString = function(obj, escape) {
+exports.getUpdateString = function (obj, escape) {
 
 	if (Array.isArray(obj)) {
 		throw new Error("Function 'getUpdateColumnString': passed object is not a single object, but an array");
 	}
 
 	// if no escaping callback is given, do not transform at all
-	escape = escape || function(value) { return value; };
+	escape = escape || function (value) {
+		return value;
+	};
 
 	// loop through all properties of the given object and build the result
 	var parts = [];
@@ -182,7 +186,7 @@ exports.getUpdateString = function(obj, escape) {
 /**
  * Filters the list of objects or the single object given so that for each object
  * only the specified attributes are used. All other attributes are discarded. If an unknown
- * field is specified which cannot be found as an object property, it is silently ignored 
+ * field is specified which cannot be found as an object property, it is silently ignored
  * (no error produced).
  *
  * @method filterProperties
@@ -192,15 +196,15 @@ exports.getUpdateString = function(obj, escape) {
  *   If obj is a single object, then the filtered single object is returned. If obj is a
  *   list of objects, a list of filtered objects is returned.
  */
-exports.filterProperties = function(obj, fields) {
+exports.filterProperties = function (obj, fields) {
 
-	var filter = function(obj, fd) {
+	var filter = function (obj, fd) {
 		var filteredObj = {};
-		fd.forEach(function(property) {
+		fd.forEach(function (property) {
 			if (typeof(obj[property]) != 'undefined') {
 				// preserve this field
 				filteredObj[property] = obj[property];
-			} 
+			}
 		});
 		return filteredObj;
 	}
@@ -209,7 +213,7 @@ exports.filterProperties = function(obj, fields) {
 	if (Array.isArray(obj)) {
 		// list of objects => filter each entry separately
 		result = [];
-		obj.forEach(function(item) {
+		obj.forEach(function (item) {
 			// result.push(changeKeysToSnakeCase(o));
 			// result.push(filterProperties(o, fields));
 			result.push(filter(item, fields));
@@ -222,44 +226,59 @@ exports.filterProperties = function(obj, fields) {
 }
 
 /**
- * Sends the result of the operation back to the client.
+ * Sends the result of the operation back to the client. The response body will contain a JSON
+ * object containing the information. In error case, the response will consist of a JSON object
+ * with the only key 'error', which contains further attributes describing the error.
+ * In success case, the response will consist of a maximum of 2 keys:
+ * * data ... contains the requested data (rows)
+ * * info ... contains additional info (metainformation) about the query, such as
+ * number of affected rows
  * @method sendResult
  * @param res {Object} the response object which will be used for the response
- * @param data {Object} the retrieved data. This will be sent as JSON data in the response body
+ * @param data {Object} the retrieved data. This will be sent under the key 'data' in the
+ *   response body
+ * @param info {Object} metadata about the query. This may contain information like numbers of
+ *   affected rows, numbers of rows retrieved, indication if there are further 'pages' to be
+ *   retrieved etc. This will be sent under the key 'info' in the response body
  * @param err {Object} the error, if any. If there, the error object will be sent back in the
  *   response body as JSON object with a HTTP error status code. If the error object is a
  *   standard error object (errorCode/errorObj/message), it will be propagated "as is". If the
  *   error object is something else, a standard error object will be created, including the
  *   error object in the property 'errorObj'.
  */
-exports.sendResult = function(res, data, err) {
-  if (err != null) {
+exports.sendResult = function (res, data, info, err) {
+	if (err != null) {
 
-	  var e;
+		var e;
 //	  console.log('passed err object: ' + JSON.stringify(err));
-	  if (typeof(err) === 'object' && err.errorCode) {
+		if (typeof(err) === 'object' && err.errorCode) {
 //		  console.log('already an error object prepared => propagate it');
-		  // already an error object prepared => propagate it:
-		  e = error({
-			  errorCode: err.errorCode,
-			  errorObj: err.errorObj,
-			  message: err.message || 'Query error'
-		  });
-	  } else {
+			// already an error object prepared => propagate it:
+			e = error({
+				errorCode: err.errorCode,
+				errorObj: err.errorObj,
+				message: err.message || 'Query error'
+			});
+		} else {
 //		  console.log('error is not an object or no object looking like "our" error object');
 //		  console.log('typepf = [%s], err.errorCode=[%s]', typeof(err), err.errorCode || 'NULL');
-		  // error is not an object or no object looking like "our"
-		  // error object => wrap it into "our" error object
-		  e = error({
-			  errorCode: 1002,
-			  errorObj: err,
-			  message: 'Query error'
-		  });
-	  }
+			// error is not an object or no object looking like "our"
+			// error object => wrap it into "our" error object
+			e = error({
+				errorCode: 1002,
+				errorObj: err,
+				message: 'Query error'
+			});
+		}
 
-    res.send(400, e);
-  } else {
+		res.send(400, {
+			error: e
+		});
+	} else {
 
-    res.send(200, data);
-  }
+		res.send(200, {
+			data: data,
+			info: info
+		});
+	}
 }

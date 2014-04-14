@@ -38,6 +38,13 @@ project.limit = 200;
 project.orderBy = 'name';
 
 
+/**
+ * Model-specific API parameters
+ * @method setCriteria
+ * @param params will be passed by Model and contains request.query.params
+ * @param criteria {Object{} a Criteria object which will be passed by Model and
+ *   must be used to add model-specific criteria
+ */
 project.setCriteria = function(params, criteria) {
 	if (params.set && params.set === 'all') {
 		// don't add a constraint for limiting the result set

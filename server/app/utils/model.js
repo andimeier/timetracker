@@ -37,10 +37,11 @@ Model.prototype.select = '';
  * values on writing a model is triggered by declaring the attribute to be a 'datetime'
  * field. Also, this property will determine whether values for this attribute will be
  * quoted or not. The type can be:
- * 		- datetime (will be quoted)
- * 		- string (will be quoted)
- * 		- number (will _not_ be quoted)
- * 		- boolean (will _not_ be quoted)
+ *        - datetime (will be quoted)
+ *        - string (will be quoted)
+ *        - number (will _not_ be quoted)
+ *        - boolean (will _not_ be quoted)
+ * If 'type' is omitted, the value will be quoted by default.
  * * 'default' ... default value when not specified. Note that this is either a literal
  * which will be used as field value or one of the following special values:
  * '@NOW' (will be translated to MySql's now() function), '@USER_ID' (the user ID of the
@@ -148,7 +149,6 @@ Model.prototype.mapParams = function (params) {
 };
 
 
-
 /**
  * Converts and formats field values, if applicable. The values of the object's
  * properties are changed directly if the respective property is of
@@ -162,14 +162,22 @@ Model.prototype.formatFieldValues = function (obj) {
 	_(obj).forIn(function (value, key, obj) {
 		var attr = this.attributes[key];
 
-		if (attr && attr.type) {
-			switch (attr.type) {
-				case 'datetime':
-					obj[key] = global.mysql.escape(this.formatDate(value));
-					break;
-				case 'string':
-					obj[key] = global.mysql.escape(value);
-					break;
+		if (attr) {
+			if (attr.type) {
+				switch (attr.type) {
+					case 'datetime':
+						obj[key] = global.mysql.escape(this.formatDate(value));
+						break;
+					case 'string':
+						obj[key] = global.mysql.escape(value);
+						break;
+					case 'boolean':
+						obj[key] = value ? 1 : 0;
+						break;
+				}
+			} else {
+				// if 'type' is not defined, quote the value by default
+				obj[key] = global.mysql.escape(value);
 			}
 		}
 	}, this);
@@ -264,36 +272,30 @@ Model.prototype.removeUnacceptableFields = function (obj, method) {
  *   be considered when writing the model to the database
  */
 Model.prototype.getCalculatedAttributes = function (obj, userId) {
-//		console.log('))))) getCalculatedAttributes!');
 	var calculatedAttributes = {}
 	_(this.attributes).forIn(function (value, key) {
-//			console.log('Checking next attr [%s] ...', key);
 		if (value.default && !obj[key]) {
 			var column = this.stripTableAlias(value.column);
 			switch (value.default) {
 				case '@NOW':
 					calculatedAttributes[column] = 'now()';
-//						console.log('adding calc attr [%s]: now()', key);
 					break;
 				case '@USER_ID':
 					calculatedAttributes[column] = userId;
-//						console.log('assigning userId to [%s] ...', key);
 					break;
 				default:
-//						console.log('assigning default value of [] to [%s] ...', value.default, key);
 					calculatedAttributes[column] = value.default;
 			}
-//			} else {
-//				console.log('No default value defined for [%s] ...', key);
 		}
 	}, this);
-//		console.log('calculatedAttributes are: ' + JSON.stringify(calculatedAttributes));
 	return calculatedAttributes;
 };
 
 
 /*
- * Formats a JSON date string for being used in an SQL expression.
+ * Formats a JSON date string for being used in an SQL expression. If seconds or minutes/seconds
+ * or hours/minutes/seconds are omitted, the missing parts will be considered '00'.
+ *
  * @method formatDate
  * @param datetime {String} date time string in the compact format 20140301T180103 (YYYYMMDD'T'hhmmss)
  * @return {*} null if input is null or undefined, the datetime expression in SQL format otherwise
@@ -305,14 +307,12 @@ Model.prototype.formatDate = function (datetime) {
 		return null;
 	}
 
-	logger.verbose('called formatDate with [' + datetime + ']');
-	var r = datetime.slice(0, 4)
-		+ '-' + datetime.slice(4, 6)
-		+ '-' + datetime.slice(6, 8)
-		+ ' ' + datetime.slice(9, 11)
-		+ ':' + datetime.slice(11, 13)
-		+ ':' + (datetime.slice(13, 15) || '00') // seonds may be omitted
-	logger.verbose(' --- will return: ' + r);
+	var r = datetime.substr(0, 4)
+		+ '-' + datetime.substr(4, 2)
+		+ '-' + datetime.substr(6, 2)
+		+ ' ' + (datetime.substr(9, 2) || '00')
+		+ ':' + (datetime.substr(11, 2) || '00')
+		+ ':' + (datetime.substr(13, 2) || '00') // seconds may be omitted
 	return r;
 }
 
@@ -334,7 +334,7 @@ Model.prototype.stripTableAlias = function (column) {
 
 
 /**
- * Validates the attributse and returns validation errors.
+ * Validates the attributes and returns validation errors.
  * @method validate
  * @param obj {Object} the object (model) to be validated
  * @return {Array} list of validation error messages. If the method returns an empty array,
@@ -344,7 +344,6 @@ Model.prototype.validate = function (obj) {
 	var errorMessages = [];
 	_(this.attributes).forIn(function (value, key) {
 		if (value.required && !obj[key]) {
-//			console.log('Attribute [' + key + '] is required for new records but was not given, obj is: ' + JSON.stringify(obj));
 			errorMessages.push('Attribute [' + key + '] is mandatory and missing');
 		}
 	}, this);
@@ -361,9 +360,10 @@ Model.prototype.validate = function (obj) {
  *   to be used for this is defined in the property this.keyCol.
  * @param userId the user ID of the session user
  * @param callback {Function} a callback function which is called when the
- *   record has been retrieved. It must accept two parameters:
- *   data (the record data as array with length==1) and err (error
- *   object).
+ *   record has been retrieved. It must accept the following parameters:
+ *   * data (the record data as array with length==1)
+ *   * info (metadata, e.g. number of rows)
+ *   * err (error object)
  */
 Model.prototype.findById = function (id, userId, callback) {
 
@@ -389,7 +389,7 @@ Model.prototype.findById = function (id, userId, callback) {
 			// close connection
 			connection.release();
 
-			callback(result, err);
+			callback(result, { rows: 1 }, err);
 		});
 	});
 
@@ -423,12 +423,12 @@ Model.prototype.buildOrderByString = function (orderBy) {
 			self.attributes[a].column : null;
 	};
 
-	// just for isolated unit testing of this class, use the following
-	// lines to have the log messages appear on the console:
-	var logger = function () {
-	};
-	logger.verbose = console.log;
-	logger.error = console.log;
+//	// just for isolated unit testing of this class, use the following
+//	// lines to have the log messages appear on the console:
+//	var logger = function () {
+//	};
+//	logger.verbose = console.log;
+//	logger.error = console.log;
 
 	if (orderBy) {
 		// split orderBy string to get all involved fields
@@ -470,7 +470,7 @@ Model.prototype.buildOrderByString = function (orderBy) {
 }
 
 /**
- * Finds some records by specified criteria and return them
+ * Finds some records by specified criteria and returns them.
  * @method findAll
  * @param params {Object} object containing parameters for the query.
  *   Parameter set depends on the model instance, but typical parameters are:
@@ -483,9 +483,10 @@ Model.prototype.buildOrderByString = function (orderBy) {
  *      'limit', defaulting to the default value otherwise. The first page is page 1.
  * @param userId the user ID of the session user
  * @param callback {Function} a callback function which is called when the
- *   records have been retrieved. It must accept two parameters:
- *   data (the record data as array of retrieved records) and err (error
- *   object).
+ *   records have been retrieved. It must accept the following parameters:
+ *   * data (the record data as array of retrieved records)
+ *   * info (metadata, e.g. number of rows)
+ *   * err (error object)
  */
 Model.prototype.findAll = function (params, userId, callback) {
 
@@ -496,31 +497,18 @@ Model.prototype.findAll = function (params, userId, callback) {
 		whereClause, // assembled where clause
 		sortClause; // assembled sort clause
 
-	// model-specific input parameters?
+	// process model-specific input parameters
 	if (typeof(this.setCriteria) === 'function') {
 		criteria = new Criteria();
-
-		debugger;
 		this.setCriteria(params, criteria);
 		var constraints = criteria.get();
-//		_.forEach(criteria.get(), function() {
-//			if (typeof(value) === 'array') {
-//				// translate attribute name into database column name
-//				constraints.push(getDatabaseColumn(value[0]) + ' ' + value[1]);
-//			} else {
-//				// string == raw criterion, take it as is
-//				constraints.push(value);
-//			}
-//		}, this);
-		console.log('nach "setCriteria: criteria = ' + JSON.stringify(constraints));
 		if (constraints.length) {
 			whereClause = 'WHERE ' + constraints.join(' AND ');
 		}
-	} else {
-		console.log('No function setCriteria defined');
 	}
 	whereClause = whereClause || '';
 
+	debugger;
 	this.mapParams(params);
 
 	if (params.fields) {
@@ -544,8 +532,6 @@ Model.prototype.findAll = function (params, userId, callback) {
 			limitClause += ' OFFSET ' + (limit[1] - 1) * limit[0];
 		}
 	}
-	;
-
 
 	var sql = _.compact([this.select, whereClause, sortClause, limitClause]).join(' ');
 	logger.verbose('=====> (in model.js) NEW select is [' + sql + ']');
@@ -570,7 +556,7 @@ Model.prototype.findAll = function (params, userId, callback) {
 			// close connection
 			connection.release();
 
-			callback(result, err);
+			callback(result, { rows: result.length } , err);
 		});
 	});
 
@@ -582,9 +568,10 @@ Model.prototype.findAll = function (params, userId, callback) {
  * @param obj {Object} the object to be written
  * @param userId the user ID of the session user
  * @param callback {Function} a callback function which is called when the
- *   record has been written. It must accept two parameters:
- *   data (some info data with respect to the written record) and err (error
- *   object).
+ *   record has been written. It must accept the following parameters:
+ *   * data (will be empty in this case as no rows are returned)
+ *   * info (metadata, some info data with respect to the written record)
+ *   * err (error object).
  */
 Model.prototype.add = function (obj, userId, callback) {
 
@@ -597,7 +584,6 @@ Model.prototype.add = function (obj, userId, callback) {
 
 	// begin input validation
 	// ----------------------
-//	console.log('obj is now (1): ' + JSON.stringify(obj));
 
 	var validationErrors = this.validate(obj);
 	if (validationErrors.length) {
@@ -607,7 +593,7 @@ Model.prototype.add = function (obj, userId, callback) {
 			message: 'Validation error',
 			errorObj: validationErrors
 		})
-		callback(null, err);
+		callback(null, null, err);
 
 	} else {
 		// input is ok, let's write to DB
@@ -648,7 +634,7 @@ Model.prototype.add = function (obj, userId, callback) {
 				// close connection
 				connection.release();
 
-				callback(result, err);
+				callback({}, result, err);
 			});
 		});
 	}
@@ -662,15 +648,16 @@ Model.prototype.add = function (obj, userId, callback) {
  * @param obj {Object} the object to be written
  * @param userId the user ID of the session user
  * @param callback {Function} a callback function which is called when the
- *   record has been written. It must accept two parameters:
- *   data (some info data with respect to the written record) and err (error
- *   object).
+ *   record has been written. It must accept the following parameters:
+ *   * data (will be empty in this case as no rows are returned)
+ *   * info (metadata, some info data with respect to the written record)
+ *   * err (error object).
  */
 Model.prototype.update = function (id, obj, userId, callback) {
 
 	var recordId = parseInt(id);
 	if (!recordId) {
-		callback(null, error({
+		callback(null, null, error({
 			errorCode: 1003,
 			message: 'No ID passed in the API call'
 		}));
@@ -696,7 +683,7 @@ Model.prototype.update = function (id, obj, userId, callback) {
 			message: 'Validation error',
 			errorObj: validationErrors
 		})
-		callback(null, err);
+		callback(null, null, err);
 
 	} else {
 		// input is ok, let's write to DB
@@ -742,7 +729,7 @@ Model.prototype.update = function (id, obj, userId, callback) {
 				// close connection
 				connection.release();
 
-				callback(result, err);
+				callback({}, result, err);
 			});
 		});
 	}
@@ -756,15 +743,16 @@ Model.prototype.update = function (id, obj, userId, callback) {
  *   to be used for this is defined in the property this.keyCol.
  * @param userId the user ID of the session user
  * @param callback {Function} a callback function which is called when the
- *   record has been written. It must accept two parameters:
- *   data (some info data with respect to the written record) and err (error
- *   object).
+ *   record has been written. It must accept the following parameters:
+ *   * data (will be empty in this case as no rows are returned)
+ *   * info (metadata, some info data with respect to the written record)
+ *   * err (error object).
  */
 Model.prototype.delete = function (id, userId, callback) {
 
 	var recordId = parseInt(id);
 	if (!recordId) {
-		callback(null, error({
+		callback(null, null, error({
 			errorCode: 1003,
 			message: 'No ID passed in the API call'
 		}));
@@ -795,7 +783,7 @@ Model.prototype.delete = function (id, userId, callback) {
 			// close connection
 			connection.release();
 
-			callback(result, err);
+			callback({}, result, err);
 		});
 	});
 };

@@ -25,7 +25,7 @@ describe('Project API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// 7 projects returned
@@ -45,7 +45,7 @@ describe('Project API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// 7 projects returned
@@ -75,7 +75,7 @@ describe('Project API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// only 1 record returned
@@ -99,7 +99,7 @@ describe('Project API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// investigate the first record
@@ -119,7 +119,7 @@ describe('Project API', function () {
 					if (err) {
 						throw err;
 					}
-					var data = res.body;
+					var data = res.body.data;
 					expect(data).to.be.an('array');
 
 					// 10 projects returned

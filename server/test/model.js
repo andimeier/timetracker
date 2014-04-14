@@ -91,6 +91,61 @@ describe('Model object', function () {
 
 		result = model.formatDate('20140301T1802');
 		expect(result).to.be.equal('2014-03-01 18:02:00');
+
+		result = model.formatDate('20140301');
+		expect(result).to.be.equal('2014-03-01 00:00:00');
+
+		result = model.formatDate('20140301T08');
+		expect(result).to.be.equal('2014-03-01 08:00:00');
+
+		result = model.formatDate('20140301T0804');
+		expect(result).to.be.equal('2014-03-01 08:04:00');
+
+		done();
+	});
+
+	it('should format and quote the object attributes correctly', function (done) {
+		var result;
+
+		var model = new Model();
+		model.attributes = {
+			'projectId': {
+				column: 'p.project_id',
+				type: 'number' },
+			'name': {
+				column: 'p.name',
+				type: 'string' },
+			'abbreviation': {
+				column: 'p.abbreviation',
+				type: 'string' },
+			'startdate': {
+				column: 'p.startdate',
+				type: 'datetime' },
+			'active': {
+				column: 'p.active',
+				type: 'boolean' },
+			'inactive': {
+				column: 'p.inactive',
+				type: 'boolean' }
+		};
+
+		var obj = {
+			projectId: 13,
+			name: 'Project name',
+			abbreviation: 'ProjName',
+			startdate: '20140103T0913',
+			active: true,
+			inactive: false
+		};
+
+		model.formatFieldValues(obj);
+
+		expect(obj.projectId).to.be.a('Number').and.be.equal(13);
+		expect(obj.name).to.be.a('String').and.be.equal("'Project name'");
+		expect(obj.abbreviation).to.be.a('String').and.be.equal("'ProjName'");
+		expect(obj.startdate).to.be.a('String').and.be.equal("'2014-01-03 09:13:00'");
+		expect(obj.active).to.be.a('Number').and.be.equal(1);
+		expect(obj.inactive).to.be.a('Number').and.be.equal(0);
 		done();
 	});
 });
