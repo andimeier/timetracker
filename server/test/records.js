@@ -223,9 +223,9 @@ describe('Record API', function () {
 				});
 		});
 
-		it.skip('should return a complete week using the parameter "week" (weekNo)', function (done) {
-			var week = '201310';
-			var nrOfRecords = 7; // expected number of records for this week
+		it('should return a complete week using the parameter "week" (weekNo)', function (done) {
+			var week = '201011'; // week 2010-10-11 ... 2010-10-18 = cw 2010/11
+			var nrOfRecords = 8; // expected number of records for this week
 			request(app)
 				.get('/records?week=' + week)
 				.end(function (err, res) {
@@ -241,7 +241,7 @@ describe('Record API', function () {
 					_.forEach(data, function (rec) {
 						expect(rec).to.be.an('object');
 						// check if all records belong to the requested month
-						expect(rec.starttime.substr(0, 6)).to.be.equal(month);
+//						expect(rec.starttime.substr(0, 6)).to.be.equal(month);
 						//@TODO check if all are in the same week
 					});
 
@@ -249,9 +249,9 @@ describe('Record API', function () {
 				});
 		});
 
-		it.skip('should return a complete week using the parameter "week" (a day in the week)', function (done) {
-			var week = '20130301';
-			var nrOfRecords = 7; // expected number of records for this week
+		it('should return a complete week using the parameter "week" (a day in the week)', function (done) {
+			var week = '20101013'; // week 2010-10-11 ... 2010-10-18 = cw 2010/11
+			var nrOfRecords = 8; // expected number of records for this week
 			request(app)
 				.get('/records?week=' + week)
 				.end(function (err, res) {
@@ -267,7 +267,7 @@ describe('Record API', function () {
 					_.forEach(data, function (rec) {
 						expect(rec).to.be.an('object');
 						// check if all records belong to the requested month
-						expect(rec.starttime.substr(0, 6)).to.be.equal(month);
+//						expect(rec.starttime.substr(0, 6)).to.be.equal(month);
 						//@TODO check if all are in the same week
 					});
 
@@ -275,7 +275,30 @@ describe('Record API', function () {
 				});
 		});
 
-		it('should include info about next page and previous page for browsing');
+		it.only('should include info about next page and previous page for browsing', function (done) {
+			request(app)
+				.get('/records?n=2&p=3')
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var result = res.body;
+
+					expect(result).to.contain.keys('data', 'info');
+
+					var data = result.data;
+					expect(data).to.be.an('array');
+
+					// 2 projects returned per page
+					expect(data).to.have.length(2);
+
+					var info = result.info;
+					expect(info.prevPage).to.be.equal(2);
+					expect(info.nextPage).to.be.equal(4);
+
+					done();
+				});
+		});
 	});
 
 

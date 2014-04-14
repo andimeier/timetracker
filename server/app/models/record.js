@@ -1,5 +1,6 @@
 var Model = require(__dirname + '/../utils/model'),
 	utils = require(__dirname + '/../utils/utils'),
+	dateUtils = require(__dirname + '/../utils/dateUtils'),
 	moment = require('moment');
 
 
@@ -100,6 +101,26 @@ record.setCriteria = function(params, criteria) {
 			criteria.add('starttime').between(start, end);
 		} else {
 			logger.error('Illegal parameter format for parameter records/month: [%s], should be YYYYMM', m);
+		}
+	}
+
+	var w = params.week;
+	if (w) {
+		debugger;
+		if (w.length == 6 && w.match(/^\d\d\d\d\d\d/)) {
+			// week given in the format YYYYWW (YYYY ... year, WW ... ISO nr of week)
+			var start = moment(dateUtils.startOfWeek(w));
+			var end = start.clone().add('d', 7);
+			criteria.add('starttime').between(start.format('YYYYMMDD'), end.format('YYYYMMDD'));
+
+		} else if(w.match(/^\d\d\d\d\d\d\d\d/)) {
+			// week specified as a date value somewhere in the week
+			var start = moment(dateUtils.startOfWeekFromDate(w));
+			var end = start.clone().add('w', 1);
+			criteria.add('starttime').between(start.format('YYYYMMDD'), end.format('YYYYMMDD'));
+
+		} else {
+			logger.error('Illegal parameter format for parameter records/week: [%s], should be YYYYWW or YYYYMMDD', w);
 		}
 	}
 };
