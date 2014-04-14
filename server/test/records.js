@@ -224,7 +224,7 @@ describe('Record API', function () {
 		});
 
 		it('should return a complete week using the parameter "week" (weekNo)', function (done) {
-			var week = '201011'; // week 2010-10-11 ... 2010-10-18 = cw 2010/11
+			var week = '201041'; // week 2010-10-11 ... 2010-10-18 = cw 2010/41
 			var nrOfRecords = 8; // expected number of records for this week
 			request(app)
 				.get('/records?week=' + week)
@@ -250,7 +250,7 @@ describe('Record API', function () {
 		});
 
 		it('should return a complete week using the parameter "week" (a day in the week)', function (done) {
-			var week = '20101013'; // week 2010-10-11 ... 2010-10-18 = cw 2010/11
+			var week = '20101013'; // week 2010-10-11 ... 2010-10-18 = cw 2010/41
 			var nrOfRecords = 8; // expected number of records for this week
 			request(app)
 				.get('/records?week=' + week)
@@ -275,7 +275,7 @@ describe('Record API', function () {
 				});
 		});
 
-		it.only('should include info about next page and previous page for browsing', function (done) {
+		it.skip('should include info about next page and previous page for browsing', function (done) {
 			request(app)
 				.get('/records?n=2&p=3')
 				.end(function (err, res) {
