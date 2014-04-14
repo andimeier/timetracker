@@ -5,6 +5,7 @@
  * @module model
  */
 var utils = require(__dirname + '/../utils/utils'),
+	Criteria = require('../utils/criteria'),
 	error = require('../utils/error'),
 	_ = require('lodash');
 
@@ -34,7 +35,12 @@ Model.prototype.select = '';
  * * 'type' ... data type, e.g. 'datetime'. This is for special treatment of the value
  * before saving resp. after reading it. For example, the conversion of date/time
  * values on writing a model is triggered by declaring the attribute to be a 'datetime'
- * field
+ * field. Also, this property will determine whether values for this attribute will be
+ * quoted or not. The type can be:
+ * 		- datetime (will be quoted)
+ * 		- string (will be quoted)
+ * 		- number (will _not_ be quoted)
+ * 		- boolean (will _not_ be quoted)
  * * 'default' ... default value when not specified. Note that this is either a literal
  * which will be used as field value or one of the following special values:
  * '@NOW' (will be translated to MySql's now() function), '@USER_ID' (the user ID of the
@@ -100,6 +106,28 @@ Model.prototype.paramMap = {
 	'p': 'page'
 };
 
+
+/**
+ * If defined, this method will be invoked when parsing the input parameters.
+ * By using this method, you can define special query parameters per model,
+ * e.g. a model "project" may have the API query parameter 'all=1' to
+ * retrieve all project, not just the active ones.
+ * If defined, the function should expect two parameters, the parameter
+ * object and the Criteria object. The parameter object contains all parameters
+ * which have been received by the API. The Criteria object can be used to set
+ * any database criteria, based on the parameters.
+ *
+ * @method setCriteria
+ * @example
+ *   model.setCriteria = function(params, criteria) {
+ *     if (params.quiteNew) {
+ *       criteria.add('date').between('2014', '2015')
+ *     }
+ *   };
+ */
+Model.prototype.setCriteria;
+
+
 /**
  * Maps alternative names for REST parameters to the "official" ones.
  * The passed parameters list is manipulated and the modified list
@@ -120,23 +148,27 @@ Model.prototype.mapParams = function (params) {
 };
 
 
-//
+
 /**
- * Converts field values, if applicable. The values of the object's
+ * Converts and formats field values, if applicable. The values of the object's
  * properties are changed directly if the respective property is of
  * a data type which need conversion. For example, date time values
  * will be formatted. The type of the property is specified in the
  * property 'type' of this.attributes.
+ * Quting (e.g. for string values) will be done here, too
  * @param obj {Object} object to be processed.
  */
-Model.prototype.convertFieldValues = function (obj) {
+Model.prototype.formatFieldValues = function (obj) {
 	_(obj).forIn(function (value, key, obj) {
 		var attr = this.attributes[key];
 
 		if (attr && attr.type) {
 			switch (attr.type) {
 				case 'datetime':
-					obj[key] = this.formatDate(value);
+					obj[key] = global.mysql.escape(this.formatDate(value));
+					break;
+				case 'string':
+					obj[key] = global.mysql.escape(value);
 					break;
 			}
 		}
@@ -144,7 +176,42 @@ Model.prototype.convertFieldValues = function (obj) {
 };
 
 
-//
+/**
+ * Converts field value, if applicable. The values of the object's
+ * properties are changed directly if the respective property is of
+ * a data type which need conversion. For example, date time values
+ * will be formatted. The type of the property is specified in the
+ * property 'type' of this.attributes.
+ * @param attribute {String} model attribute
+ * @param value {*} the value which might be converted (or left
+ *   unchanged if there is no conversion necessary)
+ * @return the converted attribute value or the unmodified value if
+ *   no conversion is applicable
+ */
+Model.prototype.convertFieldValue = function (attribute, value) {
+	var attr = this.attributes[key];
+
+	if (attr && attr.type) {
+		switch (attr.type) {
+			case 'datetime':
+				value = this.formatDate(value);
+				break;
+		}
+	}
+	return value;
+};
+
+
+/**
+ * Converts the attribute name into the corresponding database column name.
+ * @param attribute {String} model attribute
+ * @return the database column name of the specified attribute
+ */
+Model.prototype.getDatabaseColumn = function (attribute) {
+	return this.attributes[attribute];
+};
+
+
 /**
  * Remove unacceptable fields. Unacceptable fields are all fields (model properties)
  * which are not defined as being "safe" for the specified method.
@@ -244,7 +311,7 @@ Model.prototype.formatDate = function (datetime) {
 		+ '-' + datetime.slice(6, 8)
 		+ ' ' + datetime.slice(9, 11)
 		+ ':' + datetime.slice(11, 13)
-		+ ':' + datetime.slice(13, 15)
+		+ ':' + (datetime.slice(13, 15) || '00') // seonds may be omitted
 	logger.verbose(' --- will return: ' + r);
 	return r;
 }
@@ -422,13 +489,37 @@ Model.prototype.buildOrderByString = function (orderBy) {
  */
 Model.prototype.findAll = function (params, userId, callback) {
 
-	var constraints = [ '1=1'], // find constraints, default: not constrained
-		fields, // list of fields to be displayed in the output
+	var fields, // list of fields to be displayed in the output
 		orderBy = this.orderBy, // order by fields
 		limit = [this.limit, 1], // limit/pageNr for limit/offset clause
 		limitClause, // assembled limit clause
 		whereClause, // assembled where clause
 		sortClause; // assembled sort clause
+
+	// model-specific input parameters?
+	if (typeof(this.setCriteria) === 'function') {
+		criteria = new Criteria();
+
+		debugger;
+		this.setCriteria(params, criteria);
+		var constraints = criteria.get();
+//		_.forEach(criteria.get(), function() {
+//			if (typeof(value) === 'array') {
+//				// translate attribute name into database column name
+//				constraints.push(getDatabaseColumn(value[0]) + ' ' + value[1]);
+//			} else {
+//				// string == raw criterion, take it as is
+//				constraints.push(value);
+//			}
+//		}, this);
+		console.log('nach "setCriteria: criteria = ' + JSON.stringify(constraints));
+		if (constraints.length) {
+			whereClause = 'WHERE ' + constraints.join(' AND ');
+		}
+	} else {
+		console.log('No function setCriteria defined');
+	}
+	whereClause = whereClause || '';
 
 	this.mapParams(params);
 
@@ -440,9 +531,6 @@ Model.prototype.findAll = function (params, userId, callback) {
 		orderBy = params.orderBy;
 	}
 	sortClause = this.buildOrderByString(orderBy)
-
-	// build 'where' constraint
-	whereClause = 'WHERE ' + constraints.join(' and ');
 
 	if (params.limit) {
 		limit[0] = params.limit;
@@ -504,7 +592,7 @@ Model.prototype.add = function (obj, userId, callback) {
 //	console.log('User attempts to post a new record: ' + JSON.stringify(obj));
 
 	this.removeUnacceptableFields(obj, 'add');
-	this.convertFieldValues(obj);
+	this.formatFieldValues(obj);
 	var calculatedAttributes = this.getCalculatedAttributes(obj, userId);
 
 	// begin input validation
@@ -528,13 +616,13 @@ Model.prototype.add = function (obj, userId, callback) {
 
 			// convert case of the column names into database syntax
 			obj = utils.changeKeysToSnakeCase(obj);
-			var dataFields = utils.getInsertLists(obj, global.mysql.escape);
+			var dataFields = utils.getInsertLists(obj);
 
 			var columnNames = dataFields['keys'].join(',');
 			var values = dataFields['values'].join(',');
 			if (!_.isEmpty(calculatedAttributes)) {
 //				console.log('-----calc fields: ' + JSON.stringify(calculatedAttributes));
-//				convertFieldValues(calculatedAttributes, this);
+//				formatFieldValues(calculatedAttributes, this);
 //				console.log('-----AFTER CONVERT calc fields: ' + JSON.stringify(calculatedAttributes));
 //				console.log('YES there are calc fields');
 				var calcFields = utils.getInsertLists(calculatedAttributes);
@@ -593,7 +681,7 @@ Model.prototype.update = function (id, obj, userId, callback) {
 //	console.log('User attempts to update an existing record: ' + JSON.stringify(obj));
 
 	this.removeUnacceptableFields(obj, 'update');
-	this.convertFieldValues(obj);
+	this.formatFieldValues(obj);
 	var calculatedAttributes = this.getCalculatedAttributes(obj, userId);
 
 	// begin input validation
@@ -617,11 +705,11 @@ Model.prototype.update = function (id, obj, userId, callback) {
 
 			// convert case of the column names into database syntax
 			obj = utils.changeKeysToSnakeCase(obj);
-			var fieldAssignments = utils.getUpdateString(obj, global.mysql.escape);
+			var fieldAssignments = utils.getUpdateString(obj);
 
 			if (!_.isEmpty(calculatedAttributes)) {
 //				console.log('-----calc fields: ' + JSON.stringify(calculatedAttributes));
-//				convertFieldValues(calculatedAttributes, this);
+//				formatFieldValues(calculatedAttributes, this);
 //				console.log('-----AFTER CONVERT calc fields: ' + JSON.stringify(calculatedAttributes));
 //				console.log('YES there are calc fields');
 

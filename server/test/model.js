@@ -82,4 +82,15 @@ describe('Model object', function () {
 		expect(p.page).to.be.equal(3);
 		done();
 	});
+
+	it('should format a date value correctly', function (done) {
+		var result;
+
+		var result = model.formatDate('20140301T180103');
+		expect(result).to.be.equal('2014-03-01 18:01:03');
+
+		result = model.formatDate('20140301T1802');
+		expect(result).to.be.equal('2014-03-01 18:02:00');
+		done();
+	});
 });

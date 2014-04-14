@@ -123,15 +123,15 @@ describe('Project API', function () {
 					expect(data).to.be.an('array');
 
 					// 10 projects returned
-					expect(data).to.have.length(10);
+					expect(data).to.have.length(13);
 
 					// check that result contains active and inactive projects
 					var active = false,
 						inactive = false;
 					for (var i = 0; i < data.length; i++) {
-						if (data[i].active) {
+						if (data[i].active === 1) {
 							active = true;
-						} else if (data[i].inactive) {
+						} else if (data[i].active === 0) {
 							inactive = true;
 						}
 					}

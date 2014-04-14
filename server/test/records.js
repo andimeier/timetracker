@@ -8,6 +8,7 @@ var request = require('supertest'),
 	assert = require('assert'),
 	expect = require('chai').expect,
 	app = require('../app/server.js').app,
+	_ = require('lodash'),
 	credentials = require('./credentials.json');
 
 var Session = require('supertest-session')({
@@ -196,7 +197,96 @@ describe('Record API', function () {
 					done();
 				});
 		});
+
+		it.skip('should return a complete month using the parameter "month"', function (done) {
+			var month = '201301';
+			var nrOfRecords = 17; // expected number of records for this month
+			request(app)
+				.get('/records?month=' + month)
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var result = res.body;
+					expect(result).to.be.an('array');
+
+					var data = result.data;
+
+					// 17 records returned for this month
+					expect(data).to.have.length(nrOfRecords);
+
+					// investigate the records on this page
+					_.forEach(data, function (rec) {
+						expect(rec).to.be.an('object');
+						// check if all records belong to the requested month
+						expect(rec.starttime.substr(0, 6)).to.be.equal(month);
+					});
+
+					done();
+				});
+		});
+
+		it.skip('should return a complete week using the parameter "week" (weekNo)', function (done) {
+			var week = '201310';
+			var nrOfRecords = 7; // expected number of records for this week
+			request(app)
+				.get('/records?week=' + week)
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var result = res.body;
+					expect(result).to.be.an('array');
+
+					var data = result.data;
+
+					// 17 records returned for this month
+					expect(data).to.have.length(nrOfRecords);
+
+					// investigate the records on this page
+					_.forEach(data, function (rec) {
+						expect(rec).to.be.an('object');
+						// check if all records belong to the requested month
+						expect(rec.starttime.substr(0, 6)).to.be.equal(month);
+						//@TODO check if all are in the same week
+					});
+
+					done();
+				});
+		});
+
+		it.skip('should return a complete week using the parameter "week" (a day in the week)', function (done) {
+			var week = '20130301';
+			var nrOfRecords = 7; // expected number of records for this week
+			request(app)
+				.get('/records?week=' + week)
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var result = res.body;
+					expect(result).to.be.an('array');
+
+					var data = result.data;
+
+					// 17 records returned for this month
+					expect(data).to.have.length(nrOfRecords);
+
+					// investigate the records on this page
+					_.forEach(data, function (rec) {
+						expect(rec).to.be.an('object');
+						// check if all records belong to the requested month
+						expect(rec.starttime.substr(0, 6)).to.be.equal(month);
+						//@TODO check if all are in the same week
+					});
+
+					done();
+				});
+		});
+
+		it('should include info about next page and previous page for browsing');
 	});
+
 
 	describe('POST /records', function () {
 		it('should reject request because we are not logged in', function (done) {
@@ -397,59 +487,4 @@ describe('Record API', function () {
 		});
 
 	});
-
-	describe.skip('TEST TEST', function () {
-
-		it('should login', function (done) {
-			this.sess.post('/login')
-				.send({
-					user: credentials.login.username,
-					pass: credentials.login.password
-				})
-				.expect(200)
-				.end(done);
-		});
-
-
-		it('should update a record', function (done) {
-
-			this.sess.post('/records/' + testUpdate.recordId)
-				.send(testUpdate)
-				.expect(200)
-				.end(function (err, res) {
-					if (err) {
-						throw err;
-					}
-					var data = res.body;
-
-					// no error on saving
-					expect(data).to.not.contain.key('error');
-
-					logger.verbose('In "should update a record": posted data', { data: data });
-
-					expect(data.affectedRows).to.be.equal(1);
-					expect(data.changedRows).to.be.equal(1);
-
-					// retrieve record and check if saved correctly
-					retrieveRecord(testUpdate.recordId, function (data, err) {
-
-						expect(err).to.be.null;
-
-						// only 1 record returned
-						expect(data).to.have.length(1);
-
-						// investigate the first (and only) record
-						var rec = data[0];
-						logger.verbose('Retrieved record []' + testUpdate.recordId, { data: rec });
-						expect(rec).to.be.an('object');
-						expect(rec.description).to.be.equal(testUpdate.description);
-						expect(rec.starttime).to.be.equal(testUpdate.starttime);
-					});
-
-					done();
-				});
-		});
-	});
 });
-
-

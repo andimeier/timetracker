@@ -21,17 +21,23 @@ record.select = "SELECT " +
 record.attributes = {
 	'clientId': {
 		column: 'c.client_id',
+		type: 'number',
 		safe: [ 'add', 'update' ] },
 	'clientName': {
-		column: 'c.name' },
+		column: 'c.name',
+		type: 'string' },
 	'clientAbbreviation,': {
-		column: 'c.abbreviation' },
+		column: 'c.abbreviation',
+		type: 'string' },
 	'projectName': {
-		column: 'p.name' },
+		column: 'p.name',
+		type: 'string' },
 	'projectAbbreviation': {
-		column: 'p.abbreviation' },
+		column: 'p.abbreviation',
+		type: 'string' },
 	'recordId': {
 		column: 'r.record_id',
+		type: 'number',
 		safe: [ 'update' ] },
 	'starttime': {
 		column: 'r.starttime',
@@ -47,15 +53,19 @@ record.attributes = {
 		safe: [ 'add', 'update' ] },
 	'projectId': {
 		column: 'r.project_id',
+		type: 'number',
 		safe: [ 'add', 'update' ] },
 	'description': {
 		column: 'r.description',
+		type: 'string',
 		safe: [ 'add', 'update' ] },
 	'userId': {
 		column: 'r.user_id',
+		type: 'number',
 		default: '@USER_ID' },
 	'invoiceId': {
 		column: 'r.invoice_id',
+		type: 'number',
 		safe: [ 'add', 'update' ] },
 	'cdate': {
 		column: 'r.cdate',
@@ -68,5 +78,6 @@ record.attributes = {
 };
 
 record.orderBy = 'starttime DESC';
+
 
 module.exports = record;
