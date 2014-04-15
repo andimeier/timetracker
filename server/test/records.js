@@ -9,7 +9,9 @@ var request = require('supertest'),
 	expect = require('chai').expect,
 	app = require('../app/server.js').app,
 	_ = require('lodash'),
-	credentials = require('./credentials.json');
+	moment = require('moment'),
+	credentials = require('./credentials.json'),
+	dateUtils = require('../app/utils/dateUtils');
 
 var Session = require('supertest-session')({
 	app: require('../app/server.js').app
@@ -224,10 +226,10 @@ describe('Record API', function () {
 		});
 
 		it('should return a complete week using the parameter "week" (weekNo)', function (done) {
-			var week = '201041'; // week 2010-10-11 ... 2010-10-18 = cw 2010/41
+			var weekNo = '201041'; // week 2010-10-11 ... 2010-10-18 = cw 2010/41
 			var nrOfRecords = 8; // expected number of records for this week
 			request(app)
-				.get('/records?week=' + week)
+				.get('/records?week=' + weekNo)
 				.end(function (err, res) {
 					if (err) {
 						throw err;
@@ -241,8 +243,8 @@ describe('Record API', function () {
 					_.forEach(data, function (rec) {
 						expect(rec).to.be.an('object');
 						// check if all records belong to the requested month
-//						expect(rec.starttime.substr(0, 6)).to.be.equal(month);
-						//@TODO check if all are in the same week
+						var start = dateUtils.inflateDateTime(rec.starttime)
+						expect(moment(start).format('GGGGWW')).to.be.equal(weekNo);
 					});
 
 					done();
@@ -251,6 +253,7 @@ describe('Record API', function () {
 
 		it('should return a complete week using the parameter "week" (a day in the week)', function (done) {
 			var week = '20101013'; // week 2010-10-11 ... 2010-10-18 = cw 2010/41
+			var weekNo = '201041';
 			var nrOfRecords = 8; // expected number of records for this week
 			request(app)
 				.get('/records?week=' + week)
@@ -266,9 +269,9 @@ describe('Record API', function () {
 					// investigate the records on this page
 					_.forEach(data, function (rec) {
 						expect(rec).to.be.an('object');
-						// check if all records belong to the requested month
-//						expect(rec.starttime.substr(0, 6)).to.be.equal(month);
-						//@TODO check if all are in the same week
+						// check if all records belong to the requested mont
+						var start = dateUtils.inflateDateTime(rec.starttime);
+						expect(moment(start).format('GGGGWW')).to.be.equal(weekNo);
 					});
 
 					done();

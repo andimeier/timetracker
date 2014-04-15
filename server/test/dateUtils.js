@@ -49,4 +49,49 @@ describe('dateUtils', function () {
 
 		done();
 	});
+
+	it('should inflate a date time value', function (done) {
+
+		expect(dateUtils.inflateDateTime('dummy')).to.be.null;
+		expect(dateUtils.inflateDateTime(null)).to.be.null;
+		expect(dateUtils.inflateDateTime('2014031412111111')).to.be.null;
+		expect(dateUtils.inflateDateTime('201403141211111')).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314121111')).to.be.null;
+		expect(dateUtils.inflateDateTime('2014031412111')).to.be.null;
+		expect(dateUtils.inflateDateTime('201403141211')).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314121')).to.be.null;
+		expect(dateUtils.inflateDateTime('2014031412')).to.be.null;
+		expect(dateUtils.inflateDateTime('201403141')).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314')).to.be.equal('2014-03-14');
+		expect(dateUtils.inflateDateTime('2014031')).to.be.null;
+		expect(dateUtils.inflateDateTime('201401')).to.be.null;
+		expect(dateUtils.inflateDateTime('20141')).to.be.null;
+		expect(dateUtils.inflateDateTime('2011')).to.be.null;
+		expect(dateUtils.inflateDateTime('201')).to.be.null;
+		expect(dateUtils.inflateDateTime('20')).to.be.null;
+		expect(dateUtils.inflateDateTime('2')).to.be.null;
+		expect(dateUtils.inflateDateTime('')).to.be.null;
+
+		expect(dateUtils.inflateDateTime('20140314T12111111')).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T1211111')).to.be.null;
+		expect(dateUtils.inflateDateTime('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T121111')).to.be.equal('2014-03-14T12:11:11');
+		expect(dateUtils.inflateDateTime('20140314T12111')).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T1211')).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T121')).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T12')).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T1')).to.be.null;
+
+		expect(dateUtils.inflateDateTime('20140314T12111111', true)).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T1211111', true)).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T121111', true)).to.be.equal('2014-03-14');
+		expect(dateUtils.inflateDateTime('20140314T12111', true)).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T1211', true)).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T121', true)).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T12', true)).to.be.null;
+		expect(dateUtils.inflateDateTime('20140314T1', true)).to.be.null;
+
+		done();
+	});
+
 });
