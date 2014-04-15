@@ -37,10 +37,10 @@ Model.prototype.select = '';
  * values on writing a model is triggered by declaring the attribute to be a 'datetime'
  * field. Also, this property will determine whether values for this attribute will be
  * quoted or not. The type can be:
- *        - datetime (will be quoted)
- *        - string (will be quoted)
- *        - number (will _not_ be quoted)
- *        - boolean (will _not_ be quoted)
+ *      - datetime (will be quoted)
+ *      - string (will be quoted)
+ *      - number (will _not_ be quoted)
+ *      - boolean (will _not_ be quoted)
  * If 'type' is omitted, the value will be quoted by default.
  * * 'default' ... default value when not specified. Note that this is either a literal
  * which will be used as field value or one of the following special values:
@@ -362,7 +362,8 @@ Model.prototype.validate = function (obj) {
  * @param callback {Function} a callback function which is called when the
  *   record has been retrieved. It must accept the following parameters:
  *   * data (the record data as array with length==1)
- *   * info (metadata, e.g. number of rows)
+ *   * info (metadata), containing the following keys:
+ *       - rows: number of rows returned
  *   * err (error object)
  */
 Model.prototype.findById = function (id, userId, callback) {
@@ -485,7 +486,11 @@ Model.prototype.buildOrderByString = function (orderBy) {
  * @param callback {Function} a callback function which is called when the
  *   records have been retrieved. It must accept the following parameters:
  *   * data (the record data as array of retrieved records)
- *   * info (metadata, e.g. number of rows)
+ *   * info (metadata), containing the following keys:
+ *       - rows: number of rows returned
+ *       - pageSize: max. number of rows per page (equivalent to the 'limit' parameter
+ *       - nextPage: number of next page for pagination, or null if this is the last page
+ *       - prevPage: number of previous page for pagination, or null if this is the first page
  *   * err (error object)
  */
 Model.prototype.findAll = function (params, userId, callback) {
@@ -568,6 +573,7 @@ Model.prototype.findAll = function (params, userId, callback) {
 
 			callback(result, {
 				rows: result.length,
+				pageSize: limit || null,
 				nextPage: nextPage,
 				prevPage: page > 1 ? page - 1 : null
 			} , err);
@@ -584,7 +590,9 @@ Model.prototype.findAll = function (params, userId, callback) {
  * @param callback {Function} a callback function which is called when the
  *   record has been written. It must accept the following parameters:
  *   * data (will be empty in this case as no rows are returned)
- *   * info (metadata, some info data with respect to the written record)
+ *   * info (metadata), containing the following keys:
+ *       - insertId {number}: ID of the inserted row (value of AUTO_INCREMENT field)
+ *       - db {object}: database specific info returned from MySql
  *   * err (error object).
  */
 Model.prototype.add = function (obj, userId, callback) {
@@ -664,7 +672,9 @@ Model.prototype.add = function (obj, userId, callback) {
  * @param callback {Function} a callback function which is called when the
  *   record has been written. It must accept the following parameters:
  *   * data (will be empty in this case as no rows are returned)
- *   * info (metadata, some info data with respect to the written record)
+ *   * info (metadata), containing the following keys:
+ *       - affectedRows {number}: number of udpated rows
+ *       - db {object}: database specific info returned from MySql
  *   * err (error object).
  */
 Model.prototype.update = function (id, obj, userId, callback) {
@@ -759,7 +769,9 @@ Model.prototype.update = function (id, obj, userId, callback) {
  * @param callback {Function} a callback function which is called when the
  *   record has been written. It must accept the following parameters:
  *   * data (will be empty in this case as no rows are returned)
- *   * info (metadata, some info data with respect to the written record)
+ *   * info (metadata), containing the following keys:
+ *       - affectedRows {number}: number of deleted rows
+ *       - db {object}: database specific info returned from MySql
  *   * err (error object).
  */
 Model.prototype.delete = function (id, userId, callback) {
