@@ -492,10 +492,11 @@ Model.prototype.findAll = function (params, userId, callback) {
 
 	var fields, // list of fields to be displayed in the output
 		orderBy = this.orderBy, // order by fields
-		limit = [this.limit, 1], // limit/pageNr for limit/offset clause
+		limit = this.limit, // limit for limit/offset clause
 		limitClause, // assembled limit clause
 		whereClause, // assembled where clause
-		sortClause; // assembled sort clause
+		sortClause,  // assembled sort clause
+		page = 1, nextPage = null;
 
 	// process model-specific input parameters
 	if (typeof(this.setCriteria) === 'function') {
@@ -521,15 +522,17 @@ Model.prototype.findAll = function (params, userId, callback) {
 	sortClause = this.buildOrderByString(orderBy)
 
 	if (params.limit) {
-		limit[0] = params.limit;
+		limit = parseInt(params.limit);
 	}
 	if (params.page) {
-		limit[1] = params.page;
+		page = parseInt(params.page);
 	}
-	if (limit[0]) {
-		limitClause = 'LIMIT ' + limit[0];
-		if (limit[1]) {
-			limitClause += ' OFFSET ' + (limit[1] - 1) * limit[0];
+	if (limit) {
+		// retrieve one record beyond the limit to see if there are further
+		// records (for paginating)
+		limitClause = 'LIMIT ' + (limit + 1);
+		if (page) {
+			limitClause += ' OFFSET ' + (page - 1) * limit;
 		}
 	}
 
@@ -540,6 +543,13 @@ Model.prototype.findAll = function (params, userId, callback) {
 
 		// query the database to some data
 		connection.query(sql, function (err, rows) {
+
+			// if there is one record "too much", strip it and remember that
+			// there are further records for paginating ...
+			if (rows.length > limit) {
+				rows = rows.slice(0, limit);
+				nextPage = page + 1;
+			}
 
 			var result;
 			if (err === null) {
@@ -556,7 +566,11 @@ Model.prototype.findAll = function (params, userId, callback) {
 			// close connection
 			connection.release();
 
-			callback(result, { rows: result.length } , err);
+			callback(result, {
+				rows: result.length,
+				nextPage: nextPage,
+				prevPage: page > 1 ? page - 1 : null
+			} , err);
 		});
 	});
 

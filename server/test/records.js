@@ -278,7 +278,7 @@ describe('Record API', function () {
 				});
 		});
 
-		it.skip('should include info about next page and previous page for browsing', function (done) {
+		it('should include info about next page and previous page for browsing', function (done) {
 			request(app)
 				.get('/records?n=2&p=3')
 				.end(function (err, res) {
@@ -298,6 +298,133 @@ describe('Record API', function () {
 					var info = result.info;
 					expect(info.prevPage).to.be.equal(2);
 					expect(info.nextPage).to.be.equal(4);
+
+					done();
+				});
+
+		});
+
+		it('should include info about next page and previous page for browsing (test #2)', function (done) {
+			request(app)
+				.get('/records?n=2&p=1')
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var result = res.body;
+
+					expect(result).to.contain.keys('data', 'info');
+
+					var data = result.data;
+					expect(data).to.be.an('array');
+
+					// 2 projects returned per page
+					expect(data).to.have.length(2);
+
+					var info = result.info;
+					expect(info.prevPage).to.be.null;
+					expect(info.nextPage).to.be.equal(2);
+
+					done();
+				});
+
+		});
+
+		it('should include info about next page and previous page for browsing (test #3)', function (done) {
+			request(app)
+				.get('/records?n=2&p=1')
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var result = res.body;
+
+					expect(result).to.contain.keys('data', 'info');
+
+					var data = result.data;
+					expect(data).to.be.an('array');
+
+					// 2 projects returned per page
+					expect(data).to.have.length(2);
+
+					var info = result.info;
+					expect(info.nextPage).to.be.equal(2);
+					expect(info.prevPage).to.be.null;
+
+					done();
+				});
+		});
+
+		it('should include info about next page and previous page for browsing (test #4)', function (done) {
+			request(app)
+				.get('/records?n=60')
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var result = res.body;
+
+					expect(result).to.contain.keys('data', 'info');
+
+					var data = result.data;
+					expect(data).to.be.an('array');
+
+					// 2 projects returned per page
+					expect(data).to.have.length(60);
+
+					var info = result.info;
+					expect(info.nextPage).to.be.equal(2);
+					expect(info.prevPage).to.be.null;
+
+					done();
+				});
+		});
+
+		it('should include info about next page and previous page for browsing (test #5)', function (done) {
+			request(app)
+				.get('/records?n=60&p=1')
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var result = res.body;
+
+					expect(result).to.contain.keys('data', 'info');
+
+					var data = result.data;
+					expect(data).to.be.an('array');
+
+					// 2 projects returned per page
+					expect(data).to.have.length(60);
+
+					var info = result.info;
+					expect(info.nextPage).to.be.equal(2);
+					expect(info.prevPage).to.be.null;
+
+					done();
+				});
+		});
+
+		it('should include info about next page and previous page for browsing (test #6)', function (done) {
+			request(app)
+				.get('/records?n=60&p=2')
+				.end(function (err, res) {
+					if (err) {
+						throw err;
+					}
+					var result = res.body;
+
+					expect(result).to.contain.keys('data', 'info');
+
+					var data = result.data;
+					expect(data).to.be.an('array');
+
+					// 2 projects returned per page
+					expect(data).to.have.length(28);
+
+					var info = result.info;
+					expect(info.prevPage).to.be.equal(1);
+					expect(info.nextPage).to.be.null;
 
 					done();
 				});
