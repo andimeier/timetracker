@@ -1,8 +1,10 @@
+timetracker.log
+timetracker.test.log
+timetracker*.log
+doc/
+**/npm-debug.log
 **/node_modules/
-.tmp
-.sass-cache
 # config files for frontend and REST server are created 
 # by the build process depending on the
 # target environment, no need to be checked in:
-/app/scripts/services/config.js
-.idea/
+app/config/config.json
