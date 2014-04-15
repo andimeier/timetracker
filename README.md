@@ -30,4 +30,4 @@ Run unit tests
 *Note:* to successfully run the tests, it is necessary to prepare the database fixture data.
 Use the following statement to prepare the database before doing a `npm test`:
 
-    mysql -u $DB_USER -h $DB_HOST -p$DB_PWD $DB_NAME </server/test/fixtures/timetracker.fixtures.dump.sql
+    mysql -u $DB_USER -h $DB_HOST -p$DB_PWD $DB_NAME < test/fixtures/timetracker.fixtures.dump.sql
