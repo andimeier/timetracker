@@ -7,7 +7,7 @@ process.env.NODE_ENV = 'test';
 var request = require('supertest'),
 	assert = require('assert'),
 	expect = require('chai').expect,
-	app = require('../../server/app/server.js').app;
+	app = require('../app/server.js').app;
 
 describe('Project API', function () {
 	describe('GET /projects', function () {

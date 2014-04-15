@@ -11,13 +11,14 @@
     "moment": "~2.6.0"
   },
   "scripts": {
-	  "start": "node app/server.js",
-	  "test": "mocha --reporter spec test/*.js",
-	  "doc": "yuidoc --outdir doc ."
+    "start": "node app/server.js",
+    "test": "mocha --reporter spec test/*.js",
+    "doc": "yuidoc --outdir doc ."
   },
   "devDependencies": {
     "winston": "~0.7.3",
     "supertest": "~0.10.0",
-    "supertest-session": "0.0.1"
+    "supertest-session": "0.0.1",
+    "chai": "~1.9.1"
   }
 }
