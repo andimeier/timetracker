@@ -1,2 +1,5 @@
 timetracker.log
 timetracker.test.log
+timetracker*.log
+doc/
+**/npm-debug.log

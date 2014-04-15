@@ -11,7 +11,9 @@
     "moment": "~2.6.0"
   },
   "scripts": {
-    "test": "mocha --reporter spec test/*.js"
+	  "start": "node app/server.js",
+	  "test": "mocha --reporter spec test/*.js",
+	  "doc": "yuidoc --outdir doc ."
   },
   "devDependencies": {
     "winston": "~0.7.3",
