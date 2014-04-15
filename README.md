@@ -21,7 +21,7 @@ Generate YUI documentation:
 
     npm run doc
 
-This will generate the YUI documentation the folder `doc/`, located in the project's root diretory.
+This will generate the YUI documentation folder `doc/`, located in the project's root diretory.
 
 Run unit tests
 
