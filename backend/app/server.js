@@ -1,4 +1,7 @@
 var express = require('express'),
+	bodyParser = require('body-parser'),
+	cookieParser = require('cookie-parser'),
+	cookieSession = require('cookie-session'),
 	mysql = require('mysql'),
 	records = require('./routes/records'),
 	projects = require('./routes/projects'),
@@ -83,10 +86,13 @@ app.use(function (req, res, next) {
 
 
 app.use(allowCrossDomain);
-app.use(express.urlencoded())
-app.use(express.json())
-app.use(express.cookieParser('asdr84353$^@k;1B'));
-app.use(express.cookieSession({cookie: { httpOnly: false }}));
+app.use(bodyParser())
+//app.use(express.json())
+app.use(cookieParser('asdr84353$^@k;1B'));
+app.use(cookieSession({
+	signed: false,
+	httpOnly: false
+}));
 // app.use(express.csrf());
 // app.use(function(req, res, next) {
 // 	logger.verbose('XSRF-TOKEN from the request: [' + req.csrfToken() + ']');
