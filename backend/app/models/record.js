@@ -6,6 +6,8 @@ var Model = require(__dirname + '/../utils/model'),
 
 var record = new Model();
 
+record.tableName = 'records';
+
 record.keyCol = 'record_id';
 
 record.select = "SELECT " +
