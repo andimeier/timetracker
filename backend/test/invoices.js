@@ -59,7 +59,7 @@ var retrieveInvoice = function (invoiceId, session, callback) {
 }
 
 
-describe.skip('Invoice API', function () {
+describe('Invoice API', function () {
 
 	before(function () {
 		this.sess = new Session();
@@ -234,7 +234,7 @@ describe.skip('Invoice API', function () {
 				.end(done);
 		});
 
-		it('should accept a new (added) invoice', function (done) {
+		it.skip('should accept a new (added) invoice', function (done) {
 
 			var testNewInv = {
 				clientId: 6,
@@ -282,7 +282,7 @@ describe.skip('Invoice API', function () {
 				});
 		});
 
-		it('should update a invoice', function (done) {
+		it.skip('should update a invoice', function (done) {
 
 			var self = this;
 			console.log('testUpdate: ' + testUpdate);
@@ -318,7 +318,7 @@ describe.skip('Invoice API', function () {
 				});
 		});
 
-		it('should delete a invoice', function (done) {
+		it.skip('should delete a invoice', function (done) {
 
 			var self = this;
 			this.sess.del('/invoices/' + testDelete.invoiceId)
@@ -351,13 +351,13 @@ describe.skip('Invoice API', function () {
 				.expect(200, done);
 		});
 
-		it('should not be possible to read invoices because we are already logged out', function (done) {
+		it.skip('should not be possible to read invoices because we are already logged out', function (done) {
 			logger.verbose('Logged out, let\'s see...');
 			this.sess.get('/invoices/' + 3591)
 				.expect(401, done);
 		});
 
-		it('should reject add request because we are already logged out', function (done) {
+		it.skip('should reject add request because we are already logged out', function (done) {
 
 			var testInv = {
 				clientId: 1,
@@ -371,14 +371,14 @@ describe.skip('Invoice API', function () {
 				.expect(401, done);
 		});
 
-		it('should reject update request because we are already logged out', function (done) {
+		it.skip('should reject update request because we are already logged out', function (done) {
 
 			this.sess.post('/invoices/' + testUpdate.invoiceId)
 				.send(testUpdate)
 				.expect(401, done);
 		});
 
-		it('should reject delete request because we are already logged out', function (done) {
+		it.skip('should reject delete request because we are already logged out', function (done) {
 
 			var testInv = {
 				invoiceId: 3581
