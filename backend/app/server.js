@@ -78,13 +78,25 @@ var allowCrossDomain = function (req, res, next) {
 	}
 };
 
-var app = exports.app = express();
+// user validation using session cookies
+var auth = function (req, res, next) {
+	logger.verbose('Entering auth handler, try to identify user', { 'req.session': req.session });
+	if (!req.session.userId) {
+		res.status(401);
+		res.end('Unauthorized access.');
+	} else {
+		logger.verbose('Session detected, SID=[' + req.sessionID + ']', { userId: req.session.userId, firstName: req.session.firstName });
+		next();
+	}
+};
+
+
+var app = express();
 
 app.use(function (req, res, next) {
 	logger.verbose('=== NEW REQUEST', { query: req });
 	next();
 });
-
 
 app.use(allowCrossDomain);
 app.use(cookieParser());
@@ -104,19 +116,6 @@ app.use(session({
 	})
 }));
 app.use(bodyParser());
-
-// user validation using session cookies
-var auth = function (req, res, next) {
-	logger.verbose('Entering auth handler, try to identify user', { 'req.session': req.session });
-	if (!req.session.userId) {
-		res.status(401);
-		res.end('Unauthorized access.');
-	} else {
-		logger.verbose('Session detected, SID=[' + req.sessionID + ']', { userId: req.session.userId, firstName: req.session.firstName });
-		next();
-	}
-};
-
 
 // express routes config starts here
 // ---------------------------------
@@ -156,7 +155,6 @@ app.put('/invoices/:id',    auth, invoices.update);
 app.post('/invoices',       auth, invoices.add); // POST without ID => add
 app.delete('/invoices/:id', auth, invoices.delete);
 
-
 app.use(function (req, res) {
 	logger.verbose('Unrecognized API call', { url: req.originalUrl });
 	res.send(404);
@@ -166,3 +164,4 @@ app.use(function (req, res) {
 app.listen(port);
 logger.verbose('Listening on port ' + port + ' ...');
 
+exports.app = app;
