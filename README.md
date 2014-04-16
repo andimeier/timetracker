@@ -1,3 +1,10 @@
+General information
+===================
+
+The timetracker application consists of a Javascript frontend (running in the browser)
+communicating via JSON REST API with the backend (a node.js server application running on the server).
+
+
 Frontend
 ========
 
@@ -10,8 +17,8 @@ Run:
     grunt serve
 
 
-Server (REST Backend)
-=====================
+Backend (REST service)
+======================
 
 Start server:
 

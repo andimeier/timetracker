@@ -6,6 +6,8 @@ var utils = require(__dirname + '/../utils/utils');
 
 var project = new Model();
 
+project.tableName = 'projects';
+
 project.keyCol = 'project_id';
 
 project.select = "SELECT p.project_id, p.name, p.abbreviation, " +
