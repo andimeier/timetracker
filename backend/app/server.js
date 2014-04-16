@@ -20,10 +20,10 @@ var config = require(__dirname + '/config/config.json');
 
 // global MySql connection pool
 global.dbPool = mysql.createPool({
-	host: config.host,
-	user: config.user,
-	password: config.password,
-	database: config.database,
+	host: config.db.host,
+	user: config.db.user,
+	password: config.db.password,
+	database: config.db.database,
 	dateStrings: true // don't convert date fields into Date objects (since
 	// it would make the process vulnerable due to implicit, automatic timezone
 	// conversions. We do not want that, so let's treat these fields simply as
@@ -109,9 +109,9 @@ app.use(session({
 	},
 	store: new (require('express-sessions'))({
 		storage: 'redis',
-		host: 'eck-zimmer.at',
-		port: 6379,
-		collection: 'sessions',
+		host: config.redis.host,
+		port: config.redis.port,
+		collection: config.redis.collection,
 		expire: 86400 // optional
 	})
 }));
