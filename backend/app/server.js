@@ -1,7 +1,8 @@
 var express = require('express'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
-	cookieSession = require('cookie-session'),
+	session = require('express-session'),
+	redis = require('redis'),
 	mysql = require('mysql'),
 	records = require('./routes/records'),
 	projects = require('./routes/projects'),
@@ -15,6 +16,7 @@ var express = require('express'),
 var port = 3000;
 
 var config = require(__dirname + '/config/config.json');
+//var client = redis.createClient(6379, 'localhost');
 
 // global MySql connection pool
 global.dbPool = mysql.createPool({
@@ -76,7 +78,6 @@ var allowCrossDomain = function (req, res, next) {
 	}
 };
 
-
 var app = exports.app = express();
 
 app.use(function (req, res, next) {
@@ -86,19 +87,23 @@ app.use(function (req, res, next) {
 
 
 app.use(allowCrossDomain);
-app.use(bodyParser())
-//app.use(express.json())
-app.use(cookieParser('asdr84353$^@k;1B'));
-app.use(cookieSession({
-	signed: false,
-	httpOnly: false
+app.use(cookieParser());
+app.use(session({
+	secret: 'asdfsa',
+	key: 'sid',
+	cookie: {
+		maxAge: 2628000000,
+		httpOnly: false
+	},
+	store: new (require('express-sessions'))({
+		storage: 'redis',
+		host: 'eck-zimmer.at',
+		port: 6379,
+		collection: 'sessions',
+		expire: 86400 // optional
+	})
 }));
-// app.use(express.csrf());
-// app.use(function(req, res, next) {
-// 	logger.verbose('XSRF-TOKEN from the request: [' + req.csrfToken() + ']');
-// 	res.cookie('XSRF-TOKEN', req.csrfToken());
-// 	next();
-// });
+app.use(bodyParser());
 
 // user validation using session cookies
 var auth = function (req, res, next) {
@@ -107,7 +112,7 @@ var auth = function (req, res, next) {
 		res.status(401);
 		res.end('Unauthorized access.');
 	} else {
-		logger.verbose('Session detected', { userId: req.session.userId, firstName: req.session.firstName });
+		logger.verbose('Session detected, SID=[' + req.sessionID + ']', { userId: req.session.userId, firstName: req.session.firstName });
 		next();
 	}
 };
