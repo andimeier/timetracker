@@ -113,6 +113,15 @@ var auth = function (req, res, next) {
 // ATTENTION: BE SURE TO ADD THE AUTH HANDLER TO ALL ROUTES WHICH CHANGE DATA OR MUST
 // IN ANY OTHER SENSE BE CONSIDERED PRIVATE!
 
+app.use(function (req, res, next) {
+	logger.verbose('=== NEW REQUEST: ', {url: req.originalUrl, method: req.method, query: req.query });
+
+	if (req.method === 'POST') {
+		logger.verbose('=== INCOMING POST REQUEST: ', {url: req.originalUrl, body: req.body });
+	}
+	next();
+});
+
 app.post('/login',               login.login);
 app.get('/logout',         auth, login.logout);
 
@@ -129,8 +138,12 @@ app.get('/projects/:id',          projects.findById);
 
 app.get('/stats',                 stats.recordedHours);
 
-app.get('/invoices',       auth, invoices.findAll);
-app.get('/invoices/:id',   auth, invoices.findById);
+app.get('/invoices',        auth, invoices.findAll);
+app.get('/invoices/:id',    auth, invoices.findById);
+app.post('/invoices/:id',   auth, invoices.update); // POST with ID => update
+app.put('/invoices/:id',    auth, invoices.update);
+app.post('/invoices',       auth, invoices.add); // POST without ID => add
+app.delete('/invoices/:id', auth, invoices.delete);
 
 
 app.use(function (req, res) {

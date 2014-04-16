@@ -13,7 +13,7 @@
   "scripts": {
     "start": "node app/server.js",
     "test": "mocha --reporter spec test/*.js",
-    "doc": "yuidoc --outdir doc ."
+    "doc": "yuidoc --outdir doc ./app"
   },
   "devDependencies": {
     "winston": "~0.7.3",

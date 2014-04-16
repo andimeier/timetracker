@@ -481,12 +481,13 @@ describe('Record API', function () {
 					expect(recordId).to.be.a('number');
 
 					// retrieve record and check if saved correctly
-					retrieveRecord(recordId, function (data, err) {
+					retrieveRecord(recordId, function (result, err) {
 
 						expect(err).to.be.null;
 
 						// only 1 record returned
-						expect(data.data).to.have.length(1);
+						expect(result).to.contain.key('data');
+						expect(result.data).to.have.length(1);
 
 						// investigate the first record
 						var rec = data.data[0];

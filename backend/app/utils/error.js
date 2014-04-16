@@ -30,7 +30,8 @@ var error = function(error) {
 		1001: "Wrong credentials",
 		1002: "SQL error",
 		1003: "Validation error",
-		1004: "Connection error"
+		1004: "Connection error",
+		1005: "Application error"
 	};
 
 	switch(typeof(error)) {

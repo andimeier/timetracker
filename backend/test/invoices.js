@@ -15,22 +15,51 @@ var Session = require('supertest-session')({
 });
 
 /**
- * retrieve a specific invoice from database and provide it via callback
+ * Retrieve a specific invoice from database and provide it via callback.
+ * This function will also check if there IS a record retrieved and
+ * if ONLY ONE record is retrieved and there is no database error.
+ * something goes wrong.
+ * There are only 2 cases where this function will not assert an error:
+ *   1. exactly one record is retrieved => this record will be passed to the callback
+ *   2. no record is retrieved => 'null' will be passed to the callback
  * @param invoiceId the ID of the invoice to be retrieved
- * @param callback a callback function taking 2 parameters:
- *   data ... the retrieved invoice
- *   err ... error object (in case of an error)
+ * @param session {Object} session object to be used for authenticated access
+ * @param callback a callback function taking 1 parameter:
+ *   invoice ... the retrieved invoice object or null if not found
  */
-var retrieveInvoice = function (invoiceId, callback) {
-	request(app)
-		.get('/invoices/' + invoiceId)
+var retrieveInvoice = function (invoiceId, session, callback) {
+	session.post('/invoices/' + invoiceId)
+		.expect(200)
 		.end(function (err, res) {
-			callback(err ? null : res.body, err);
+
+			expect(err).to.be.null;
+
+			var invoice = null;
+			var result = res.body;
+
+			console.log('------ check: ' + JSON.stringify(result, null, 2));
+
+			// only 1 invoice returned
+			expect(result).to.contain.key('info');
+
+			var info = result.info;
+			expect(info.rows).to.be.within(0, 1);
+
+			if (info.rows == 0) {
+				logger.verbose('Invoice [%s] was not found in database.', invoiceId);
+			} else {
+				expect(result.data).to.have.length(1);
+				logger.verbose('Retrieved invoice []' + invoiceId, { data: result.data[0] });
+				invoice = result.data[0];
+			}
+			// deliver the invoice object (or null)
+			callback(invoice);
 		});
 
 }
 
-describe('Invoice API', function () {
+
+describe.skip('Invoice API', function () {
 
 	before(function () {
 		this.sess = new Session();
@@ -182,7 +211,7 @@ describe('Invoice API', function () {
 		});
 	});
 
-	describe.skip('POST /invoices', function () {
+	describe('POST /invoices', function () {
 		it('should reject request because we are not logged in', function (done) {
 			request(app)
 				.post('/invoices')
@@ -195,17 +224,29 @@ describe('Invoice API', function () {
 				.expect(401, done);
 		});
 
+		it('should login', function (done) {
+			this.sess.post('/login')
+				.send({
+					user: credentials.login.username,
+					pass: credentials.login.password
+				})
+				.expect(200)
+				.end(done);
+		});
+
 		it('should accept a new (added) invoice', function (done) {
 
 			var testNewInv = {
 				clientId: 6,
 				invoiceYear: 2014,
 				invoiceDate: '20140410',
-				comment: 'Sample test comment, new invoices'
+				comment: 'Sample test comment, new invoice'
 			};
 
+			var self = this;
 			this.sess.post('/invoices')
 				.send(testNewInv)
+				.expect(200)
 				.end(function (err, res) {
 					if (err) {
 						throw err;
@@ -213,27 +254,22 @@ describe('Invoice API', function () {
 					var result = res.body;
 
 					// no error on saving
-					expect(result).to.not.contain.key('error').and.contain.key('info');
+					console.log('result: ' + JSON.stringify(result));
+					expect(result).to.contain.key('info').and.not.contain.key('error');
 
 					logger.verbose('Posted data', { data: testNewInv });
 
 					var info = result.info;
+					console.log('----------- Received result', { result: result});
+					logger.verbose('Received info', { info: info});
 
 					// invoiceId returned
 					var invoiceId = info.insertId;
 					expect(invoiceId).to.be.a('number');
 
 					// retrieve invoice and check if saved correctly
-					retrieveInvoice(invoiceId, function (data, err) {
+					retrieveInvoice(invoiceId, self.sess, function (inv) {
 
-						expect(err).to.be.null;
-
-						// only 1 invoice returned
-						expect(data.data).to.have.length(1);
-
-						// investigate the first invoice
-						var inv = data.data[0];
-						logger.verbose('Retrieved invoice []' + invoiceId, { data: inv });
 						logger.verbose('Comparing start time', { invoice: inv.starttime, testInvoice: testInv.starttime });
 						expect(inv).to.be.an('object');
 						expect(inv.clientId).to.be.equal(testNewInv.clientId);
@@ -248,8 +284,12 @@ describe('Invoice API', function () {
 
 		it('should update a invoice', function (done) {
 
+			var self = this;
+			console.log('testUpdate: ' + testUpdate);
+			logger.verbose('testUpdate: ',  { testUpdate: testUpdate });
 			this.sess.post('/invoices/' + testUpdate.invoiceId)
 				.send(testUpdate)
+				.expect(200)
 				.end(function (err, res) {
 					if (err) {
 						throw err;
@@ -257,7 +297,7 @@ describe('Invoice API', function () {
 					var result = res.body;
 
 					// no error on saving
-					expect(result).to.not.contain.key('error').and.contain.key('info');
+					expect(result).to.contain.key('info').and.not.contain.key('error');
 
 					logger.verbose('Posted data', { data: testUpdate });
 
@@ -266,16 +306,8 @@ describe('Invoice API', function () {
 					expect(info.changedRows).to.be.equal(1);
 
 					// retrieve invoice and check if saved correctly
-					retrieveInvoice(testUpdate.invoiceId, function (data, err) {
+					retrieveInvoice(testUpdate.invoiceId, self.sess, function (inv) {
 
-						expect(err).to.be.null;
-
-						// only 1 invoice returned
-						expect(data.data).to.have.length(1);
-
-						// investigate the first (and only) invoice
-						var inv = data.data[0];
-						logger.verbose('Retrieved invoice []' + testUpdate.invoiceId, { data: inv });
 						expect(inv).to.be.an('object');
 						expect(inv.comment).to.be.equal(testUpdate.comment);
 						expect(inv.clientId).to.be.equal(testUpdate.clientId);
@@ -288,7 +320,9 @@ describe('Invoice API', function () {
 
 		it('should delete a invoice', function (done) {
 
+			var self = this;
 			this.sess.del('/invoices/' + testDelete.invoiceId)
+				.expect(200)
 				.end(function (err, res) {
 					if (err) {
 						throw err;
@@ -296,19 +330,16 @@ describe('Invoice API', function () {
 					var result = res.body;
 
 					// no error on saving
-					expect(result).to.not.contain.key('error').and.contain.key('info');
+					expect(result).to.contain.key('info').and.not.contain.key('error');
 
 					var info = result.info;
 					expect(info.affectedRows).to.be.equal(1);
 
 					// retrieve invoice and check if saved correctly
-					retrieveInvoice(testDelete.invoiceId, function (data, err) {
+					retrieveInvoice(testDelete.invoiceId, self.sess, function (inv) {
 
-						expect(err).to.be.null;
-
-						// no invoices returned
-						expect(data.data).to.be.an('array');
-						expect(data.data).to.have.length(0);
+						// no invoices returned => invoices has been deleted
+						expect(inv).to.be.null;
 					});
 
 					done();
@@ -321,8 +352,8 @@ describe('Invoice API', function () {
 		});
 
 		it('should not be possible to read invoices because we are already logged out', function (done) {
-			request(app)
-				.get('/invoices')
+			logger.verbose('Logged out, let\'s see...');
+			this.sess.get('/invoices/' + 3591)
 				.expect(401, done);
 		});
 
@@ -335,16 +366,14 @@ describe('Invoice API', function () {
 				comment: 'Sample test comment (should fail)'
 			};
 
-			request(app)
-				.post('/invoices')
+			this.sess.post('/invoices')
 				.send(testInv)
 				.expect(401, done);
 		});
 
 		it('should reject update request because we are already logged out', function (done) {
 
-			request(app)
-				.post('/invoices/' + testUpdate.invoiceId)
+			this.sess.post('/invoices/' + testUpdate.invoiceId)
 				.send(testUpdate)
 				.expect(401, done);
 		});
@@ -355,8 +384,7 @@ describe('Invoice API', function () {
 				invoiceId: 3581
 			};
 
-			request(app)
-				.del('/invoices/' + testInv.invoiceId)
+			this.sess.del('/invoices/' + testInv.invoiceId)
 				.send(testInv)
 				.expect(401, done);
 		});
