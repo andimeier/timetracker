@@ -22,3 +22,22 @@ exports.findAll = function(req, res) {
 		utils.sendResult(res, data, err);
 	});
 };
+
+exports.add = function(req, res) {
+	invoice.add(req.body, userId, function(data, info, err) {
+		utils.sendResult(res, data, info, err);
+	});
+};
+
+exports.update = function(req, res) {
+	logger.verbose('update called, with: ', {body: req.body});
+	invoice.update(req.params.id, req.body, userId, function(data, info, err) {
+		utils.sendResult(res, data, info, err);
+	});
+};
+
+exports.delete = function(req, res) {
+	invoice.delete(req.params.id, userId, function(data, info, err) {
+		utils.sendResult(res, data, info, err);
+	});
+}

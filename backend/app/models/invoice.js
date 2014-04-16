@@ -4,48 +4,64 @@ var utils = require(__dirname + '/../utils/utils');
 
 var invoice = new Model();
 
+invoice.tableName = 'invoices';
+
 // mapping from model attribute names to query column names
 invoice.attributes = {
 	'invoiceId': {
 		column: 'i.invoice_id',
+		type: 'number',
 		safe: [ 'update' ]},
 	'clientId': {
 		column: 'i.client_id',
+		type: 'number',
 		safe: [ 'add', 'update' ]},
 	'invoiceYear': {
 		column: 'i.invoice_year',
+		type: 'number',
 		safe: [ 'add', 'update' ]},
 	'invoiceNumber': {
 		column: 'i.invoice_number',
+		type: 'number',
 		safe: [ 'add', 'update' ]},
 	'cancelled': {
 		column: 'i.cancelled',
+		type: 'boolean',
 		safe: [ 'add', 'update' ]},
 	'sumNet': {
 		column: 'i.sum_net',
+		type: 'number',
 		safe: [ 'add', 'update' ]},
 	'sumGross': {
 		column: 'i.sum_gross',
+		type: 'number',
 		safe: [ 'add', 'update' ]},
 	'invoiceDate': {
 		column: 'i.invoice_date',
+		type: 'date',
 		safe: [ 'add', 'update' ]},
 	'paid': {
 		column: 'i.paid',
+		type: 'boolean',
 		safe: [ 'add', 'update' ]},
 	'paidOn': {
 		column: 'i.paid_on',
+		type: 'date',
 		safe: [ 'add', 'update' ]},
 	'comment': {
 		column: 'i.comment',
+		type: 'string',
 		safe: [ 'add', 'update' ]},
 	'cdate': {
 		column: 'i.cdate',
+		type: 'datetime',
 		default: '@NOW'},
 	'clientName': {
-		column: 'c.client_name'},
+		column: 'c.client_name',
+		type: 'string' },
 	'clientAbbreviation': {
-		column: 'c.client_abbreviation'}
+		column: 'c.client_abbreviation',
+		type: 'string' }
 };
 
 invoice.limit = 10;

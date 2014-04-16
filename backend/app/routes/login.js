@@ -38,7 +38,7 @@ exports.logout = function (req, res) {
 	var username = req.session.username;
 
 	// remove session data
-	req.session = null;
+	req.session.destroy();
 	logger.info('Session cleared, user [' + username + '] logged out.');
 	res.send(200, { message: 'Logout successful' });
 };

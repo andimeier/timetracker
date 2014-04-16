@@ -1,4 +1,8 @@
 var express = require('express'),
+	bodyParser = require('body-parser'),
+	cookieParser = require('cookie-parser'),
+	session = require('express-session'),
+	redis = require('redis'),
 	mysql = require('mysql'),
 	records = require('./routes/records'),
 	projects = require('./routes/projects'),
@@ -12,6 +16,7 @@ var express = require('express'),
 var port = 3000;
 
 var config = require(__dirname + '/config/config.json');
+//var client = redis.createClient(6379, 'localhost');
 
 // global MySql connection pool
 global.dbPool = mysql.createPool({
@@ -73,27 +78,6 @@ var allowCrossDomain = function (req, res, next) {
 	}
 };
 
-
-var app = exports.app = express();
-
-app.use(function (req, res, next) {
-	logger.verbose('=== NEW REQUEST', { query: req });
-	next();
-});
-
-
-app.use(allowCrossDomain);
-app.use(express.urlencoded())
-app.use(express.json())
-app.use(express.cookieParser('asdr84353$^@k;1B'));
-app.use(express.cookieSession({cookie: { httpOnly: false }}));
-// app.use(express.csrf());
-// app.use(function(req, res, next) {
-// 	logger.verbose('XSRF-TOKEN from the request: [' + req.csrfToken() + ']');
-// 	res.cookie('XSRF-TOKEN', req.csrfToken());
-// 	next();
-// });
-
 // user validation using session cookies
 var auth = function (req, res, next) {
 	logger.verbose('Entering auth handler, try to identify user', { 'req.session': req.session });
@@ -101,17 +85,52 @@ var auth = function (req, res, next) {
 		res.status(401);
 		res.end('Unauthorized access.');
 	} else {
-		logger.verbose('Session detected', { userId: req.session.userId, firstName: req.session.firstName });
+		logger.verbose('Session detected, SID=[' + req.sessionID + ']', { userId: req.session.userId, firstName: req.session.firstName });
 		next();
 	}
 };
 
+
+var app = express();
+
+app.use(function (req, res, next) {
+	logger.verbose('=== NEW REQUEST', { query: req });
+	next();
+});
+
+app.use(allowCrossDomain);
+app.use(cookieParser());
+app.use(session({
+	secret: 'asdfsa',
+	key: 'sid',
+	cookie: {
+		maxAge: 2628000000,
+		httpOnly: false
+	},
+	store: new (require('express-sessions'))({
+		storage: 'redis',
+		host: 'eck-zimmer.at',
+		port: 6379,
+		collection: 'sessions',
+		expire: 86400 // optional
+	})
+}));
+app.use(bodyParser());
 
 // express routes config starts here
 // ---------------------------------
 
 // ATTENTION: BE SURE TO ADD THE AUTH HANDLER TO ALL ROUTES WHICH CHANGE DATA OR MUST
 // IN ANY OTHER SENSE BE CONSIDERED PRIVATE!
+
+app.use(function (req, res, next) {
+	logger.verbose('=== NEW REQUEST: ', {url: req.originalUrl, method: req.method, query: req.query });
+
+	if (req.method === 'POST') {
+		logger.verbose('=== INCOMING POST REQUEST: ', {url: req.originalUrl, body: req.body });
+	}
+	next();
+});
 
 app.post('/login',               login.login);
 app.get('/logout',         auth, login.logout);
@@ -129,9 +148,12 @@ app.get('/projects/:id',          projects.findById);
 
 app.get('/stats',                 stats.recordedHours);
 
-app.get('/invoices',       auth, invoices.findAll);
-app.get('/invoices/:id',   auth, invoices.findById);
-
+app.get('/invoices',        auth, invoices.findAll);
+app.get('/invoices/:id',    auth, invoices.findById);
+app.post('/invoices/:id',   auth, invoices.update); // POST with ID => update
+app.put('/invoices/:id',    auth, invoices.update);
+app.post('/invoices',       auth, invoices.add); // POST without ID => add
+app.delete('/invoices/:id', auth, invoices.delete);
 
 app.use(function (req, res) {
 	logger.verbose('Unrecognized API call', { url: req.originalUrl });
@@ -142,3 +164,4 @@ app.use(function (req, res) {
 app.listen(port);
 logger.verbose('Listening on port ' + port + ' ...');
 
+exports.app = app;

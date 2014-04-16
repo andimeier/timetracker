@@ -7,6 +7,7 @@
 var utils = require(__dirname + '/../utils/utils'),
 	Criteria = require('../utils/criteria'),
 	error = require('../utils/error'),
+//	pluralize = require('pluralize'),
 	_ = require('lodash');
 
 /**
@@ -14,8 +15,16 @@ var utils = require(__dirname + '/../utils/utils'),
  * @constructor
  */
 var Model = function () {
-
 };
+
+/**
+ * The name of the database entity representing the model. This
+ * will be used e.g. for CRU operations.
+ * The table name will not be escaped.
+ * @property tableName
+ * @type String
+ */
+Model.prototype.tableName = '';
 
 /**
  * The select statement for retrieving values.
@@ -155,7 +164,7 @@ Model.prototype.mapParams = function (params) {
  * a data type which need conversion. For example, date time values
  * will be formatted. The type of the property is specified in the
  * property 'type' of this.attributes.
- * Quting (e.g. for string values) will be done here, too
+ * Quoting (e.g. for string values) will be done here, too
  * @param obj {Object} object to be processed.
  */
 Model.prototype.formatFieldValues = function (obj) {
@@ -597,6 +606,8 @@ Model.prototype.findAll = function (params, userId, callback) {
  */
 Model.prototype.add = function (obj, userId, callback) {
 
+	console.log(')))))))))))))))))) class name: DUMMYYYYY ');
+
 	logger.verbose('User attempts to post a new record', { obj: obj });
 //	console.log('User attempts to post a new record: ' + JSON.stringify(obj));
 
@@ -620,6 +631,7 @@ Model.prototype.add = function (obj, userId, callback) {
 	} else {
 		// input is ok, let's write to DB
 		// ------------------------------
+		self = this;
 		dbPool.getConnection(function (err, connection) {
 
 			// convert case of the column names into database syntax
@@ -640,7 +652,7 @@ Model.prototype.add = function (obj, userId, callback) {
 //			} else {
 //				console.log('NO there are no calc fields: ' + JSON.stringify(calculatedAttributes));
 			}
-			var sql = 'INSERT into records(' + columnNames + ') values ('
+			var sql = 'INSERT into ' + self.tableName + '(' + columnNames + ') values ('
 				+ values + ')';
 
 			logger.verbose("SQL = " + sql);
@@ -699,6 +711,11 @@ Model.prototype.update = function (id, obj, userId, callback) {
 	// ----------------------
 //	console.log('obj is now (1): ' + JSON.stringify(obj));
 
+	// SOMETHING must be updated, if no attributes are left, throw an error
+	if (_.keys(obj).length == 0) {
+		throw new Expection('Empty object passed for UPDATE, this makes no sense!');
+	}
+
 	var validationErrors = this.validate(obj);
 	if (validationErrors.length) {
 		// validation error
@@ -712,6 +729,7 @@ Model.prototype.update = function (id, obj, userId, callback) {
 	} else {
 		// input is ok, let's write to DB
 		// ------------------------------
+		self = this;
 		dbPool.getConnection(function (err, connection) {
 
 			// convert case of the column names into database syntax
@@ -730,7 +748,7 @@ Model.prototype.update = function (id, obj, userId, callback) {
 			}
 
 
-			var sql = 'UPDATE records set ' + fieldAssignments + ' where record_id=' + recordId;
+			var sql = 'UPDATE ' + self.tableName + ' set ' + fieldAssignments + ' where record_id=' + recordId;
 
 			logger.verbose("SQL = " + sql);
 			connection.query(sql, function (err, rows) {
@@ -785,9 +803,10 @@ Model.prototype.delete = function (id, userId, callback) {
 		return;
 	}
 
+	self = this;
 	dbPool.getConnection(function (err, connection) {
 		// write to DB
-		var sql = 'DELETE from records where record_id=' + recordId;
+		var sql = 'DELETE from ' + self.tableName + ' where record_id=' + recordId;
 		logger.verbose("SQL = " + sql);
 		connection.query(sql, function (err, rows) {
 
