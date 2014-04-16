@@ -490,7 +490,7 @@ describe('Record API', function () {
 						expect(result.data).to.have.length(1);
 
 						// investigate the first record
-						var rec = data.data[0];
+						var rec = result.data[0];
 						logger.verbose('Retrieved record []' + recordId, { data: rec });
 						expect(rec).to.be.an('object');
 						expect(rec.description).to.be.equal(testRec.description);
