@@ -1,3 +1,8 @@
+/**
+ * Routes for statistics.
+ * @module stats
+ * @type {*|Object}
+ */
 var report = require(__dirname + '/../utils/report');
 
 

@@ -7,7 +7,6 @@
  *
  * @module criteria
  */
-//var _ = require('lodash');
 
 /**
  * @class Criteria

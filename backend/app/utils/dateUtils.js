@@ -1,5 +1,5 @@
 /**
- * Utility class.
+ * Utility class for date/datetime handling.
  * @module dateUtils
  * @type {exports}
  */

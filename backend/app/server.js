@@ -2,21 +2,19 @@ var express = require('express'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
 	session = require('express-session'),
-	redis = require('redis'),
 	mysql = require('mysql'),
+	winston = require('winston'),
 	records = require('./routes/records'),
 	projects = require('./routes/projects'),
 	invoices = require('./routes/invoices'),
 	stats = require('./routes/stats'),
 	login = require('./routes/login'),
-	authenticate = require('./utils/auth'),
-	winston = require('winston');
+	authenticate = require('./utils/auth');
 
 // server port
 var port = 3000;
 
 var config = require(__dirname + '/config/config.json');
-//var client = redis.createClient(6379, 'localhost');
 
 // global MySql connection pool
 global.dbPool = mysql.createPool({
@@ -33,16 +31,14 @@ global.dbPool = mysql.createPool({
 // enable routers access to mysql functions like mysql.escape
 global.mysql = mysql;
 
+// set up logging
+// ==============
+
 if (process.env.NODE_ENV !== 'test') {
 	// production settings for logging
 	global.logger = new (winston.Logger)({
 		transports: [
 			new (winston.transports.Console)({
-				level: 'verbose',
-				handleExceptions: true
-			}),
-			new (winston.transports.File)({
-				filename: 'timetracker.prod.log',
 				level: 'verbose',
 				handleExceptions: true
 			})
@@ -70,7 +66,7 @@ var allowCrossDomain = function (req, res, next) {
 	res.header('Access-Control-Allow-Credentials', 'true');
 
 	// intercept OPTIONS method
-	if ('OPTIONS' == req.method) {
+	if ('OPTIONS' === req.method) {
 		res.send(200);
 	}
 	else {
@@ -80,12 +76,12 @@ var allowCrossDomain = function (req, res, next) {
 
 // user validation using session cookies
 var auth = function (req, res, next) {
-	logger.verbose('Entering auth handler, try to identify user', { 'req.session': req.session });
 	if (!req.session.userId) {
 		res.status(401);
 		res.end('Unauthorized access.');
 	} else {
-		logger.verbose('Session detected, SID=[' + req.sessionID + ']', { userId: req.session.userId, firstName: req.session.firstName });
+		logger.verbose('Session detected, SID=[' + req.sessionID + ']',
+			{ userId: req.session.userId, firstName: req.session.firstName });
 		next();
 	}
 };

@@ -1,10 +1,29 @@
+/**
+ * Utility class for authenticating users.
+ * @module authenticate
+ * @type {exports}
+ */
 var crypto = require('crypto');
 
-exports.authenticate = function(username, pass, callback) {
+/**
+ * Authenticates a user with username and password given.
+ * The credentials are checked against the database. If successful, the function sends
+ * user ID and other user data to the callback function.
+ * If not successful (wrong password, no username or password provided, etc.), the
+ * callback will be called with success=false.
+ * @method authenticate
+ * @param username {String} username
+ * @param pass {String} password
+ * @param cb {Function} a callback function accepting the following parameters:
+ * * success {Boolean} ... true if authentication was successful, false otherwise
+ * * userId {Number} user ID of successfully authenticated user, undefined otherwise
+ * * user (Object} user object of successfully authenticated user from database, undefined otherwise
+ */
+exports.authenticate = function(username, pass, cb) {
 
 	if (!username || !pass) {
-		logger.info('Username or password missing at login request');
-		callback(false);
+		logger.verbose('Username or password missing at login request');
+		cb(false);
 		return;
 	}
 
@@ -25,27 +44,24 @@ exports.authenticate = function(username, pass, callback) {
 		connection.query(sql, function(err, rows) {
 
 			logger.verbose('Query result: ' + JSON.stringify(rows));
-			// logger.verbose('passed pw=[' + pass + '],  passHash=[' + passHash + ']');
 			logger.verbose('error=[' + + JSON.stringify(err));
 			if (rows.length > 0 && err == null) {
 				logger.verbose('Query went (technically) ok, now check if password is correct ...');
 				var user = rows[0];
 				if (user.password == passHash) {
 					logger.verbose('Whoa! Correct password! Congrats!');
-					callback(true, user.user_id, user);
+					cb(true, user.user_id, user);
 					logger.info('User [' + username + '] logged in successfully.');
 					return;
 				} else {
 					logger.info('Wrong username or password (user: [' + username + '])');
 				}
 			}
-			callback(false);
+			cb(false);
 			return;
 		});
 
 		// close connection
 		connection.release();
 	});
-	logger.verbose('return');
-
 };

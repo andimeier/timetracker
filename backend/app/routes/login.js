@@ -1,3 +1,8 @@
+/**
+ * Routes for login/logout.
+ * @module login
+ * @type {*|Object}
+ */
 var auth = require(__dirname + '/../utils/auth');
 var error = require(__dirname + '/../utils/error');
 

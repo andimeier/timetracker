@@ -1,7 +1,30 @@
+/**
+ * A class for a generic reporter, for retrieving statistical queries against the database.
+ *
+ * @module genericReport
+ */
 var utils = require(__dirname + '/utils');
 var error = require(__dirname + '/error');
 
-
+/**
+ * Performs a database query, using the given SQL string as input, and returns
+ * the retrieved rows.
+ *
+ * This provides a generic utility for "rapid report development". You don't have to
+ * implement a separate module/function for every new report, but can simply
+ * create the SQL statement and then use this "generic report" facility.
+ *
+ * The function executes the report, translates all database columns to the respective
+ * JSON counterparts (changing case from snake case to camel case) and returns the
+ * JSON result in the HTTP response object. Nothing else to do.
+ *
+ * Since this is a very simple class, parameter parsing and processing must be done
+ * before (possibly changing the SQL statement).
+ *
+ * @param req {Object} express' request object
+ * @param res {Object} express' response object
+ * @param sql {String} the SQL statement to be executed which generates the data for the report
+ */
 exports.genericReport = function(req, res, sql) {
 
 	logger.verbose('---------------------------------');
