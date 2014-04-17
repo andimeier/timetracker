@@ -351,13 +351,13 @@ describe('Invoice API', function () {
 				.expect(200, done);
 		});
 
-		it.skip('should not be possible to read invoices because we are already logged out', function (done) {
+		it('should not be possible to read invoices because we are already logged out', function (done) {
 			logger.verbose('Logged out, let\'s see...');
 			this.sess.get('/invoices/' + 3591)
 				.expect(401, done);
 		});
 
-		it.skip('should reject add request because we are already logged out', function (done) {
+		it('should reject add request because we are already logged out', function (done) {
 
 			var testInv = {
 				clientId: 1,
@@ -371,14 +371,14 @@ describe('Invoice API', function () {
 				.expect(401, done);
 		});
 
-		it.skip('should reject update request because we are already logged out', function (done) {
+		it('should reject update request because we are already logged out', function (done) {
 
 			this.sess.post('/invoices/' + testUpdate.invoiceId)
 				.send(testUpdate)
 				.expect(401, done);
 		});
 
-		it.skip('should reject delete request because we are already logged out', function (done) {
+		it('should reject delete request because we are already logged out', function (done) {
 
 			var testInv = {
 				invoiceId: 3581

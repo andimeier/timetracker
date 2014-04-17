@@ -101,10 +101,10 @@ app.use(function (req, res, next) {
 app.use(allowCrossDomain);
 app.use(cookieParser());
 app.use(session({
-	secret: 'asdfsa',
+	secret: 'asdfsa$12{34))X_.sd',
 	key: 'sid',
 	cookie: {
-		maxAge: 2628000000,
+		maxAge: config.session.expire,
 		httpOnly: false
 	},
 	store: new (require('express-sessions'))({
@@ -112,7 +112,7 @@ app.use(session({
 		host: config.redis.host,
 		port: config.redis.port,
 		collection: config.redis.collection,
-		expire: 86400 // optional
+		expire: config.session.expire
 	})
 }));
 app.use(bodyParser());

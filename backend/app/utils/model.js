@@ -606,8 +606,6 @@ Model.prototype.findAll = function (params, userId, callback) {
  */
 Model.prototype.add = function (obj, userId, callback) {
 
-	console.log(')))))))))))))))))) class name: DUMMYYYYY ');
-
 	logger.verbose('User attempts to post a new record', { obj: obj });
 //	console.log('User attempts to post a new record: ' + JSON.stringify(obj));
 
@@ -748,7 +746,7 @@ Model.prototype.update = function (id, obj, userId, callback) {
 			}
 
 
-			var sql = 'UPDATE ' + self.tableName + ' set ' + fieldAssignments + ' where record_id=' + recordId;
+			var sql = 'UPDATE ' + self.tableName + ' set ' + fieldAssignments + ' where ' + self.keyCol + '=' + recordId;
 
 			logger.verbose("SQL = " + sql);
 			connection.query(sql, function (err, rows) {
@@ -806,7 +804,7 @@ Model.prototype.delete = function (id, userId, callback) {
 	self = this;
 	dbPool.getConnection(function (err, connection) {
 		// write to DB
-		var sql = 'DELETE from ' + self.tableName + ' where record_id=' + recordId;
+		var sql = 'DELETE from ' + self.tableName + ' where ' + self.keyCol + '=' + recordId;
 		logger.verbose("SQL = " + sql);
 		connection.query(sql, function (err, rows) {
 

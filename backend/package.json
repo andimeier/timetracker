@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "node app/server.js",
-    "test": "mocha --reporter spec test/*.js",
+    "test": "mocha --timeout 5000 --reporter spec test/*.js",
     "doc": "yuidoc --outdir doc ./app"
   },
   "devDependencies": {

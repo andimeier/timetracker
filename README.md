@@ -75,14 +75,20 @@ Create/edit the config file `app/config/config.json` like that:
 		"database": "timetracker",
 		"sessionTable": "sessions"
 	},
-	"sessionStorage": "mysql"
+	"session": {
+		"storage": "mysql",
+		"expire": 86400
+	},
 }
 ```
 
-The entry `"sessionStorage": "mysql"` tells the backend to use the MySql database to store
+The entry `"session.storage": "mysql"` tells the backend to use the MySql database to store
 session data.
 
-In this case you must provide the additional key `"sessionTable"` which determines
+If the key `"session.expire"` is given, an expiration time will be attached to the session data.
+I would regard 1 day (86400 seconds) as being suitable for this.
+
+If session storage is set to "mysql",  you must provide the additional key `"mysql.sessionTable"` which determines
 the table name where session data is stored. The table must be defined like that:
 
 ```
@@ -92,6 +98,8 @@ create table sessions (
   lastAccess datetime not null
  );
 ```
+
+
 
 ### Redis session store
 
@@ -110,28 +118,31 @@ Create/edit the config file `app/config/config.json` like that:
 
 ```
 {
-    "mysql": {
+	"db": {
 		"host": "server.com",
 		"user": "username",
 		"password": "password",
-		"database": "timetracker"
+		"database": "timetracker",
+		"sessionTable": "sessions"
 	},
-	"sessionStorage": "redis"
+	"session": {
+		"storage": "redis",
+		"expire": 86400
+	},
 	"redis": {
 		"host": "localhost",
 		"port": 6379,
 		"collection": "sessions",
-        "expire": 86400
 	}
 }
 ```
 
-The entry `"sessionStorage": "redis"` tells the backend to use the connection data
+The entry `"session.storage": "redis"` tells the backend to use the connection data
 configured under the key "redis" for the Redis connection.
 
 The entry `"collection"` specifies a prefix for the session data.
 Each session will in this example config be stored under the key `sessions:5f98349abc0e9d0e723d`
 where "5f98349abc0e9d0e723d" would  be the generated session ID for one of the session.
 
-If the key `"expire"` is given, an expiration time will be attached to the session data.
+If the key `"session.expire"` is given, an expiration time will be attached to the session data in Redis.
 I would regard 1 day (86400 seconds) as being suitable for this.
