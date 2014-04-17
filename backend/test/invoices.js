@@ -5,14 +5,13 @@
 process.env.NODE_ENV = 'test';
 
 var request = require('supertest'),
+	debug = require('debug')('tt:invoices'),
 	assert = require('assert'),
 	expect = require('chai').expect,
 	app = require('../app/server.js').app,
 	credentials = require('./credentials.json');
 
-var Session = require('supertest-session')({
-	app: require('../app/server.js').app
-});
+var Session = require('supertest-session')({ app: app });
 
 /**
  * Retrieve a specific invoice from database and provide it via callback.
@@ -28,7 +27,7 @@ var Session = require('supertest-session')({
  *   invoice ... the retrieved invoice object or null if not found
  */
 var retrieveInvoice = function (invoiceId, session, callback) {
-	session.post('/invoices/' + invoiceId)
+	session.get('/invoices/' + invoiceId)
 		.expect(200)
 		.end(function (err, res) {
 
@@ -37,7 +36,7 @@ var retrieveInvoice = function (invoiceId, session, callback) {
 			var invoice = null;
 			var result = res.body;
 
-			console.log('------ check: ' + JSON.stringify(result, null, 2));
+			debug('------ check: ' + JSON.stringify(result, null, 2));
 
 			// only 1 invoice returned
 			expect(result).to.contain.key('info');
@@ -234,7 +233,7 @@ describe('Invoice API', function () {
 				.end(done);
 		});
 
-		it.skip('should accept a new (added) invoice', function (done) {
+		it('should accept a new (added) invoice', function (done) {
 
 			var testNewInv = {
 				clientId: 6,
@@ -254,13 +253,13 @@ describe('Invoice API', function () {
 					var result = res.body;
 
 					// no error on saving
-					console.log('result: ' + JSON.stringify(result));
+					debug('result: ' + JSON.stringify(result));
 					expect(result).to.contain.key('info').and.not.contain.key('error');
 
 					logger.verbose('Posted data', { data: testNewInv });
 
 					var info = result.info;
-					console.log('----------- Received result', { result: result});
+					debug('----------- Received result', { result: result});
 					logger.verbose('Received info', { info: info});
 
 					// invoiceId returned
@@ -270,7 +269,7 @@ describe('Invoice API', function () {
 					// retrieve invoice and check if saved correctly
 					retrieveInvoice(invoiceId, self.sess, function (inv) {
 
-						logger.verbose('Comparing start time', { invoice: inv.starttime, testInvoice: testInv.starttime });
+						logger.verbose('Comparing start time', { invoice: inv.starttime, testInvoice: testNewInv.starttime });
 						expect(inv).to.be.an('object');
 						expect(inv.clientId).to.be.equal(testNewInv.clientId);
 						expect(inv.invoiceDate).to.be.equal(testNewInv.invoiceDate);
@@ -282,10 +281,10 @@ describe('Invoice API', function () {
 				});
 		});
 
-		it.skip('should update a invoice', function (done) {
+		it('should update a invoice', function (done) {
 
 			var self = this;
-			console.log('testUpdate: ' + testUpdate);
+			debug('testUpdate: ' + testUpdate);
 			logger.verbose('testUpdate: ',  { testUpdate: testUpdate });
 			this.sess.post('/invoices/' + testUpdate.invoiceId)
 				.send(testUpdate)
@@ -303,7 +302,6 @@ describe('Invoice API', function () {
 
 					var info = result.info;
 					expect(info.affectedRows).to.be.equal(1);
-					expect(info.changedRows).to.be.equal(1);
 
 					// retrieve invoice and check if saved correctly
 					retrieveInvoice(testUpdate.invoiceId, self.sess, function (inv) {
@@ -318,7 +316,7 @@ describe('Invoice API', function () {
 				});
 		});
 
-		it.skip('should delete a invoice', function (done) {
+		it('should delete a invoice', function (done) {
 
 			var self = this;
 			this.sess.del('/invoices/' + testDelete.invoiceId)

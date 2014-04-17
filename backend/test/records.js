@@ -13,9 +13,7 @@ var request = require('supertest'),
 	credentials = require('./credentials.json'),
 	dateUtils = require('../app/utils/dateUtils');
 
-var Session = require('supertest-session')({
-	app: require('../app/server.js').app
-});
+var Session = require('supertest-session')({ app: app });
 
 /**
  * retrieve a specific record from database and provide it via callback
@@ -610,16 +608,14 @@ describe('Record API', function () {
 				description: 'Sample test description (should fail)'
 			};
 
-			request(app)
-				.post('/records')
+			this.sess.post('/records')
 				.send(testRec)
 				.expect(401, done);
 		});
 
 		it('should reject update request because we are already logged out', function (done) {
 
-			request(app)
-				.post('/records/' + testUpdate.recordId)
+			this.sess.post('/records/' + testUpdate.recordId)
 				.send(testUpdate)
 				.expect(401, done);
 		});
@@ -630,8 +626,7 @@ describe('Record API', function () {
 				recordId: 3581
 			};
 
-			request(app)
-				.del('/records/' + testRec.recordId)
+			this.sess.del('/records/' + testRec.recordId)
 				.send(testRec)
 				.expect(401, done);
 		});

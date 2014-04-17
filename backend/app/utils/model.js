@@ -47,6 +47,7 @@ Model.prototype.select = '';
  * field. Also, this property will determine whether values for this attribute will be
  * quoted or not. The type can be:
  *      - datetime (will be quoted)
+ *      - date (will be quoted)
  *      - string (will be quoted)
  *      - number (will _not_ be quoted)
  *      - boolean (will _not_ be quoted)
@@ -159,7 +160,8 @@ Model.prototype.mapParams = function (params) {
 
 
 /**
- * Converts and formats field values, if applicable. The values of the object's
+ * Converts and formats field values for writing to the database, if applicable.
+ * The values of the object's
  * properties are changed directly if the respective property is of
  * a data type which need conversion. For example, date time values
  * will be formatted. The type of the property is specified in the
@@ -175,6 +177,7 @@ Model.prototype.formatFieldValues = function (obj) {
 			if (attr.type) {
 				switch (attr.type) {
 					case 'datetime':
+					case 'date':
 						obj[key] = global.mysql.escape(this.formatDate(value));
 						break;
 					case 'string':
@@ -194,7 +197,8 @@ Model.prototype.formatFieldValues = function (obj) {
 
 
 /**
- * Converts field value, if applicable. The values of the object's
+ * Converts field value for writing to database, if applicable.
+ * The values of the object's
  * properties are changed directly if the respective property is of
  * a data type which need conversion. For example, date time values
  * will be formatted. The type of the property is specified in the
@@ -211,6 +215,7 @@ Model.prototype.convertFieldValue = function (attribute, value) {
 	if (attr && attr.type) {
 		switch (attr.type) {
 			case 'datetime':
+			case 'date':
 				value = this.formatDate(value);
 				break;
 		}
@@ -399,7 +404,7 @@ Model.prototype.findById = function (id, userId, callback) {
 			// close connection
 			connection.release();
 
-			callback(result, { rows: 1 }, err);
+			callback(result, { rows: result.length }, err);
 		});
 	});
 
