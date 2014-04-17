@@ -13,7 +13,9 @@
     "body-parser": "~1.0.2",
     "express-session": "~1.0.2",
     "redis": "~0.10.1",
-    "express-sessions": "~1.0.5"
+    "express-sessions": "~1.0.5",
+    "lockdown": "0.0.5",
+	"winston": "~0.7.3",
   },
   "scripts": {
     "start": "node app/server.js",
@@ -21,7 +23,6 @@
     "doc": "yuidoc --outdir doc ./app"
   },
   "devDependencies": {
-    "winston": "~0.7.3",
     "supertest": "~0.10.0",
     "supertest-session": "0.0.1",
     "chai": "~1.9.1"
