@@ -5,12 +5,14 @@
  * * an error code
  * * an error message
  * * an additional error object, containing additional, arbitrary information
- * @module error
+ * @class error
  * @main error
  */
 
 /**
- * Assembles a standardized error message object.
+ * Assembl
+ * es a standardized error message object.
+ * @method
  * @param error {*} can be an object, a number (error code) or a string. If object,
  *   it must consist of:
  *   * errorCode: errorCode

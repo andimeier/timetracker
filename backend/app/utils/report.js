@@ -1,7 +1,7 @@
 /**
  * A class for a generic reporter, for retrieving statistical queries against the database.
  *
- * @module genericReport
+ * @class genericReport
  */
 var utils = require(__dirname + '/utils');
 var error = require(__dirname + '/error');
@@ -21,6 +21,7 @@ var error = require(__dirname + '/error');
  * Since this is a very simple class, parameter parsing and processing must be done
  * before (possibly changing the SQL statement).
  *
+ * @method genericReport
  * @param req {Object} express' request object
  * @param res {Object} express' response object
  * @param sql {String} the SQL statement to be executed which generates the data for the report

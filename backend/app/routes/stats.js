@@ -1,13 +1,15 @@
 /**
  * Routes for statistics.
- * @module stats
+ * @class stats
  * @type {*|Object}
  */
 var report = require(__dirname + '/../utils/report');
 
 
 /**
- * get record statistics: how many hours have been recorded on which record?
+ * Get record statistics: how many hours have been recorded on which record?
+ *
+ * @method recordedHours
  */
 exports.recordedHours = function(req, res) {
 

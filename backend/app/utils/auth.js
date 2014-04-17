@@ -1,6 +1,6 @@
 /**
  * Utility class for authenticating users.
- * @module authenticate
+ * @class authenticate
  * @type {exports}
  */
 var crypto = require('crypto');
@@ -15,7 +15,7 @@ var crypto = require('crypto');
  * @param username {String} username
  * @param pass {String} password
  * @param cb {Function} a callback function accepting the following parameters:
- * * success {Boolean} ... true if authentication was successful, false otherwise
+ * * success {Boolean} true if authentication was successful, false otherwise
  * * userId {Number} user ID of successfully authenticated user, undefined otherwise
  * * user (Object} user object of successfully authenticated user from database, undefined otherwise
  */

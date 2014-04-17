@@ -1,6 +1,6 @@
 /**
  * Utility class.
- * @module utils
+ * @class utils
  * @type {exports}
  */
 var changeCase = require('change-case'),

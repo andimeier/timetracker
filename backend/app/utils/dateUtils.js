@@ -1,6 +1,6 @@
 /**
  * Utility class for date/datetime handling.
- * @module dateUtils
+ * @class dateUtils
  * @type {exports}
  */
 var moment = require('moment');
