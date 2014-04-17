@@ -1,0 +1,15 @@
+{
+	"mysql": {
+		"host": "server.com",
+		"user": "username",
+		"password": "password",
+		"database": "timetracker"
+	},
+	"sessionStorage": "redis"
+	"redis": {
+		"host": "localhost",
+		"port": 6379,
+		"collection": "sessions",
+		"expire": 86400
+	}
+}
