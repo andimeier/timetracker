@@ -16,7 +16,11 @@
 # Deploy app
 #
 
-SYMLINK=/tmp/NewApp
+VERSION_JSON=version.json
+DEPLOY_BASE_DIR=/var/www/eck-zimmer.at/apps/timetracker.rest
+SYMLINK=$DEPLOY_BASE_DIR/app
+CONFIG_SRC=$DEPLOY_BASE_DIR/config
+CONFIG_DEST=$DEPLOY_DIR/config
 
 TMP_DIR=`mktemp -d`
 git archive HEAD | tar x -C $TMP_DIR
@@ -27,24 +31,33 @@ npm install --production
 mv $TMP_DIR/backend/node_modules/ $TMP_DIR/backend/app/
 
 # add version file
-cat ../package.json | grep \"version\" | perl -p -e 's/^.*version.*\b(\d+\.\d+\.\d+)\b.*$/\1/g;' >> version.txt
+VERSION=`cat ../package.json | grep \"version\" | perl -p -e 's/^.*version.*\b(\d+\.\d+\.\d+)\b.*$/\1/g;'`
+echo '{' >${VERSION_JSON}
+echo "  \"version\": \"$VERSION\"" >>${VERSION_JSON}
+echo '}' >>${VERSION_JSON}
 echo "------------------------------------"
-echo -n "Extracted version: "
-cat version.txt
+echo "Extracted version: $a"
+echo "Written version file ${VERSION.JSON}"
 echo "------------------------------------"
 
 # now copy the app as is into the app directory
 ts=`date '+%Y%m%d-%H%M%S'`
-DEPLOY_DIR=/tmp/$ts
+DEPLOY_DIR=$DEPLOY_BASE_DIR/$ts
 mkdir $DEPLOY_DIR
+echo "Deploying to $DEPLOY_DIR ..."
 cp -r . $DEPLOY_DIR
 
 # add config file
-# ...@TODO
+echo "Copying config files"
+cp -r $CONFIG_SRC $CONFIG_DEST
 
+echo "Adapting symlink to current app version"
 rm $SYMLINK
 ln -s $DEPLOY_DIR $SYMLINK
 
 echo Removing tmp dir [$TMP_DIR]
-#rm -fr $TMP_DIR
+rm -fr $TMP_DIR
+
+echo RESTARTING instance
+sudo service timetracker restart
 exit 0
