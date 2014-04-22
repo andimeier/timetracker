@@ -129,37 +129,46 @@ app.use(function (req, res, next) {
 	next();
 });
 
-app.post('/login',               login.login);
-app.get('/logout',         auth, login.logout);
+app.post('/login', login.login);
+app.get('/logout', auth, login.logout);
 
-app.get('/records',              records.findAll);
-app.get('/records/:id',          records.findById);
-app.post('/records/:id',   auth, records.update); // POST with ID => update
-app.put('/records/:id',    auth, records.update);
+app.get('/records', records.findAll);
+app.get('/records/:id', records.findById);
+app.post('/records/:id', auth, records.update); // POST with ID => update
+app.put('/records/:id', auth, records.update);
 //app.post('/records',       auth, records.add); // POST without ID => add
-app.post('/records',       auth, records.add); // POST without ID => add
+app.post('/records', auth, records.add); // POST without ID => add
 app.delete('/records/:id', auth, records.delete);
 
-app.get('/projects',              projects.findAll);
-app.get('/projects/:id',          projects.findById);
+app.get('/projects', projects.findAll);
+app.get('/projects/:id', projects.findById);
 
-app.get('/stats',                 stats.recordedHours);
+app.get('/stats', stats.recordedHours);
 
-app.get('/invoices',        auth, invoices.findAll);
-app.get('/invoices/:id',    auth, invoices.findById);
-app.post('/invoices/:id',   auth, invoices.update); // POST with ID => update
-app.put('/invoices/:id',    auth, invoices.update);
-app.post('/invoices',       auth, invoices.add); // POST without ID => add
+app.get('/invoices', auth, invoices.findAll);
+app.get('/invoices/:id', auth, invoices.findById);
+app.post('/invoices/:id', auth, invoices.update); // POST with ID => update
+app.put('/invoices/:id', auth, invoices.update);
+app.post('/invoices', auth, invoices.add); // POST without ID => add
 app.delete('/invoices/:id', auth, invoices.delete);
 
 // output version info
-app.get('/version', function(req, res) {
-	fs.readFile(__dirname +  '/version.json', function(err, data) {
-		if (err) {
-			console.log(err);
-			res.send(400, err);
+app.get('/version', function (req, res) {
+	fs.exists(__dirname + '/version.json', function(exists) {
+
+		if (exists) {
+			fs.readFile(__dirname + '/version.json', function (err, data) {
+				if (err) {
+					logger.error(err);
+					res.send(400, err);
+				}
+				res.send(200, data);
+//		res.send({ version: "hoo" });
+			});
+		} else {
+			logger.error('Version file [' + __dirname + '/version.json' + '] does not exist');
+			res.send(400, { version: 'unknown' });
 		}
-		res.send(200, data);
 	});
 });
 
