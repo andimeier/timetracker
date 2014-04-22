@@ -3,7 +3,8 @@
  * @class authenticate
  * @type {exports}
  */
-var crypto = require('crypto');
+var crypto = require('crypto'),
+	debug = require('debug')('login');
 
 /**
  * Authenticates a user with username and password given.
@@ -36,20 +37,20 @@ exports.authenticate = function(username, pass, cb) {
 
 		// secure text input
 		usernameEscaped = connection.escape(username);
-		logger.verbose('Escaped user name', { user: usernameEscaped });
+		debug('Escaped user name', { user: usernameEscaped });
 
 		// query the database to some data 
 		var sql = "SELECT first_name, last_name, user_id, username, password, lastlogin from users where username=" + usernameEscaped;
-		logger.verbose('Trying to retrieve specified user', { sql: sql });
+		debug('Trying to retrieve specified user', { sql: sql });
 		connection.query(sql, function(err, rows) {
 
-			logger.verbose('Query result: ' + JSON.stringify(rows));
-			logger.verbose('error=[' + + JSON.stringify(err));
+			debug('Query result: ' + JSON.stringify(rows));
+			debug('error=[' + JSON.stringify(err));
 			if (rows.length > 0 && err == null) {
-				logger.verbose('Query went (technically) ok, now check if password is correct ...');
+				debug('Query went (technically) ok, now check if password is correct ...');
 				var user = rows[0];
 				if (user.password == passHash) {
-					logger.verbose('Whoa! Correct password! Congrats!');
+					debug('Whoa! Correct password! Congrats!');
 					cb(true, user.user_id, user);
 					logger.info('User [' + username + '] logged in successfully.');
 					return;
