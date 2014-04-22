@@ -7,91 +7,101 @@ process.env.NODE_ENV = 'test';
 var expect = require('chai').expect,
 	app = require('../app/server.js').app,
 	moment = require('moment'),
+	cases = require('cases'),
 	dateUtils = require('../app/utils/dateUtils.js');
 
-describe('dateUtils', function () {
+describe.only('dateUtils', function () {
 
-	it('should calculate the beginning of a week correctly', function (done) {
+	it('should calculate the beginning of a week correctly', cases([
+		[ '201415', '2014-04-07' ],
+		[ '201414', '2014-03-31' ]
+	], function(week, expectedStartOfWeek, done) {
 
+			var result;
+
+			result = moment(dateUtils.startOfWeek(week)).format('YYYY-MM-DD');
+			expect(result).to.be.equal(expectedStartOfWeek);
+
+			done();
+		}
+	));
+
+
+	it('should calculate the beginning of a week containing a date', cases([
+		[ '20140407', '2014-04-07' ],
+		[ '20140408', '2014-04-07' ],
+		[ '20140412', '2014-04-07' ],
+		[ '20140413', '2014-04-07' ],
+		[ '20140414', '2014-04-14' ],
+		[ '20140415', '2014-04-14' ]
+	], function(date, expectedStartOfWeek, done) {
 		var result;
 
-		result = moment(dateUtils.startOfWeek('201415')).format('YYYY-MM-DD');
-		expect(result).to.be.equal('2014-04-07');
-
-		result = moment(dateUtils.startOfWeek('201414')).format('YYYY-MM-DD');
-		expect(result).to.be.equal('2014-03-31');
+		result = moment(dateUtils.startOfWeekFromDate(date)).format('YYYY-MM-DD');
+		expect(result).to.be.equal(expectedStartOfWeek);
 
 		done();
-	});
 
+	}));
 
-	it('should calculate the beginning of a week containing a date', function (done) {
-
-		var result;
-
-		result = moment(dateUtils.startOfWeekFromDate('20140407')).format('YYYY-MM-DD');
-		expect(result).to.be.equal('2014-04-07');
-
-		result = moment(dateUtils.startOfWeekFromDate('20140408')).format('YYYY-MM-DD');
-		expect(result).to.be.equal('2014-04-07');
-
-		result = moment(dateUtils.startOfWeekFromDate('20140412')).format('YYYY-MM-DD');
-		expect(result).to.be.equal('2014-04-07');
-
-		result = moment(dateUtils.startOfWeekFromDate('20140413')).format('YYYY-MM-DD');
-		expect(result).to.be.equal('2014-04-07');
-
-		result = moment(dateUtils.startOfWeekFromDate('20140414')).format('YYYY-MM-DD');
-		expect(result).to.be.equal('2014-04-14');
-
-		result = moment(dateUtils.startOfWeekFromDate('20140415')).format('YYYY-MM-DD');
-		expect(result).to.be.equal('2014-04-14');
-
+	it('should inflate a date time value to <null> if no parseable date/time is given', cases([
+		[ 'dummy', null ],
+		[ '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', null ],
+		[ null, null ],
+		[ '', null ]
+	], function(datetime, expectedResult, done) {
+		expect(dateUtils.inflateDateTime(datetime)).to.be.equal(expectedResult);
 		done();
-	});
+	}));
 
-	it('should inflate a date time value', function (done) {
-
-		expect(dateUtils.inflateDateTime('dummy')).to.be.null;
-		expect(dateUtils.inflateDateTime(null)).to.be.null;
-		expect(dateUtils.inflateDateTime('2014031412111111')).to.be.null;
-		expect(dateUtils.inflateDateTime('201403141211111')).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314121111')).to.be.null;
-		expect(dateUtils.inflateDateTime('2014031412111')).to.be.null;
-		expect(dateUtils.inflateDateTime('201403141211')).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314121')).to.be.null;
-		expect(dateUtils.inflateDateTime('2014031412')).to.be.null;
-		expect(dateUtils.inflateDateTime('201403141')).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314')).to.be.equal('2014-03-14');
-		expect(dateUtils.inflateDateTime('2014031')).to.be.null;
-		expect(dateUtils.inflateDateTime('201401')).to.be.null;
-		expect(dateUtils.inflateDateTime('20141')).to.be.null;
-		expect(dateUtils.inflateDateTime('2011')).to.be.null;
-		expect(dateUtils.inflateDateTime('201')).to.be.null;
-		expect(dateUtils.inflateDateTime('20')).to.be.null;
-		expect(dateUtils.inflateDateTime('2')).to.be.null;
-		expect(dateUtils.inflateDateTime('')).to.be.null;
-
-		expect(dateUtils.inflateDateTime('20140314T12111111')).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T1211111')).to.be.null;
-		expect(dateUtils.inflateDateTime('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T121111')).to.be.equal('2014-03-14T12:11:11');
-		expect(dateUtils.inflateDateTime('20140314T12111')).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T1211')).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T121')).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T12')).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T1')).to.be.null;
-
-		expect(dateUtils.inflateDateTime('20140314T12111111', true)).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T1211111', true)).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T121111', true)).to.be.equal('2014-03-14');
-		expect(dateUtils.inflateDateTime('20140314T12111', true)).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T1211', true)).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T121', true)).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T12', true)).to.be.null;
-		expect(dateUtils.inflateDateTime('20140314T1', true)).to.be.null;
-
+	it('should inflate a date time value into date expression when no time is given', cases([
+		[ '2014031412111111', null ],
+		[ '201403141211111', null ],
+		[ '20140314121111', null ],
+		[ '2014031412111', null ],
+		[ '201403141211', null ],
+		[ '20140314121', null ],
+		[ '2014031412', null ],
+		[ '201403141', null ],
+		[ '20140314', '2014-03-14' ],
+		[ '2014031', null ],
+		[ '201403', null ],
+		[ '20140', null ],
+		[ '2014', null ],
+		[ '201', null ],
+		[ '20', null ],
+		[ '2', null ]
+	], function(datetime, expectedResult, done) {
+		expect(dateUtils.inflateDateTime(datetime)).to.be.equal(expectedResult);
 		done();
-	});
+	}));
 
+	it('should inflate a date time value into date/time expression when date and time are given', cases([
+		[ '20140314T12111111', null ],
+		[ '20140314T1211111', null ],
+		[ '20140314T121111', '2014-03-14T12:11:11' ],
+		[ '20140314T12111', null ],
+		[ '20140314T1211', null ],
+		[ '20140314T121', null ],
+		[ '20140314T12', null ],
+		[ '20140314T1', null ]
+	], function(datetime, expectedResult, done) {
+		expect(dateUtils.inflateDateTime(datetime)).to.be.equal(expectedResult);
+		done();
+	}));
+
+	it('should inflate a date time value into a date expression when using \'onlyDate\' parameter', cases([
+		[ '20140314T12111111', null ],
+		[ '20140314T1211111', null ],
+		[ '20140314T121111', '2014-03-14' ],
+		[ '20140314T12111', null ],
+		[ '20140314T1211', null ],
+		[ '20140314T121', null ],
+		[ '20140314T12', null ],
+		[ '20140314T1', null ]
+
+	], function(datetime, expectedResult, done) {
+		expect(dateUtils.inflateDateTime(datetime, true)).to.be.equal(expectedResult);
+		done();
+	}));
 });
