@@ -10,7 +10,7 @@ var expect = require('chai').expect,
 	cases = require('cases'),
 	dateUtils = require('../app/utils/dateUtils.js');
 
-describe.only('dateUtils', function () {
+describe('dateUtils', function () {
 
 	it('should calculate the beginning of a week correctly', cases([
 		[ '201415', '2014-04-07' ],
