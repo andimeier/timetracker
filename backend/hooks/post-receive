@@ -31,8 +31,10 @@ mv $TMP_DIR/backend/node_modules/ $TMP_DIR/backend/app/
 
 # add version file
 VERSION=`cat ../package.json | grep \"version\" | perl -p -e 's/^.*version.*\b(\d+\.\d+\.\d+)\b.*$/\1/g;'`
+ts_json=`date '+%Y-%m-%d %H:%M:%S'`
 echo '{' >${VERSION_JSON}
 echo "  \"version\": \"$VERSION\"" >>${VERSION_JSON}
+echo "  \"deployed\": \"$ts_json\"" >>${VERSION_JSON}
 echo '}' >>${VERSION_JSON}
 echo "------------------------------------"
 echo "Extracted version: $a"
