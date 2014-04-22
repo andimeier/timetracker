@@ -60,7 +60,20 @@ describe('Model object', function () {
 
 	it('should map abbreviated parameter names correctly', function () {
 
-		var p = { n: 10, p: 3 };
+		var p;
+
+		p = { n: 10, p: 3 };
+		model.mapParams(p);
+		expect(p).to.have.keys(['limit', 'page']);
+		expect(p.limit).to.be.equal(10);
+		expect(p.page).to.be.equal(3);
+
+		p = { limit: 10 };
+		model.mapParams(p);
+		expect(p).to.have.keys(['limit']);
+		expect(p.limit).to.be.equal(10);
+
+		p = { limit: 10, p: 3 };
 		model.mapParams(p);
 		expect(p).to.have.keys(['limit', 'page']);
 		expect(p.limit).to.be.equal(10);
