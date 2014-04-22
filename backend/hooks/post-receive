@@ -26,6 +26,13 @@ find -type f -name '.gitignore' -exec rm {} \;
 npm install --production
 mv $TMP_DIR/backend/node_modules/ $TMP_DIR/backend/app/
 
+# add version file
+cat ../package.json | grep \"version\" | perl -p -e 's/^.*version.*\b(\d+\.\d+\.\d+)\b.*$/\1/g;' >> version.txt
+echo "------------------------------------"
+echo -n "Extracted version: "
+cat version.txt
+echo "------------------------------------"
+
 # now copy the app as is into the app directory
 ts=`date '+%Y%m%d-%H%M%S'`
 DEPLOY_DIR=/tmp/$ts
@@ -38,5 +45,6 @@ cp -r . $DEPLOY_DIR
 rm $SYMLINK
 ln -s $DEPLOY_DIR $SYMLINK
 
+echo Removing tmp dir [$TMP_DIR]
 #rm -fr $TMP_DIR
 exit 0
