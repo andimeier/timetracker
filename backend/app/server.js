@@ -9,7 +9,8 @@ var express = require('express'),
 	invoices = require('./routes/invoices'),
 	stats = require('./routes/stats'),
 	login = require('./routes/login'),
-	authenticate = require('./utils/auth');
+	authenticate = require('./utils/auth'),
+	fs = require('fs');
 
 // server port
 var port = 3000;
@@ -150,6 +151,18 @@ app.post('/invoices/:id',   auth, invoices.update); // POST with ID => update
 app.put('/invoices/:id',    auth, invoices.update);
 app.post('/invoices',       auth, invoices.add); // POST without ID => add
 app.delete('/invoices/:id', auth, invoices.delete);
+
+app.get('/version', function(req, res) {
+	fs.readFile('./version.json', function(err, data) {
+
+		if (err) {
+			console.log(err);
+			res.send(400, err);
+		}
+
+		res.send(200, data);
+	});
+});
 
 app.use(function (req, res) {
 	logger.verbose('Unrecognized API call', { url: req.originalUrl });
