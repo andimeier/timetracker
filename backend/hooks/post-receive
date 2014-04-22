@@ -20,7 +20,6 @@ VERSION_JSON=version.json
 DEPLOY_BASE_DIR=/var/www/eck-zimmer.at/apps/timetracker.rest
 SYMLINK=$DEPLOY_BASE_DIR/app
 CONFIG_SRC=$DEPLOY_BASE_DIR/config
-CONFIG_DEST=$DEPLOY_DIR/config
 
 TMP_DIR=`mktemp -d`
 git archive HEAD | tar x -C $TMP_DIR
@@ -49,7 +48,10 @@ cp -r . $DEPLOY_DIR
 
 # add config file
 echo "Copying config files"
-cp -r $CONFIG_SRC/* $CONFIG_DEST/
+CONFIG_DEST=$DEPLOY_DIR/config
+# mkdir if not exists:
+mkdir -p $CONFIG_DEST
+cp -r $CONFIG_SRC/* $CONFIG_DEST
 
 echo "Adapting symlink to current app version"
 rm $SYMLINK
