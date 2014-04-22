@@ -152,14 +152,13 @@ app.put('/invoices/:id',    auth, invoices.update);
 app.post('/invoices',       auth, invoices.add); // POST without ID => add
 app.delete('/invoices/:id', auth, invoices.delete);
 
+// output version info
 app.get('/version', function(req, res) {
-	fs.readFile('./version.json', function(err, data) {
-
+	fs.readFile(__dirname +  '/version.json', function(err, data) {
 		if (err) {
 			console.log(err);
 			res.send(400, err);
 		}
-
 		res.send(200, data);
 	});
 });
