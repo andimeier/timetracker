@@ -49,7 +49,7 @@ cp -r . $DEPLOY_DIR
 
 # add config file
 echo "Copying config files"
-cp -r $CONFIG_SRC $CONFIG_DEST
+cp -r $CONFIG_SRC/* $CONFIG_DEST/
 
 echo "Adapting symlink to current app version"
 rm $SYMLINK
