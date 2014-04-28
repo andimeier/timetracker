@@ -2,7 +2,7 @@
 	"db": {
 		"host": "server.com",
 		"user": "username",
-		"password": "password",
+		"password": "password_base64_encoded",
 		"database": "timetracker",
 		"sessionTable": "sessions"
 	},

@@ -21,7 +21,7 @@ var config = require(__dirname + '/config/config.json');
 global.dbPool = mysql.createPool({
 	host: config.db.host,
 	user: config.db.user,
-	password: config.db.password,
+	password: new Buffer(config.db.password, 'base64').toString('ascii'),
 	database: config.db.database,
 	dateStrings: true // don't convert date fields into Date objects (since
 	// it would make the process vulnerable due to implicit, automatic timezone
@@ -180,5 +180,7 @@ app.use(function (req, res) {
 // start the server
 app.listen(port);
 logger.verbose('Listening on port ' + port + ' ...');
+
+debugger;
 
 exports.app = app;
