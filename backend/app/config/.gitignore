@@ -1,1 +1,4 @@
-config.json.alex
+# config files for frontend and REST server are created 
+# by the build process depending on the
+# target environment, no need to be checked in:
+config.json
