@@ -17,6 +17,18 @@ var port = 3000;
 
 var config = require(__dirname + '/config/config.json');
 
+// check if password is base64 encoded
+// The Base64 encoding should only provide a minimum layer of
+// "security by obscurity" so that one cannot see the password *immediately*
+// when looking at the config file. Of course the password can be retrieved
+// (decoded) by everybody but this should only keep the plain text password
+// from being immediately visible to the occasional beholder
+var base64Matcher = new RegExp('^[A-Za-z0-9+/]+=*$');
+if (! base64Matcher.test(config.db.password)) {
+    // It's definitely not base64 encoded.
+    logger.warn('config.db.password must be Base64 encoded, but does not seem to be a Base64 string');
+}
+
 // global MySql connection pool
 global.dbPool = mysql.createPool({
 	host: config.db.host,
