@@ -110,7 +110,7 @@ create table sessions (
 
 ### Redis session store
 
-You must have a Redis server installed. For Ubuntu or Debian, this would be something like:
+For using the Redis session store, you must have a Redis server installed. For Ubuntu or Debian, this would be something like:
 
     apt-get install redis-server
 
