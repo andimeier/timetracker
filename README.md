@@ -1,9 +1,16 @@
 General information
 ===================
 
+Timetracker is an online utility for tracking (record) hours you spent working on projects. It is supposed to be a helper utility for freelancers. Basic features are:
+
+* record begin of work, end of work, work description
+* report recorded work by multiple criteria
+* keep track of invoices by assigning specific work records to invoices and track the payment
+
 The timetracker application consists of a Javascript frontend (running in the browser)
 communicating via JSON REST API with the backend (a node.js server application running on the server).
 
+Application status: work in progress, far from stable
 
 Frontend
 ========
