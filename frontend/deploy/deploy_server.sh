@@ -4,7 +4,10 @@
 #
 
 APP_DIR=server/app
-REMOTE_TARGET=alex@eck-zimmer.at:/var/www/eck-zimmer.at/apps/timetracker.rest
+DEPLOY_USER='deploy'
+DEPLOY_SERVER='server.com'
+TARGET_DIR='/var/www/timetracker.rest'
+REMOTE_TARGET=$DEPLOY_USER@$DEPLOY_SERVER:$TARGET_DIR
 
 echo "Script executed from: ${PWD}"
 
